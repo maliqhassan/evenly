@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npx eslint .
+      - name: Unit & component tests (money domain, ledger, screens)
+        run: npm test -- --ci
+      - name: Database tests (migrations, RLS, RPCs in PGlite)
+        run: npm run test:db
+      - name: Bundle (Android, demo mode)
+        run: npx expo export --platform android --output-dir dist
+        env:
+          EXPO_PUBLIC_DEMO_MODE: 'true'
