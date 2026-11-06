@@ -55,7 +55,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     ['expo-splash-screen', { backgroundColor: '#2F3B33', image: './assets/images/splash-icon.png', imageWidth: 76 }],
-    ['@react-native-google-signin/google-signin', iosUrlScheme ? { iosUrlScheme } : {}],
+    // The plugin only configures the iOS URL scheme and throws without one, so
+    // it is added once EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID is set (required for iOS builds).
+    // Android needs no plugin config; the native module autolinks.
+    ...(iosUrlScheme ? [['@react-native-google-signin/google-signin', { iosUrlScheme }] as [string, object]] : []),
     'expo-secure-store',
     'expo-sqlite',
     'expo-localization',
