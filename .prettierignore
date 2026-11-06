@@ -1,0 +1,8 @@
+node_modules
+design_handoff_evenly
+supabase/.temp
+package-lock.json
+supabase/migrations
+.expo
+dist
+assets

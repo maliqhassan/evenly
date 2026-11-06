@@ -1,0 +1,78 @@
+import type { ConfigContext, ExpoConfig } from 'expo/config';
+
+/**
+ * Expo app config. Values that differ per environment come from env vars
+ * (see .env.example); nothing secret belongs here.
+ */
+const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '';
+// Google Sign-In on iOS needs the *reversed* iOS client ID as a URL scheme.
+const iosUrlScheme = iosClientId
+  ? `com.googleusercontent.apps.${iosClientId.replace('.apps.googleusercontent.com', '')}`
+  : undefined;
+const inviteHost = (process.env.EXPO_PUBLIC_INVITE_BASE_URL ?? 'https://evenly.app/j')
+  .replace(/^https?:\/\//, '')
+  .split('/')[0];
+const bundleId = process.env.APP_BUNDLE_ID ?? 'app.evenly.mobile';
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  name: 'Evenly',
+  slug: 'evenly',
+  scheme: 'evenly',
+  version: '1.0.0',
+  orientation: 'portrait',
+  userInterfaceStyle: 'light',
+  icon: './assets/images/icon.png',
+  backgroundColor: '#F4F5F3',
+  ios: {
+    bundleIdentifier: bundleId,
+    supportsTablet: false,
+    associatedDomains: [`applinks:${inviteHost}`],
+    infoPlist: {
+      NSCameraUsageDescription: 'Evenly uses the camera to photograph receipts and set your profile photo.',
+      NSPhotoLibraryUsageDescription: 'Evenly lets you attach receipt photos and choose a profile photo.',
+      ITSAppUsesNonExemptEncryption: false,
+    },
+  },
+  android: {
+    package: bundleId,
+    adaptiveIcon: {
+      backgroundColor: '#2F3B33',
+      foregroundImage: './assets/images/android-icon-foreground.png',
+      monochromeImage: './assets/images/android-icon-monochrome.png',
+    },
+    predictiveBackGestureEnabled: false,
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: [{ scheme: 'https', host: inviteHost, pathPrefix: '/j/' }],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
+  },
+  web: { output: 'static', favicon: './assets/images/favicon.png' },
+  plugins: [
+    'expo-router',
+    ['expo-splash-screen', { backgroundColor: '#2F3B33', image: './assets/images/splash-icon.png', imageWidth: 76 }],
+    ['@react-native-google-signin/google-signin', iosUrlScheme ? { iosUrlScheme } : {}],
+    'expo-secure-store',
+    'expo-sqlite',
+    'expo-localization',
+    ['expo-notifications', { color: '#2F3B33' }],
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Evenly lets you attach receipt photos and choose a profile photo.',
+        cameraPermission: 'Evenly uses the camera to photograph receipts and set your profile photo.',
+      },
+    ],
+    'expo-font',
+    'expo-web-browser',
+    ['@sentry/react-native', { organization: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT }],
+  ],
+  experiments: { typedRoutes: true, reactCompiler: true },
+  extra: {
+    eas: process.env.EAS_PROJECT_ID ? { projectId: process.env.EAS_PROJECT_ID } : undefined,
+  },
+});
