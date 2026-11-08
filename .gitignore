@@ -58,3 +58,4 @@ service-account*.json
 
 # Expo export output
 dist/
+*firebase-adminsdk*.json

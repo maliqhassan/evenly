@@ -93,9 +93,7 @@ export const firebaseAuthClient: AuthClient = {
 
       const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(getAuthInstance(), credential);
-      // Force a refresh so the token carries the `role` claim set by the
-      // blocking function before the first Supabase request.
-      await result.user.getIdToken(true);
+      // The `role` claim Supabase needs is added in prepareSession().
       return { status: 'success', user: toAuthUser(result.user) };
     } catch (e) {
       if (isErrorWithCode(e)) {
@@ -116,6 +114,25 @@ export const firebaseAuthClient: AuthClient = {
       // Not signed in with the native SDK (or Expo Go) — ignore.
     }
     await fbSignOut(getAuthInstance());
+  },
+
+  async prepareSession() {
+    const user = getAuthInstance().currentUser;
+    if (!user) throw new Error('not signed in');
+    const current = await user.getIdTokenResult();
+    if (current.claims.role === 'authenticated') return;
+
+    // First sign-in: ask the `firebase-role` Edge Function to add the claim to
+    // this (verified) account, then refresh the token so it carries it.
+    const live = config.live!;
+    const res = await fetch(`${live.supabaseUrl}/functions/v1/firebase-role`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: live.supabaseAnonKey },
+      body: JSON.stringify({ idToken: current.token }),
+    });
+    if (!res.ok) throw new Error(`role claim setup failed (${res.status})`);
+    const refreshed = await user.getIdTokenResult(true);
+    if (refreshed.claims.role !== 'authenticated') throw new Error('role claim missing after refresh');
   },
 
   async getIdToken(forceRefresh = false) {

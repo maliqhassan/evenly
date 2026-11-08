@@ -19,6 +19,12 @@ export interface AuthClient {
   onChange(listener: (user: AuthUser | null) => void): () => void;
   signInWithGoogle(): Promise<SignInResult>;
   signOut(): Promise<void>;
+  /**
+   * Make sure the signed-in user's token carries what the backend requires
+   * (Firebase: the `role: "authenticated"` claim). Call before the first
+   * backend request of a session; cheap when already satisfied.
+   */
+  prepareSession(): Promise<void>;
   /** Current Firebase ID token (refreshed automatically when near expiry). */
   getIdToken(forceRefresh?: boolean): Promise<string | null>;
   /** Delete the identity-provider account (after the app data was deleted). */

@@ -416,3 +416,7 @@ enabled = true
 # Called by the database (pg_net) with a shared secret, not a user JWT.
 [functions.push-dispatch]
 verify_jwt = false
+
+# Verifies the Firebase ID token itself (the token has no Supabase role yet).
+[functions.firebase-role]
+verify_jwt = false

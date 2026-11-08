@@ -4,20 +4,18 @@ You'll configure four things: **Firebase** (identity), **Google Cloud** (OAuth c
 
 ## 1. Firebase: Google sign-in
 
+Everything here works on the free **Spark** plan.
+
 1. Create a project at <https://console.firebase.google.com> (e.g. `evenly-prod`).
 2. **Authentication → Sign-in method → Google → Enable.** Leave all other providers off.
 3. **Project settings → Your apps → Add app → Web.** Copy `apiKey`, `authDomain`, `projectId`, `appId` into `.env` (`EXPO_PUBLIC_FIREBASE_*`).
-4. **Upgrade to Firebase Authentication with Identity Platform** (Authentication → Settings). Blocking functions require it; the free tier covers 50k MAU.
-5. Deploy the blocking functions that add `role: "authenticated"` to every ID token. Supabase needs this claim:
-   ```bash
-   cd firebase/functions
-   npm install
-   npx firebase-tools login
-   npx firebase-tools use <project-id>
-   npm run deploy
-   ```
-   Then go to **Authentication → Settings → Blocking functions** and select `evenlyBeforeCreate` (before account creation) and `evenlyBeforeSignIn` (before sign in).
-6. If any users signed in before step 5, run `npm run backfill` once with a service-account key (`GOOGLE_APPLICATION_CREDENTIALS=./service-account.json`). Never commit or ship that key.
+4. **Project settings → Service accounts → Generate new private key.** This downloads a JSON key. Keep it outside the repo; it becomes a Supabase secret in section 3. Never commit it, ship it in the app, or paste it anywhere.
+
+### How users get the `role` claim Supabase requires
+
+Supabase only accepts Firebase tokens that carry `role: "authenticated"`. On a user's first sign-in, the app sends its ID token to the **`firebase-role` Edge Function** (`supabase/functions/firebase-role`). The function verifies the token against Google's public keys, then sets the claim on that same user through the Identity Toolkit admin API, using the service-account key. The app then refreshes its token. After that, nothing extra happens on later sign-ins.
+
+**Alternative on Blaze:** if you upgrade to Blaze and enable Identity Platform, you can instead deploy the blocking functions in `firebase/functions` (`npm run deploy`, then register them under Authentication → Settings → Blocking functions). The edge function then becomes a no-op.
 
 ## 2. Google Cloud: OAuth clients
 
@@ -45,7 +43,12 @@ Use the Google Cloud project that Firebase created.
    on conflict (key) do update set value = excluded.value;
    ```
 5. Storage buckets (`receipts`, private; `avatars`, public) and their policies are created by the migrations.
-6. **Push delivery (optional, needed for push notifications):**
+6. **Role-claim function (required for sign-in):** store the Firebase service-account key from section 1 as a secret, then deploy:
+   ```bash
+   npx supabase secrets set FIREBASE_SERVICE_ACCOUNT="$(cat /path/to/evenly-firebase-adminsdk.json)"
+   npx supabase functions deploy firebase-role --no-verify-jwt
+   ```
+7. **Push delivery (optional, needed for push notifications):**
    ```bash
    # a random shared secret, e.g. `openssl rand -hex 32`
    npx supabase secrets set PUSH_DISPATCH_SECRET=<secret>

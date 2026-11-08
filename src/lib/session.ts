@@ -28,6 +28,8 @@ async function handshake(user: AuthUser) {
   const s = useSession.getState();
   s.setAuthenticating(true);
   try {
+    // Ensure the token carries the claims Supabase requires (first sign-in only).
+    await authClient.prepareSession();
     // Creates the profile on first sign-in; returns the existing one otherwise.
     const { me } = await api.ensureProfile({ fullName: user.displayName, avatarUrl: user.photoURL });
     if (!isDemo) void secureStorage.setItem(meKey(user.uid), JSON.stringify(me)).catch(() => undefined);

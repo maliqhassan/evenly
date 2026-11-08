@@ -28,6 +28,9 @@ export const demoAuthClient: AuthClient = {
     current = null;
     emit();
   },
+  async prepareSession() {
+    // Nothing to prepare for the local demo identity.
+  },
   async getIdToken() {
     return current ? 'demo-token' : null;
   },
