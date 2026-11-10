@@ -7,13 +7,13 @@ import { DMSans_600SemiBold } from '@expo-google-fonts/dm-sans/600SemiBold';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
-import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ToastHost } from '@/components';
 import { ConfigMissingScreen } from '@/features/system/ConfigMissingScreen';
+import { RootStack } from '@/features/system/RootStack';
 import { SplashView } from '@/features/system/SplashView';
 import { configErrors, parseInviteCode } from '@/lib/config';
 import { initMonitoring, wrapRoot } from '@/lib/monitoring';
@@ -21,7 +21,6 @@ import { queryClient } from '@/lib/query-client';
 import { startSessionListener } from '@/lib/session';
 import { usePendingInvite } from '@/stores/drafts';
 import { useSession } from '@/stores/session';
-import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 initMonitoring();
@@ -64,23 +63,7 @@ function RootLayout() {
         {status === 'booting' ? (
           <SplashView />
         ) : (
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.bg },
-              animation: 'slide_from_right',
-            }}
-          >
-            <Stack.Protected guard={status === 'signedIn'}>
-              <Stack.Screen name="(app)" />
-            </Stack.Protected>
-            <Stack.Protected guard={status === 'onboarding'}>
-              <Stack.Screen name="(onboarding)" />
-            </Stack.Protected>
-            <Stack.Protected guard={status === 'signedOut'}>
-              <Stack.Screen name="(auth)" />
-            </Stack.Protected>
-          </Stack>
+          <RootStack status={status} />
         )}
         <ToastHost />
       </QueryClientProvider>
