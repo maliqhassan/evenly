@@ -1,17 +1,17 @@
 /**
  * Evenly colour tokens (design handoff → "Design Tokens / Colours").
- * Palette: https://coolors.co/1b211d-2f3b33-1e7a4c-ddefe3-f4f5f3-c2362f
+ * Palette: https://coolors.co/1b211d-26302a-1e7a4c-badfc6-f4f5f3-c2362f
  *
  * Screens must use these tokens, never raw hex values. `dark` is prepared so
  * a dark theme can be switched on without touching screens.
  */
 const light = {
   ink: '#1B211D',
-  forest: '#2F3B33',
+  forest: '#26302A',
   forestCard: '#3B4A3F',
   positive: '#1E7A4C',
   positiveSoft: '#E3F1E7',
-  mint: '#DDEFE3',
+  mint: '#BADFC6',
   negative: '#C2362F',
   negativeSoft: '#FBECEA',
   negativeTrack: '#F2CFCB',
@@ -44,7 +44,7 @@ const light = {
   onDarkHairline: 'rgba(255,255,255,0.14)',
   onDarkBorder: 'rgba(255,255,255,0.25)',
   onDarkField: 'rgba(255,255,255,0.10)',
-  hairlineOnMint: 'rgba(47,59,51,0.12)',
+  hairlineOnMint: 'rgba(38,48,42,0.12)',
 
   tabBar: 'rgba(255,255,255,0.92)',
   frosted: 'rgba(255,255,255,0.82)',
@@ -59,17 +59,17 @@ const light = {
   barPositive: '#8CC5A0',
 
   // Gradients
-  mintGradient: ['#F4FBF6', '#D5ECDD', '#C3E2CD'] as const,
-  mintGradientSoft: ['#F4FBF6', '#CFE8D7'] as const,
+  mintGradient: ['#F4FBF6', '#CDE8D5', '#BADFC6'] as const,
+  mintGradientSoft: ['#F4FBF6', '#BADFC6'] as const,
   successGlow: ['#E1F1E6', '#F4F5F3'] as const,
   welcomeGradient: ['#F4F5F3', '#FFFFFF', '#EEF5F0', '#FFFFFF'] as const,
   photoStripe: ['#DCE3DC', '#E4EAE3'] as const,
   avatarStripe: ['#DCE3DC', '#E6ECE5'] as const,
 
   // Reports
-  chartBarMuted: 'rgba(221,239,227,0.35)',
-  chartBarActive: '#DDEFE3',
-  categoryScale: ['#2F3B33', '#4F7A5C', '#7EA88A', '#A9C9B2', '#CFE3D5'] as const,
+  chartBarMuted: 'rgba(186,223,198,0.35)',
+  chartBarActive: '#BADFC6',
+  categoryScale: ['#26302A', '#4F7A5C', '#7EA88A', '#A9C9B2', '#CFE3D5'] as const,
 
   // Initial avatars, chosen deterministically from the user id
   avatarFills: ['#D9C7B8', '#C8D5C0', '#E6CFC9', '#C9D3E0', '#E3DCC4', '#D7C9E0', '#CFDCD6'] as const,

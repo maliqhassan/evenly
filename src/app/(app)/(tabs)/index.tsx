@@ -307,7 +307,14 @@ function otherCurrencyCaption(s: CurrencySummary, locale: string, groupNames: st
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   shell: { backgroundColor: colors.forestCard, borderRadius: radii.hero, padding: 10 },
-  mint: { borderRadius: radii.heroInner, paddingVertical: 14, paddingHorizontal: 18, overflow: 'hidden' },
+  mint: {
+    borderRadius: radii.heroInner,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    overflow: 'hidden',
+    // Solid mint under the gradient, so the panel stays light green if the SVG doesn't draw.
+    backgroundColor: colors.mint,
+  },
   split: {
     flexDirection: 'row',
     alignSelf: 'stretch',

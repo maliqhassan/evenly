@@ -37,7 +37,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: bundleId,
     adaptiveIcon: {
-      backgroundColor: '#2F3B33',
+      backgroundColor: '#26302A',
       foregroundImage: './assets/images/android-icon-foreground.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
@@ -54,7 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: { output: 'static', favicon: './assets/images/favicon.png' },
   plugins: [
     'expo-router',
-    ['expo-splash-screen', { backgroundColor: '#2F3B33', image: './assets/images/splash-icon.png', imageWidth: 76 }],
+    ['expo-splash-screen', { backgroundColor: '#26302A', image: './assets/images/splash-icon.png', imageWidth: 76 }],
     // The plugin only configures the iOS URL scheme and throws without one, so
     // it is added once EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID is set (required for iOS builds).
     // Android needs no plugin config; the native module autolinks.
@@ -62,7 +62,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-secure-store',
     'expo-sqlite',
     'expo-localization',
-    ['expo-notifications', { color: '#2F3B33' }],
+    ['expo-notifications', { color: '#26302A' }],
     [
       'expo-image-picker',
       {

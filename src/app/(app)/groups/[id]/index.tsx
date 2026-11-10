@@ -417,6 +417,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: radii.card,
     overflow: 'hidden',
+    backgroundColor: colors.mint,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
