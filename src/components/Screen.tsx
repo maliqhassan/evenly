@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { colors, sizes, spacing } from '@/theme';
 
 export interface ScreenProps {
@@ -53,6 +54,9 @@ export function Screen({
   overlay,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
+  // Android (edge-to-edge): the keyboard covers its height plus the navigation bar.
+  const keyboard = useKeyboardHeight();
+  const keyboardInset = keyboard > 0 ? keyboard + insets.bottom : 0;
   const bottomPad = withTabBar
     ? sizes.tabBarClearance + insets.bottom
     : footer
@@ -66,7 +70,10 @@ export function Screen({
   return (
     <View style={[styles.root, { backgroundColor: bg, paddingTop: header || !topInset ? 0 : insets.top }]}>
       <StatusBar style={statusBar} />
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView
+        style={[styles.flex, keyboardInset ? { paddingBottom: keyboardInset } : null]}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         {scroll ? (
           <ScrollView
             style={styles.flex}
@@ -92,7 +99,11 @@ export function Screen({
           <View
             style={[
               styles.footer,
-              { paddingHorizontal: padding, paddingBottom: Math.max(insets.bottom, spacing['3xl']) + spacing.xl },
+              {
+                paddingHorizontal: padding,
+                // Above the keyboard the home indicator / nav bar is hidden, so a small gap is enough.
+                paddingBottom: keyboardInset ? spacing.xl : Math.max(insets.bottom, spacing['3xl']) + spacing.xl,
+              },
             ]}
           >
             {footer}

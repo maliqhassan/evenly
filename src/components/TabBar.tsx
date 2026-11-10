@@ -19,13 +19,19 @@ const TAB_META: Record<string, { icon: IconName; label: string }> = {
 };
 
 /**
- * Floating pill tab bar: inset 24, 26 from the bottom, 64 high, white 92% +
- * blur, centre 48pt "Add expense" button.
+ * Floating pill tab bar: inset 24, 64 high, white 92% + blur, with a raised
+ * centre "Add expense" button. On iOS it sits 26 from the bottom (over the home
+ * indicator, per the design); on Android it sits a clear gap above the system
+ * navigation buttons, which edge-to-edge draws over the app.
  */
 export function TabBar({ state, navigateToTab }: TabBarProps) {
   const insets = useSafeAreaInsets();
   const routes = state.routes.filter((r) => TAB_META[r.name]);
   const half = Math.ceil(routes.length / 2);
+  const bottom =
+    Platform.OS === 'android' && insets.bottom > 0
+      ? insets.bottom + ANDROID_GAP
+      : sizes.tabBarBottom + Math.max(0, insets.bottom - 20);
 
   const renderTab = (route: (typeof routes)[number]) => {
     const meta = TAB_META[route.name]!;
@@ -48,7 +54,7 @@ export function TabBar({ state, navigateToTab }: TabBarProps) {
   return (
     <View
       pointerEvents="box-none"
-      style={[styles.wrap, { bottom: sizes.tabBarBottom + Math.max(0, insets.bottom - 20) }]}
+      style={[styles.wrap, { bottom }]}
     >
       <View style={[styles.bar, shadows.tabBar]}>
         {Platform.OS === 'ios' ? (
@@ -60,15 +66,19 @@ export function TabBar({ state, navigateToTab }: TabBarProps) {
           onPress={() => router.push('/add-expense')}
           haptic
           accessibilityLabel="Add expense"
-          style={styles.fab}
+          style={[styles.fab, shadows.fab]}
         >
-          <Icon name="plus" size={24} color={colors.onDarkStrong} />
+          <Icon name="plus" size={28} color={colors.mint} />
         </Pressable>
         {routes.slice(half).map(renderTab)}
       </View>
     </View>
   );
 }
+
+/** Space between the tab bar and Android's navigation buttons. */
+const ANDROID_GAP = 10;
+const FAB = 58;
 
 const styles = StyleSheet.create({
   wrap: { position: 'absolute', left: sizes.tabBarInset, right: sizes.tabBarInset },
@@ -83,11 +93,15 @@ const styles = StyleSheet.create({
   },
   clip: { borderRadius: sizes.tabBarHeight / 2, overflow: 'hidden' },
   tab: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
+  // Raised above the bar, ringed in white so it reads as the main action.
   fab: {
-    width: sizes.tabBarFab,
-    height: sizes.tabBarFab,
-    borderRadius: sizes.tabBarFab / 2,
+    width: FAB,
+    height: FAB,
+    borderRadius: FAB / 2,
+    marginTop: -22,
     backgroundColor: colors.forest,
+    borderWidth: 4,
+    borderColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },

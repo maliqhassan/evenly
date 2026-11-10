@@ -82,12 +82,26 @@ export default function Dashboard() {
       contentStyle={{ paddingTop: 6 }}
     >
       <View style={styles.header}>
-        <Pressable onPress={() => router.push('/profile')} accessibilityLabel="Profile and settings">
+        <Pressable
+          onPress={() => router.push('/profile')}
+          accessibilityRole="button"
+          accessibilityLabel="Open your profile"
+          accessibilityHint="Your details, preferences and settings"
+          style={styles.profile}
+        >
           <Avatar id={myId} name={me.profile.fullName} uri={me.profile.avatarUrl} size={42} />
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text variant="nav" numberOfLines={1}>
+              Hi, {firstNameOf(me.profile.fullName)}!
+            </Text>
+            <View style={styles.profileLink}>
+              <Text variant="captionMedium" color={colors.positive}>
+                View profile
+              </Text>
+              <Icon name="chevron-right" size={14} color={colors.positive} />
+            </View>
+          </View>
         </Pressable>
-        <Text variant="nav" style={{ flex: 1 }} accessibilityRole="header">
-          Hi, {firstNameOf(me.profile.fullName)}!
-        </Text>
         <IconButton
           icon="bell"
           tone="plain"
@@ -112,8 +126,20 @@ export default function Dashboard() {
           )}
         </View>
         <View style={styles.actions}>
-          <Action icon="circle-plus" label="Add Expense" onPress={() => router.push('/add-expense')} />
-          <View style={styles.vr} />
+          <Pressable
+            onPress={() => router.push('/add-expense')}
+            haptic
+            accessibilityRole="button"
+            accessibilityLabel="Add expense"
+            style={styles.addExpense}
+          >
+            <View style={styles.addIcon}>
+              <Icon name="plus" size={18} color={colors.mint} />
+            </View>
+            <Text variant="bodyStrong" color={colors.forest}>
+              Add Expense
+            </Text>
+          </Pressable>
           <Action icon="banknote" label="Settle Up" onPress={() => router.push('/settle')} />
           <View style={styles.vr} />
           <Action icon="scan-line" label="Scan Bill" onPress={scanBill} />
@@ -230,7 +256,7 @@ function Action({
   label,
   onPress,
 }: {
-  icon: 'circle-plus' | 'banknote' | 'scan-line';
+  icon: 'banknote' | 'scan-line';
   label: string;
   onPress: () => void;
 }) {
@@ -306,6 +332,8 @@ function otherCurrencyCaption(s: CurrencySummary, locale: string, groupNames: st
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  profile: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48 },
+  profileLink: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   shell: { backgroundColor: colors.forestCard, borderRadius: radii.hero, padding: 10 },
   mint: {
     borderRadius: radii.heroInner,
@@ -324,8 +352,28 @@ const styles = StyleSheet.create({
   },
   splitCol: { flex: 1, alignItems: 'center', gap: 2 },
   splitDivider: { width: 1, backgroundColor: colors.hairlineOnMint },
-  actions: { flexDirection: 'row', paddingTop: 12, paddingBottom: 4 },
+  actions: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 12, paddingBottom: 4 },
   action: { flex: 1, alignItems: 'center', gap: 6, minHeight: 48, justifyContent: 'center' },
+  // The main action: a mint pill, wider than the two secondary actions.
+  addExpense: {
+    flex: 1.6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    height: 52,
+    marginRight: 4,
+    borderRadius: 26,
+    backgroundColor: colors.mint,
+  },
+  addIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.forest,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   vr: { width: 1, backgroundColor: colors.onDarkHairline },
   recent: {
     flexDirection: 'row',

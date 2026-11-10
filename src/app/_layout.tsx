@@ -13,6 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ToastHost } from '@/components';
 import { ConfigMissingScreen } from '@/features/system/ConfigMissingScreen';
+import { NavigationBarScrim } from '@/features/system/NavigationBarScrim';
 import { RootStack } from '@/features/system/RootStack';
 import { SplashView } from '@/features/system/SplashView';
 import { configErrors, parseInviteCode } from '@/lib/config';
@@ -65,6 +66,7 @@ function RootLayout() {
         ) : (
           <RootStack status={status} />
         )}
+        <NavigationBarScrim />
         <ToastHost />
       </QueryClientProvider>
     </SafeAreaProvider>
