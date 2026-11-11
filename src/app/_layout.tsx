@@ -7,6 +7,7 @@ import { DMSans_600SemiBold } from '@expo-google-fonts/dm-sans/600SemiBold';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
+import { NavigationBar } from 'expo-navigation-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -66,6 +67,8 @@ function RootLayout() {
         ) : (
           <RootStack status={status} />
         )}
+        {/* Android: hide the system navigation buttons; a swipe up shows them briefly. */}
+        <NavigationBar hidden />
         <NavigationBarScrim />
         <ToastHost />
       </QueryClientProvider>

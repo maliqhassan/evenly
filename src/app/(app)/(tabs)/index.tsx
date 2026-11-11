@@ -126,20 +126,8 @@ export default function Dashboard() {
           )}
         </View>
         <View style={styles.actions}>
-          <Pressable
-            onPress={() => router.push('/add-expense')}
-            haptic
-            accessibilityRole="button"
-            accessibilityLabel="Add expense"
-            style={styles.addExpense}
-          >
-            <View style={styles.addIcon}>
-              <Icon name="plus" size={18} color={colors.mint} />
-            </View>
-            <Text variant="bodyStrong" color={colors.forest}>
-              Add Expense
-            </Text>
-          </Pressable>
+          <Action icon="plus" label="Add Expense" primary onPress={() => router.push('/add-expense')} />
+          <View style={styles.vr} />
           <Action icon="banknote" label="Settle Up" onPress={() => router.push('/settle')} />
           <View style={styles.vr} />
           <Action icon="scan-line" label="Scan Bill" onPress={scanBill} />
@@ -254,16 +242,21 @@ function BalanceCard({ s }: { s: CurrencySummary }) {
 function Action({
   icon,
   label,
+  primary,
   onPress,
 }: {
-  icon: 'banknote' | 'scan-line';
+  icon: 'plus' | 'banknote' | 'scan-line';
   label: string;
+  /** The main action: icon on a mint circle, bold label. */
+  primary?: boolean;
   onPress: () => void;
 }) {
   return (
-    <Pressable onPress={onPress} haptic accessibilityLabel={label} style={styles.action}>
-      <Icon name={icon} size={22} color={colors.onDarkSoft} />
-      <Text variant="caption" color={colors.onDarkSoft}>
+    <Pressable onPress={onPress} haptic accessibilityRole="button" accessibilityLabel={label} style={styles.action}>
+      <View style={[styles.actionIcon, primary && styles.actionIconPrimary]}>
+        <Icon name={icon} size={primary ? 24 : 22} color={primary ? colors.forest : colors.onDarkSoft} />
+      </View>
+      <Text variant={primary ? 'captionStrong' : 'caption'} color={primary ? colors.onDarkStrong : colors.onDarkSoft}>
         {label}
       </Text>
     </Pressable>
@@ -352,28 +345,11 @@ const styles = StyleSheet.create({
   },
   splitCol: { flex: 1, alignItems: 'center', gap: 2 },
   splitDivider: { width: 1, backgroundColor: colors.hairlineOnMint },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 12, paddingBottom: 4 },
+  actions: { flexDirection: 'row', paddingTop: 12, paddingBottom: 4 },
   action: { flex: 1, alignItems: 'center', gap: 6, minHeight: 48, justifyContent: 'center' },
-  // The main action: a mint pill, wider than the two secondary actions.
-  addExpense: {
-    flex: 1.6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    height: 52,
-    marginRight: 4,
-    borderRadius: 26,
-    backgroundColor: colors.mint,
-  },
-  addIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.forest,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  // Same size on every action so the labels line up; only the primary one is filled.
+  actionIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  actionIconPrimary: { backgroundColor: colors.mint },
   vr: { width: 1, backgroundColor: colors.onDarkHairline },
   recent: {
     flexDirection: 'row',

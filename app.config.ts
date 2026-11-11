@@ -63,6 +63,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-sqlite',
     'expo-localization',
     ['expo-notifications', { color: '#26302A' }],
+    // Android: start with the system navigation buttons hidden (swipe up to show them).
+    ['expo-navigation-bar', { hidden: true }],
     [
       'expo-image-picker',
       {
