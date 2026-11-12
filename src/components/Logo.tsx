@@ -4,13 +4,14 @@ import { colors } from '@/theme';
 
 import { Text } from './Text';
 
-const SIZES = {
-  // tile, radius, ring diameter, ring stroke
-  xs: [34, 10, 12, 4],
-  sm: [40, 12, 16, 4],
-  md: [64, 18, 22, 7],
-  lg: [76, 22, 30, 8],
-} as const;
+/** Tile edge length per size. */
+const SIZES = { xs: 34, sm: 40, md: 64, lg: 76 } as const;
+
+// Official mark geometry (evenly-mark-light.svg, 64 × 64): corner radius 18,
+// ring spanning half the tile, stroke 7. Everything scales from the tile size.
+const CORNER = 18 / 64;
+const RING = 1 / 2;
+const STROKE = 7 / 64;
 
 interface LogoProps {
   size?: keyof typeof SIZES;
@@ -20,7 +21,10 @@ interface LogoProps {
 
 /** Rounded square with a ring cut-out — the Evenly mark, as a vector. */
 export function Logo({ size = 'md', tone = 'dark' }: LogoProps) {
-  const [tile, radius, ring, stroke] = SIZES[size];
+  const tile = SIZES[size];
+  const radius = tile * CORNER;
+  const ring = tile * RING;
+  const stroke = tile * STROKE;
   const bg = tone === 'dark' ? colors.forest : colors.onDark;
   const fg = tone === 'dark' ? colors.onDark : colors.forest;
   return (
