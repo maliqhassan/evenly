@@ -200,8 +200,10 @@ const extOf = (mime: string) =>
 
 const randomId = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
+// group_members references profiles twice (profile_id and invited_by), so the
+// embed must name its foreign key or PostgREST rejects it as ambiguous (PGRST201).
 const GROUP_SELECT =
-  '*, group_members(profile_id, role, status, joined_at, profile:profiles(full_name, avatar_url, email))';
+  '*, group_members(profile_id, role, status, joined_at, profile:profiles!group_members_profile_id_fkey(full_name, avatar_url, email))';
 
 /* -------------------------------- api -------------------------------- */
 
