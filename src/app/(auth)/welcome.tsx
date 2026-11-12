@@ -50,12 +50,6 @@ export default function Welcome() {
           </View>
         </View>
 
-        <View style={styles.pager} accessibilityElementsHidden>
-          <View style={[styles.dot, styles.dotActive]} />
-          <View style={styles.dot} />
-          <View style={styles.dot} />
-        </View>
-
         <View style={styles.copy}>
           <Text variant="headline" align="center" accessibilityRole="header">
             Settle with
@@ -95,9 +89,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pager: { flexDirection: 'row', justifyContent: 'center', gap: 5, marginTop: 16 },
-  dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: colors.disabled },
-  dotActive: { width: 18, backgroundColor: colors.forest },
   copy: { marginTop: 34, paddingHorizontal: 12 },
   footer: { gap: 14, alignItems: 'center' },
 });

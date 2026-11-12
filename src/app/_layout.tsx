@@ -22,6 +22,7 @@ import { initMonitoring, wrapRoot } from '@/lib/monitoring';
 import { queryClient } from '@/lib/query-client';
 import { startSessionListener } from '@/lib/session';
 import { usePendingInvite } from '@/stores/drafts';
+import { useIntro } from '@/stores/intro';
 import { useSession } from '@/stores/session';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -38,6 +39,12 @@ function RootLayout() {
   const status = useSession((s) => s.status);
   // Keep the splash up until its intro has played, even if the session is ready sooner.
   const [introDone, setIntroDone] = useState(false);
+  // Whether this install has seen the feature tour (read once at launch).
+  const introSeen = useIntro((s) => s.seen);
+
+  useEffect(() => {
+    void useIntro.getState().load();
+  }, []);
   const url = Linking.useLinkingURL();
 
   useEffect(() => {
@@ -64,10 +71,10 @@ function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        {status === 'booting' || !introDone ? (
+        {status === 'booting' || !introDone || introSeen === null ? (
           <SplashView onFinish={() => setIntroDone(true)} />
         ) : (
-          <RootStack status={status} />
+          <RootStack status={status} introSeen={introSeen} />
         )}
         {/* Android: hide the system navigation buttons; a swipe up shows them briefly. */}
         <NavigationBar hidden />

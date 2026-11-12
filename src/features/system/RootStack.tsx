@@ -10,15 +10,16 @@ type GuardedStatus = Exclude<SessionStatus, 'booting'>;
  * the navigator's default fallback targets a route group (e.g. `/(auth)`),
  * and our groups have no index route, so it ends on +not-found.
  */
-export const sessionHome: Record<GuardedStatus, Href> = {
-  signedIn: '/',
-  onboarding: '/complete-profile',
-  signedOut: '/welcome',
-};
+export function sessionHome(status: GuardedStatus, introSeen: boolean): Href {
+  if (status === 'signedIn') return '/';
+  if (status === 'onboarding') return '/complete-profile';
+  // A new install sees the feature tour once before Welcome.
+  return introSeen ? '/welcome' : '/intro';
+}
 
 /** The root navigator: one route group per session state, guarded by the session status. */
-export function RootStack({ status }: { status: GuardedStatus }) {
-  const home = sessionHome[status];
+export function RootStack({ status, introSeen = true }: { status: GuardedStatus; introSeen?: boolean }) {
+  const home = sessionHome(status, introSeen);
   return (
     <Stack
       screenOptions={{
@@ -35,6 +36,7 @@ export function RootStack({ status }: { status: GuardedStatus }) {
       </Stack.Protected>
       <Stack.Protected guard={status === 'signedOut'} redirectTo={home}>
         <Stack.Screen name="(auth)" />
+        <Stack.Screen name="intro" options={{ animation: 'fade' }} />
       </Stack.Protected>
     </Stack>
   );
