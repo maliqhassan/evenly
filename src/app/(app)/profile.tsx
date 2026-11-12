@@ -1,10 +1,11 @@
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { api, errorMessage } from '@/api';
 import {
+  alert,
   Avatar,
   Button,
   Card,
@@ -34,13 +35,13 @@ export default function Profile() {
   const prefs = me.preferences;
 
   const logOut = () =>
-    Alert.alert('Log out of Evenly?', undefined, [
+    alert('Log out of Evenly?', undefined, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Log out', style: 'destructive', onPress: () => void signOut() },
     ]);
 
   const deleteAccount = () =>
-    Alert.alert(
+    alert(
       'Delete your account?',
       'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.',
       [
@@ -75,7 +76,7 @@ export default function Profile() {
           label: 'Sign-in method',
           value: 'Google',
           onPress: () =>
-            Alert.alert(
+            alert(
               'Sign-in method',
               `You sign in with Google${p.email ? ` (${p.email})` : ''}. Evenly never stores a password.`,
             ),
@@ -102,7 +103,7 @@ export default function Profile() {
           icon: 'moon',
           label: 'Appearance',
           value: 'Light',
-          onPress: () => Alert.alert('Appearance', 'Dark mode is on its way. Evenly uses the light theme for now.'),
+          onPress: () => alert('Appearance', 'Dark mode is on its way. Evenly uses the light theme for now.'),
         },
         {
           icon: 'circle-help',

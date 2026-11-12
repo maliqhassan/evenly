@@ -1,10 +1,11 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import { api, errorMessage } from '@/api';
 import {
+  alert,
   AmountText,
   Avatar,
   Button,
@@ -157,7 +158,7 @@ export default function AddExpense() {
     if (file) d.patch({ receipt: { uri: file.uri, mimeType: file.mimeType, size: file.size ?? null } });
   };
   const attach = () =>
-    Alert.alert('Add to expense', undefined, [
+    alert('Add to expense', undefined, [
       { text: d.receipt ? 'Replace receipt photo' : 'Attach receipt photo', onPress: pickReceipt },
       { text: d.notes ? 'Edit note' : 'Add a note', onPress: () => setSheet('note') },
       ...(d.receipt

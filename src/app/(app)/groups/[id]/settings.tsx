@@ -1,9 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { errorMessage, type Group } from '@/api';
-import { Avatar, Button, Card, Header, Icon, Overline, Pressable, Screen, Text, toast } from '@/components';
+import { alert, Avatar, Button, Card, Header, Icon, Overline, Pressable, Screen, Text, toast } from '@/components';
 import { GroupFormFields, type GroupFormValue } from '@/features/groups/GroupForm';
 import { activeMembers } from '@/features/people';
 import { useGroup, useGroupMembership, useUpdateGroup } from '@/queries';
@@ -59,7 +59,7 @@ function GroupSettingsForm({ group }: { group: Group }) {
   };
 
   const confirm = (title: string, message: string, action: string, run: () => Promise<unknown>, destructive = true) =>
-    Alert.alert(title, message, [
+    alert(title, message, [
       { text: 'Cancel', style: 'cancel' },
       {
         text: action,

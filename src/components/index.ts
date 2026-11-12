@@ -2,6 +2,7 @@ export { AmountText } from './AmountText';
 export { Avatar, AvatarStack, avatarFill, initialOf } from './Avatar';
 export { Button } from './Button';
 export { DateSheet } from './DateSheet';
+export { alert, DialogHost, type DialogButton } from './Dialog';
 export { Field, SearchField } from './Field';
 export { LinearFill, RadialFill, StripeFill } from './Gradient';
 export { Header } from './Header';

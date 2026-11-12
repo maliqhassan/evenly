@@ -9,10 +9,10 @@ import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
 import { NavigationBar } from 'expo-navigation-bar';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { ToastHost } from '@/components';
+import { DialogHost, ToastHost } from '@/components';
 import { ConfigMissingScreen } from '@/features/system/ConfigMissingScreen';
 import { NavigationBarScrim } from '@/features/system/NavigationBarScrim';
 import { RootStack } from '@/features/system/RootStack';
@@ -36,6 +36,8 @@ function RootLayout() {
     DMSans_600SemiBold,
   });
   const status = useSession((s) => s.status);
+  // Keep the splash up until its intro has played, even if the session is ready sooner.
+  const [introDone, setIntroDone] = useState(false);
   const url = Linking.useLinkingURL();
 
   useEffect(() => {
@@ -62,14 +64,15 @@ function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        {status === 'booting' ? (
-          <SplashView />
+        {status === 'booting' || !introDone ? (
+          <SplashView onFinish={() => setIntroDone(true)} />
         ) : (
           <RootStack status={status} />
         )}
         {/* Android: hide the system navigation buttons; a swipe up shows them briefly. */}
         <NavigationBar hidden />
         <NavigationBarScrim />
+        <DialogHost />
         <ToastHost />
       </QueryClientProvider>
     </SafeAreaProvider>

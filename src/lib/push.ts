@@ -5,7 +5,9 @@ import { Platform } from 'react-native';
 
 import { api } from '@/api';
 import { isDemo } from '@/lib/config';
+import { confirmDialog, showPermissionBlocked } from '@/lib/media';
 import { captureError } from '@/lib/monitoring';
+import { secureStorage } from '@/lib/secure-storage';
 
 type NotificationsModule = typeof import('expo-notifications');
 let N: NotificationsModule | null = null;
@@ -29,12 +31,23 @@ const load = (): NotificationsModule | null => {
 
 let registeredToken: string | null = null;
 
+/** Set once the user answers "Not now", so the app doesn't ask on every launch. */
+const DECLINED_KEY = 'evenly.push.declined.v1';
+
 /**
- * Ask for permission (once) and register this device's Expo push token.
- * Silently does nothing on simulators, in demo mode, or if denied — the
+ * Register this device for push. Before the system permission prompt (which
+ * the app can't style) it shows a themed explanation, and only asks the
+ * system if the user agrees.
+ *
+ * - On entering the app: asks once; "Not now" is remembered.
+ * - From Notification settings (`fromSettings`): the user just turned push on,
+ *   so it asks the system directly, or offers to open the phone's settings if
+ *   notifications are blocked there.
+ *
+ * Silently does nothing on simulators, in demo mode, or if declined — the
  * in-app notification list still works.
  */
-export async function registerForPush(): Promise<void> {
+export async function registerForPush(opts: { fromSettings?: boolean } = {}): Promise<void> {
   const Notifications = load();
   if (!Notifications || !Device.isDevice) return;
   try {
@@ -44,9 +57,35 @@ export async function registerForPush(): Promise<void> {
         importance: Notifications.AndroidImportance.DEFAULT,
       });
     }
-    let { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') status = (await Notifications.requestPermissionsAsync()).status;
-    if (status !== 'granted') return;
+    let perm = await Notifications.getPermissionsAsync();
+    if (!perm.granted) {
+      if (!perm.canAskAgain) {
+        if (opts.fromSettings) {
+          showPermissionBlocked(
+            'Notification',
+            'Evenly sends a notification when someone adds an expense, settles up or invites you.',
+            'bell',
+          );
+        }
+        return;
+      }
+      if (!opts.fromSettings) {
+        if (await secureStorage.getItem(DECLINED_KEY).catch(() => null)) return;
+        const ok = await confirmDialog(
+          'Turn on notifications?',
+          'Get a notification when someone adds an expense, settles up with you or invites you to a group.',
+          'Turn on',
+          { icon: 'bell' },
+        );
+        if (!ok) {
+          await secureStorage.setItem(DECLINED_KEY, '1').catch(() => undefined);
+          return;
+        }
+      }
+      perm = await Notifications.requestPermissionsAsync();
+      if (!perm.granted) return;
+    }
+    await secureStorage.removeItem(DECLINED_KEY).catch(() => undefined);
 
     let token: string | null = null;
     if (Platform.OS === 'android') {

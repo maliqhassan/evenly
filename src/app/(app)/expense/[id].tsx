@@ -1,10 +1,11 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 
 import { errorMessage, type AuditEntry, type Group } from '@/api';
 import {
+  alert,
   AmountText,
   Avatar,
   Card,
@@ -60,7 +61,7 @@ export default function ExpenseDetails() {
   const creator = people.label(e.createdBy);
 
   const confirmDelete = () =>
-    Alert.alert('Delete this expense?', 'It will be removed from balances. The change is recorded in the history.', [
+    alert('Delete this expense?', 'It will be removed from balances. The change is recorded in the history.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',

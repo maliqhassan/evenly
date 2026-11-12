@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
+  alert,
   AmountText,
   Card,
   EmptyState,
@@ -68,7 +69,7 @@ export default function Reports() {
         right={
           <Pressable
             onPress={() =>
-              Alert.alert('CSV export', 'Exporting your expenses to CSV is part of Evenly Plus and is coming soon.')
+              alert('CSV export', 'Exporting your expenses to CSV is part of Evenly Plus and is coming soon.')
             }
             accessibilityLabel="Export CSV (Evenly Plus)"
             style={styles.csv}

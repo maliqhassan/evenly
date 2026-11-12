@@ -22,7 +22,7 @@ export default function NotificationSettings() {
   const update = useUpdatePreferences();
   const set = (key: Key, value: boolean) => {
     update.mutate({ [key]: value } as Partial<Preferences>, { onError: (e) => toast.error(errorMessage(e)) });
-    if (key === 'notifyPush' && value) void registerForPush();
+    if (key === 'notifyPush' && value) void registerForPush({ fromSettings: true });
   };
 
   return (
