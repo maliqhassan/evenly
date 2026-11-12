@@ -1,7 +1,7 @@
 import * as Crypto from 'expo-crypto';
 import { create } from 'zustand';
 
-import type { Expense, Group, PaymentMethod, SplitDefault } from '@/api';
+import type { Expense, Group, PaymentMethod, RepeatFrequency, SplitDefault } from '@/api';
 import {
   defaultSplitValues,
   evaluateSplit,
@@ -59,6 +59,8 @@ export interface ExpenseDraft {
   included: Record<string, boolean>;
   inputs: Record<SplitMethod, Record<string, string>>;
   receipt: { uri: string; mimeType: string; size: number | null } | null;
+  /** Create a recurring expense from this one (new expenses only). */
+  repeat: 'never' | RepeatFrequency;
 }
 
 const emptyInputs = (): Record<SplitMethod, Record<string, string>> => ({
@@ -86,6 +88,7 @@ const blank = (): ExpenseDraft => ({
   included: {},
   inputs: emptyInputs(),
   receipt: null,
+  repeat: 'never',
 });
 
 /** Convert raw text to the numeric value each mode expects (see SplitRowInput). */

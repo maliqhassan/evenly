@@ -320,6 +320,51 @@ export const supabaseApi: Api = {
   async leaveGroup(groupId) {
     await rpc('leave_group', { p_group_id: groupId });
   },
+  async listRecurring(groupId) {
+    const rows = await q<Row[]>(
+      getSupabase()
+        .from('recurring_expenses')
+        .select('*')
+        .eq('group_id', groupId)
+        .order('created_at', { ascending: false }),
+    );
+    return rows.map((r) => ({
+      id: r.id,
+      groupId: r.group_id,
+      createdBy: r.created_by,
+      description: r.description,
+      amount: num(r.amount_minor),
+      currency: r.currency,
+      paidBy: r.paid_by,
+      categoryId: r.category_id,
+      frequency: r.frequency,
+      nextRun: r.next_run,
+      active: !!r.active,
+      lastError: r.last_error ?? null,
+    }));
+  },
+  async createRecurring(i) {
+    return rpc<string>('create_recurring_expense', {
+      p_group_id: i.groupId,
+      p_client_id: i.clientId,
+      p_description: i.description,
+      p_amount_minor: i.amount,
+      p_currency: i.currency,
+      p_paid_by: i.paidBy,
+      p_splits: i.splits.map((s) => ({ profile_id: s.profileId, amount_minor: s.amount, input_value: s.inputValue })),
+      p_split_method: i.splitMethod,
+      p_category_id: i.categoryId,
+      p_notes: i.notes,
+      p_frequency: i.frequency,
+      p_start_date: i.startDate,
+    });
+  },
+  async setRecurringActive(id, active) {
+    await rpc('set_recurring_active', { p_id: id, p_active: active });
+  },
+  async deleteRecurring(id) {
+    await rpc('delete_recurring_expense', { p_id: id });
+  },
   async getGroupSplitDefault(groupId) {
     const row = await q<Row | null>(
       getSupabase().from('group_split_defaults').select('method, members').eq('group_id', groupId).maybeSingle(),

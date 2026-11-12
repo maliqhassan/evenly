@@ -228,6 +228,32 @@ export interface SaveExpenseInput {
   notes: string | null;
 }
 
+export type RepeatFrequency = 'weekly' | 'monthly' | 'yearly';
+
+/** A template that creates an expense on a schedule. */
+export interface RecurringExpense {
+  id: string;
+  groupId: string;
+  createdBy: string;
+  description: string;
+  amount: Minor;
+  currency: CurrencyCode;
+  paidBy: string;
+  categoryId: string;
+  frequency: RepeatFrequency;
+  /** Date of the next expense to be created (YYYY-MM-DD). */
+  nextRun: string;
+  active: boolean;
+  /** Why it was paused automatically (e.g. a member left), if it was. */
+  lastError: string | null;
+}
+
+export interface CreateRecurringInput extends Omit<SaveExpenseInput, 'expenseId' | 'expectedVersion' | 'date'> {
+  frequency: RepeatFrequency;
+  /** The date of the expense just created; the next one is one period later. */
+  startDate: string;
+}
+
 export interface RecordSettlementInput {
   groupId: string;
   clientId: string;
@@ -303,6 +329,10 @@ export interface Api {
   updateGroup(groupId: string, input: Omit<CreateGroupInput, 'inviteeIds'>): Promise<void>;
   setGroupArchived(groupId: string, archived: boolean): Promise<void>;
   leaveGroup(groupId: string): Promise<void>;
+  listRecurring(groupId: string): Promise<RecurringExpense[]>;
+  createRecurring(input: CreateRecurringInput): Promise<string>;
+  setRecurringActive(id: string, active: boolean): Promise<void>;
+  deleteRecurring(id: string): Promise<void>;
   getGroupSplitDefault(groupId: string): Promise<SplitDefault | null>;
   setGroupSplitDefault(groupId: string, d: SplitDefault): Promise<void>;
   clearGroupSplitDefault(groupId: string): Promise<void>;

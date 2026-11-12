@@ -147,7 +147,7 @@ export default function Profile() {
             Evenly Plus
           </Text>
           <Text variant="caption" color={colors.onDarkMuted}>
-            Receipt scan, exports, recurring · $3.99/mo
+            Receipt scan, exports · $3.99/mo
           </Text>
         </View>
         <Icon name="chevron-right" size={18} color={colors.onDark} />
@@ -199,14 +199,12 @@ export default function Profile() {
 
       <Sheet visible={plus} onClose={() => setPlus(false)} title="Evenly Plus">
         <View style={{ paddingHorizontal: spacing.screen, gap: 14 }}>
-          {['Scan receipts automatically', 'Export to CSV and PDF', 'Recurring expenses', 'Currency conversion'].map(
-            (f) => (
-              <View key={f} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                <Icon name="check" size={18} color={colors.positive} />
-                <Text variant="bodyLg">{f}</Text>
-              </View>
-            ),
-          )}
+          {['Scan receipts automatically', 'Export to CSV and PDF', 'Currency conversion'].map((f) => (
+            <View key={f} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Icon name="check" size={18} color={colors.positive} />
+              <Text variant="bodyLg">{f}</Text>
+            </View>
+          ))}
           <Text variant="secondary" color={colors.textMuted}>
             Evenly Plus is coming soon. Everything you need to split and settle stays free.
           </Text>

@@ -131,6 +131,18 @@ function GroupSettingsForm({ group }: { group: Group }) {
       </View>
 
       <Card radius={radii.card}>
+        <Pressable
+          style={[styles.row, styles.divider]}
+          scaleOnPress={false}
+          accessibilityLabel="Recurring expenses"
+          onPress={() => router.push({ pathname: '/groups/[id]/recurring', params: { id } })}
+        >
+          <Icon name="refresh-cw" size={18} color={colors.forest} />
+          <Text variant="bodyMedium" style={{ flex: 1 }}>
+            Recurring expenses
+          </Text>
+          <Icon name="chevron-right" size={18} color={colors.textFaint} />
+        </Pressable>
         {isAdmin ? (
           <Pressable
             style={[styles.row, styles.divider]}

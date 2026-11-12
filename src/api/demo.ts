@@ -21,6 +21,7 @@ import type {
   Invitation,
   Member,
   Me,
+  RecurringExpense,
   Settlement,
   SplitDefault,
 } from './types';
@@ -595,6 +596,43 @@ export const demoApi: Api = {
     requireMember(groupId).archivedAt = archived ? now() : null;
     return delay(undefined);
   },
+  async listRecurring(groupId) {
+    requireMember(groupId);
+    return delay(
+      recurring.filter((r) => r.groupId === groupId).map((r) => ({ ...r })),
+      60,
+    );
+  },
+  async createRecurring(i) {
+    requireMember(i.groupId);
+    const days = { weekly: 7, monthly: 30, yearly: 365 }[i.frequency];
+    const id = uid('rec');
+    recurring.unshift({
+      id,
+      groupId: i.groupId,
+      createdBy: ME,
+      description: i.description,
+      amount: i.amount,
+      currency: i.currency,
+      paidBy: i.paidBy,
+      categoryId: i.categoryId,
+      frequency: i.frequency,
+      nextRun: addDays(i.startDate, days),
+      active: true,
+      lastError: null,
+    });
+    return delay(id, 60);
+  },
+  async setRecurringActive(id, active) {
+    const r = recurring.find((x) => x.id === id);
+    if (r) Object.assign(r, { active, lastError: active ? null : r.lastError });
+    return delay(undefined, 40);
+  },
+  async deleteRecurring(id) {
+    const i = recurring.findIndex((x) => x.id === id);
+    if (i >= 0) recurring.splice(i, 1);
+    return delay(undefined, 40);
+  },
   async getGroupSplitDefault(groupId) {
     return delay(splitDefaults.get(groupId) ?? null, 40);
   },
@@ -1052,4 +1090,5 @@ export const demoApi: Api = {
 };
 
 const splitDefaults = new Map<string, SplitDefault>();
+const recurring: RecurringExpense[] = [];
 const receiptStore = new Map<string, { id: string; storagePath: string; mimeType: string; url: string | null }[]>();

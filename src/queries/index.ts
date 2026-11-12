@@ -10,6 +10,7 @@ import {
   type Preferences,
   type Profile,
   type RecordSettlementInput,
+  type RepeatFrequency,
   type SaveExpenseInput,
   type SplitDefault,
   type UploadFile,
@@ -29,6 +30,7 @@ export const qk = {
   groupTotals: (id: string) => ['group', id, 'totals'] as const,
   groupInvites: (id: string) => ['group', id, 'invites'] as const,
   splitDefault: (id: string) => ['group', id, 'split-default'] as const,
+  recurring: (id: string) => ['group', id, 'recurring'] as const,
   inviteLink: (id: string) => ['group', id, 'link'] as const,
   expense: (id: string) => ['expense', id] as const,
   settlement: (id: string) => ['settlement', id] as const,
@@ -69,6 +71,22 @@ export const useGroupSettlements = (id: string) =>
   useQuery({ queryKey: qk.groupSettlements(id), queryFn: () => api.listGroupSettlements(id), enabled: !!id });
 export const useGroupTotals = (id: string) =>
   useQuery({ queryKey: qk.groupTotals(id), queryFn: () => api.getGroupTotals(id), enabled: !!id });
+export const useRecurring = (groupId: string) =>
+  useQuery({ queryKey: qk.recurring(groupId), queryFn: () => api.listRecurring(groupId), enabled: !!groupId });
+export const useSetRecurringActive = (groupId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) => api.setRecurringActive(id, active),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.recurring(groupId) }),
+  });
+};
+export const useDeleteRecurring = (groupId: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.deleteRecurring(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.recurring(groupId) }),
+  });
+};
 export const useGroupSplitDefault = (id: string | null | undefined) =>
   useQuery({
     queryKey: qk.splitDefault(id ?? ''),
@@ -236,12 +254,18 @@ export function useAcceptInvite() {
 export function useSaveExpense() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (v: { input: SaveExpenseInput; receipt?: UploadFile | null }) => {
+    mutationFn: async (v: { input: SaveExpenseInput; receipt?: UploadFile | null; repeat?: RepeatFrequency }) => {
       const id = await api.saveExpense(v.input);
       if (v.receipt) await api.uploadReceipt({ id, groupId: v.input.groupId }, v.receipt);
+      if (v.repeat && !v.input.expenseId) {
+        // Both calls are idempotent on the client id, so a retry after a failure here is safe.
+        const { expenseId: _e, expectedVersion: _v, date, ...rest } = v.input;
+        await api.createRecurring({ ...rest, frequency: v.repeat, startDate: date });
+      }
       return id;
     },
     onSuccess: (id, v) => {
+      if (v.repeat) qc.invalidateQueries({ queryKey: qk.recurring(v.input.groupId) });
       invalidateLedger(qc, v.input.groupId);
       qc.invalidateQueries({ queryKey: qk.expense(id) });
     },

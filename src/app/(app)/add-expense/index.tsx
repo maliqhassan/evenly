@@ -37,7 +37,15 @@ import { draftAmount, draftRows, evaluateDraft, useExpenseDraft } from '@/stores
 import { useSession } from '@/stores/session';
 import { colors, fontFamily, radii, typography } from '@/theme';
 
-type SheetName = 'group' | 'currency' | 'category' | 'date' | 'payer' | 'note' | null;
+type SheetName = 'group' | 'currency' | 'category' | 'date' | 'payer' | 'note' | 'repeat' | null;
+
+const REPEAT_OPTIONS = [
+  { value: 'never', label: 'Never', description: 'Just this once' },
+  { value: 'weekly', label: 'Every week', description: 'Same day each week' },
+  { value: 'monthly', label: 'Every month', description: 'Same date each month, such as rent' },
+  { value: 'yearly', label: 'Every year', description: 'Same date each year' },
+] as const;
+const repeatLabel = (v: string) => REPEAT_OPTIONS.find((o) => o.value === v)?.label ?? 'Never';
 
 /** 15 — Add expense (also used to edit, via ?expenseId=). */
 export default function AddExpense() {
@@ -147,9 +155,16 @@ export default function AddExpense() {
           notes: d.notes.trim() || null,
         },
         receipt: d.receipt,
+        repeat: !d.expenseId && d.repeat !== 'never' ? d.repeat : undefined,
       });
-      track('expense_saved', { method: d.method, edit: !!d.expenseId, receipt: !!d.receipt });
-      toast.success(d.expenseId ? 'Expense updated' : 'Expense saved');
+      track('expense_saved', { method: d.method, edit: !!d.expenseId, receipt: !!d.receipt, repeat: d.repeat });
+      toast.success(
+        d.expenseId
+          ? 'Expense updated'
+          : d.repeat !== 'never'
+            ? `Expense saved. It repeats ${repeatLabel(d.repeat).toLowerCase()}.`
+            : 'Expense saved',
+      );
       router.dismiss();
       if (!d.expenseId && !keepDraft) router.push({ pathname: '/expense/[id]', params: { id } });
     } catch (e) {
@@ -315,7 +330,7 @@ export default function AddExpense() {
           disabled={!group}
           scaleOnPress={false}
           accessibilityLabel="Split options"
-          style={styles.cardRow}
+          style={[styles.cardRow, !d.expenseId && styles.divider]}
         >
           <Text variant="secondary" color={colors.textMuted} style={styles.cardLabel}>
             Split
@@ -339,6 +354,24 @@ export default function AddExpense() {
           </View>
           <Icon name="chevron-right" size={18} color={colors.textFaint} />
         </Pressable>
+        {d.expenseId ? null : (
+          <Pressable
+            onPress={() => setSheet('repeat')}
+            disabled={!group}
+            scaleOnPress={false}
+            accessibilityLabel={`Repeat: ${repeatLabel(d.repeat)}`}
+            style={styles.cardRow}
+          >
+            <Text variant="secondary" color={colors.textMuted} style={styles.cardLabel}>
+              Repeat
+            </Text>
+            <Icon name="refresh-cw" size={16} color={d.repeat === 'never' ? colors.textFaint : colors.positive} />
+            <Text variant="bodyMedium" color={d.repeat === 'never' ? colors.ink : colors.positive} style={{ flex: 1 }}>
+              {repeatLabel(d.repeat)}
+            </Text>
+            <Icon name="chevron-right" size={18} color={colors.textFaint} />
+          </Pressable>
+        )}
       </Card>
 
       <Pressable onPress={attach} accessibilityLabel="Attach receipt or add a note" style={styles.attach}>
@@ -394,6 +427,14 @@ export default function AddExpense() {
         onSelect={(currency) => d.patch({ currency })}
         searchable
         searchPlaceholder="Search currencies"
+      />
+      <SelectSheet
+        visible={sheet === 'repeat'}
+        onClose={() => setSheet(null)}
+        title="Repeat"
+        options={REPEAT_OPTIONS}
+        value={d.repeat}
+        onSelect={(repeat) => d.patch({ repeat })}
       />
       <SelectSheet
         visible={sheet === 'category'}
