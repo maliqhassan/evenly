@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 /**
@@ -9,6 +12,9 @@ const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '';
 const iosUrlScheme = iosClientId
   ? `com.googleusercontent.apps.${iosClientId.replace('.apps.googleusercontent.com', '')}`
   : undefined;
+// Android push (FCM) needs Firebase's google-services.json at build time. It is
+// downloaded from the Firebase console and kept out of git.
+const googleServicesFile = existsSync(join(__dirname, 'google-services.json')) ? './google-services.json' : undefined;
 const inviteHost = (process.env.EXPO_PUBLIC_INVITE_BASE_URL ?? 'https://evenly.app/j')
   .replace(/^https?:\/\//, '')
   .split('/')[0];
@@ -36,6 +42,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: bundleId,
+    ...(googleServicesFile ? { googleServicesFile } : {}),
     adaptiveIcon: {
       backgroundColor: '#26302A',
       foregroundImage: './assets/images/android-icon-foreground.png',
