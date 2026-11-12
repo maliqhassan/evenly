@@ -1,9 +1,10 @@
 import * as Crypto from 'expo-crypto';
 import { create } from 'zustand';
 
-import type { Expense, Group, PaymentMethod, RepeatFrequency, SplitDefault } from '@/api';
+import type { Expense, ExpenseItemization, Group, PaymentMethod, RepeatFrequency, SplitDefault } from '@/api';
 import {
   defaultSplitValues,
+  evaluateItemized,
   evaluateSplit,
   formatBp,
   FULL_PERCENT_BP,
@@ -37,6 +38,14 @@ export const useOnboardingDraft = create<OnboardingDraft>((set) => ({
 
 /* ----------------------------- expense draft ---------------------------- */
 
+/** One line of an itemized bill while it is being edited. */
+export interface DraftItem {
+  id: string;
+  name: string;
+  amountText: string;
+  memberIds: string[];
+}
+
 /**
  * Shared state between Add expense (15) and Split (16). Raw text inputs are
  * kept per split mode so switching modes never loses what was typed.
@@ -61,6 +70,13 @@ export interface ExpenseDraft {
   receipt: { uri: string; mimeType: string; size: number | null } | null;
   /** Create a recurring expense from this one (new expenses only). */
   repeat: 'never' | RepeatFrequency;
+  /** Split by item: the amount is the items' total and the split comes from them. */
+  itemized: boolean;
+  items: DraftItem[];
+  /** Tax / tip, shared in proportion to what each person ordered. */
+  extraText: string;
+  /** The expense being edited already had items (so turning them off must remove them). */
+  hadItems: boolean;
 }
 
 const emptyInputs = (): Record<SplitMethod, Record<string, string>> => ({
@@ -89,6 +105,10 @@ const blank = (): ExpenseDraft => ({
   inputs: emptyInputs(),
   receipt: null,
   repeat: 'never',
+  itemized: false,
+  items: [],
+  extraText: '',
+  hadItems: false,
 });
 
 /** Convert raw text to the numeric value each mode expects (see SplitRowInput). */
@@ -145,15 +165,52 @@ export function draftRows(d: ExpenseDraft): SplitRowInput[] {
   }));
 }
 
+/** The draft's items as validated bill items, or why they're not valid yet. */
+export function parseDraftItems(d: ExpenseDraft): ExpenseItemization | { error: string } {
+  if (d.items.length === 0) return { error: 'Add at least one item' };
+  const items: ExpenseItemization['items'] = [];
+  for (const [n, it] of d.items.entries()) {
+    const amount = parseMinor(it.amountText, d.currency);
+    if (amount === null || amount <= 0) return { error: `Enter an amount for item ${n + 1}` };
+    if (it.memberIds.length === 0) return { error: `Choose who had item ${n + 1}` };
+    items.push({ name: it.name.trim() || `Item ${n + 1}`, amount, memberIds: it.memberIds });
+  }
+  const extra = d.extraText.trim() === '' ? 0 : parseMinor(d.extraText, d.currency);
+  if (extra === null) return { error: 'Tax and tip is not a valid amount' };
+  return { items, extra };
+}
+
+/** The itemization to save with the expense, or null when the draft isn't itemized. */
+export function draftItemization(d: ExpenseDraft): ExpenseItemization | null {
+  if (!d.itemized) return null;
+  const parsed = parseDraftItems(d);
+  return 'error' in parsed ? null : parsed;
+}
+
+const invalidSplit = (message: string) => ({
+  ok: false as const,
+  reason: 'invalid' as const,
+  message,
+  allocations: [],
+  allocated: 0,
+  remaining: 0,
+});
+
 export function evaluateDraft(d: ExpenseDraft) {
-  return evaluateSplit(d.method, draftAmount(d), draftRows(d));
+  if (!d.itemized) return evaluateSplit(d.method, draftAmount(d), draftRows(d));
+  const parsed = parseDraftItems(d);
+  if ('error' in parsed) return invalidSplit(parsed.error);
+  const result = evaluateItemized(parsed.items, parsed.extra, d.memberIds);
+  // The amount always comes from the items; refuse a draft where they've drifted apart.
+  if (result.ok && result.allocated !== draftAmount(d)) return invalidSplit('The amount no longer matches the items');
+  return result;
 }
 
 interface ExpenseDraftStore extends ExpenseDraft {
   /** Start a new expense in a group. */
   start: (opts: { group: Group | null; me: string; receipt?: ExpenseDraft['receipt'] }) => void;
   /** Load an existing expense for editing. */
-  startEdit: (expense: Expense, group: Group) => void;
+  startEdit: (expense: Expense & { itemization?: ExpenseItemization | null }, group: Group) => void;
   setGroup: (group: Group, me: string) => void;
   patch: (p: Partial<ExpenseDraft>) => void;
   setMethod: (m: SplitMethod) => void;
@@ -235,6 +292,15 @@ export const useExpenseDraft = create<ExpenseDraftStore>((set, get) => ({
       memberIds: ids,
       included,
       inputs,
+      itemized: !!e.itemization,
+      hadItems: !!e.itemization,
+      items: (e.itemization?.items ?? []).map((it, n) => ({
+        id: `item-${n}`,
+        name: it.name,
+        amountText: minorToDecimalString(it.amount, e.currency),
+        memberIds: it.memberIds,
+      })),
+      extraText: e.itemization?.extra ? minorToDecimalString(e.itemization.extra, e.currency) : '',
     });
   },
 
@@ -249,6 +315,9 @@ export const useExpenseDraft = create<ExpenseDraftStore>((set, get) => ({
       paidBy: me,
       method: 'equal',
       inputs: emptyInputs(),
+      itemized: false,
+      items: [],
+      extraText: '',
     });
   },
 

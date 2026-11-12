@@ -10,6 +10,7 @@ import {
   type Preferences,
   type Profile,
   type RecordSettlementInput,
+  type ExpenseItemization,
   type RepeatFrequency,
   type SaveExpenseInput,
   type SplitDefault,
@@ -254,8 +255,15 @@ export function useAcceptInvite() {
 export function useSaveExpense() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (v: { input: SaveExpenseInput; receipt?: UploadFile | null; repeat?: RepeatFrequency }) => {
+    mutationFn: async (v: {
+      input: SaveExpenseInput;
+      receipt?: UploadFile | null;
+      repeat?: RepeatFrequency;
+      /** Items to attach (set), none (null removes any), or undefined to leave them alone. */
+      itemization?: ExpenseItemization | null;
+    }) => {
       const id = await api.saveExpense(v.input);
+      if (v.itemization !== undefined) await api.setExpenseItems(id, v.itemization);
       if (v.receipt) await api.uploadReceipt({ id, groupId: v.input.groupId }, v.receipt);
       if (v.repeat && !v.input.expenseId) {
         // Both calls are idempotent on the client id, so a retry after a failure here is safe.

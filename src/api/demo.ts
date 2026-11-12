@@ -17,6 +17,7 @@ import type {
   BalanceRow,
   Category,
   Expense,
+  ExpenseItemization,
   Group,
   Invitation,
   Member,
@@ -840,7 +841,20 @@ export const demoApi: Api = {
     if (!e || e.deletedAt) throw new AppError('not_found');
     requireMember(e.groupId);
     const receipts = receiptStore.get(id) ?? [];
-    return delay({ ...structuredClone(e), audit: structuredClone(audit.get(id) ?? []), receipts });
+    return delay({
+      ...structuredClone(e),
+      audit: structuredClone(audit.get(id) ?? []),
+      receipts,
+      itemization: structuredClone(itemizations.get(id) ?? null),
+    });
+  },
+  async setExpenseItems(expenseId, value) {
+    const e = expenses.find((x) => x.id === expenseId);
+    if (!e || e.deletedAt) throw new AppError('not_found');
+    requireMember(e.groupId);
+    if (value) itemizations.set(expenseId, structuredClone(value));
+    else itemizations.delete(expenseId);
+    return delay(undefined, 40);
   },
   async saveExpense(i) {
     const g = requireMember(i.groupId);
@@ -1090,5 +1104,6 @@ export const demoApi: Api = {
 };
 
 const splitDefaults = new Map<string, SplitDefault>();
+const itemizations = new Map<string, ExpenseItemization>();
 const recurring: RecurringExpense[] = [];
 const receiptStore = new Map<string, { id: string; storagePath: string; mimeType: string; url: string | null }[]>();

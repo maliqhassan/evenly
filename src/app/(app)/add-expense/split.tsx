@@ -86,6 +86,47 @@ export default function Split() {
       },
     );
 
+  if (d.itemized) {
+    return (
+      <Screen gap={18} footer={<Button label="Done" onPress={() => router.back()} disabled={!evaluation.ok} />}>
+        <Header title={`Split ${fmt(amount)}`} subtitle="By item" />
+        <Card>
+          {evaluation.allocations.map((a, i, arr) => {
+            const p = people.get(a.id);
+            return (
+              <View key={a.id} style={[styles.row, i < arr.length - 1 && styles.divider]}>
+                <Avatar id={a.id} name={p.name} uri={p.avatarUrl} size={36} />
+                <Text variant="bodyStrong" style={{ flex: 1 }} numberOfLines={1}>
+                  {people.label(a.id)}
+                </Text>
+                <AmountText minor={a.amount} currency={d.currency} variant="bodyStrong" />
+              </View>
+            );
+          })}
+        </Card>
+        {evaluation.ok ? null : (
+          <Text variant="secondaryStrong" color={colors.negative}>
+            {evaluation.message}
+          </Text>
+        )}
+        <Button
+          label="Edit items"
+          icon="pencil"
+          variant="muted"
+          size="md"
+          onPress={() => router.push('/add-expense/items')}
+        />
+        <Button
+          label="Use a regular split instead"
+          variant="outline"
+          size="md"
+          onPress={() => d.patch({ itemized: false })}
+          accessibilityHint="Keeps the total and lets you split it equally, by percent or by shares"
+        />
+      </Screen>
+    );
+  }
+
   return (
     <Screen
       gap={18}
@@ -129,6 +170,23 @@ export default function Split() {
       <Text variant="secondary" color={colors.textMuted}>
         {meta.help}
       </Text>
+
+      <Pressable
+        onPress={() => router.push('/add-expense/items')}
+        accessibilityRole="button"
+        accessibilityLabel="Split by item"
+        accessibilityHint="Add each item from the bill and choose who had it"
+        style={styles.byItem}
+      >
+        <Icon name="receipt" size={18} color={colors.forest} />
+        <View style={{ flex: 1, gap: 1 }}>
+          <Text variant="bodyMedium">Split by item</Text>
+          <Text variant="caption" color={colors.textSubtle}>
+            Everyone pays for what they had, tax and tip shared fairly
+          </Text>
+        </View>
+        <Icon name="chevron-right" size={18} color={colors.textFaint} />
+      </Pressable>
 
       <Card>
         {d.memberIds.map((id, i) => {
@@ -271,6 +329,16 @@ export default function Split() {
 
 const styles = StyleSheet.create({
   defaultRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
+  byItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 56,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: radii.card,
+    backgroundColor: colors.surface,
+  },
   modes: { flexDirection: 'row', gap: 6 },
   mode: { flex: 1, height: 64, borderRadius: 16, alignItems: 'center', justifyContent: 'center', gap: 4 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16 },

@@ -532,7 +532,7 @@ export const supabaseApi: Api = {
 
   async getExpense(expenseId) {
     const sb = getSupabase();
-    const [row, audit, receipts] = await Promise.all([
+    const [row, audit, receipts, itemRow] = await Promise.all([
       q<Row>(
         sb
           .from('expenses')
@@ -549,6 +549,9 @@ export const supabaseApi: Api = {
           .order('id', { ascending: false }),
       ),
       q<Row[]>(sb.from('receipts').select('*').eq('expense_id', expenseId).order('created_at')),
+      q<Row | null>(
+        sb.from('expense_itemizations').select('items, extra_minor').eq('expense_id', expenseId).maybeSingle(),
+      ),
     ]);
     if (row.deleted_at) throw toAppError({ message: 'not_found' });
     const withUrls: Receipt[] = await Promise.all(
@@ -568,7 +571,26 @@ export const supabaseApi: Api = {
         createdAt: a.created_at,
       })),
       receipts: withUrls,
+      itemization: itemRow
+        ? {
+            items: (itemRow.items as Row[]).map((it) => ({
+              name: it.name ?? '',
+              amount: num(it.amount_minor),
+              memberIds: it.member_ids as string[],
+            })),
+            extra: num(itemRow.extra_minor),
+          }
+        : null,
     };
+  },
+  async setExpenseItems(expenseId, value) {
+    await rpc('set_expense_items', {
+      p_expense_id: expenseId,
+      p_items: value
+        ? value.items.map((it) => ({ name: it.name, amount_minor: it.amount, member_ids: it.memberIds }))
+        : null,
+      p_extra_minor: value?.extra ?? 0,
+    });
   },
 
   async saveExpense(i) {

@@ -55,6 +55,36 @@ describe('saving an expense with Repeat', () => {
     expect(api.createRecurring).not.toHaveBeenCalled();
   });
 
+  describe('with items', () => {
+    const itemization = {
+      items: [{ name: 'Pizza', amount: 90000, memberIds: ['me'] }],
+      extra: 0,
+    };
+
+    beforeEach(() => {
+      jest.spyOn(api, 'setExpenseItems').mockResolvedValue(undefined);
+    });
+
+    it('attaches the items to the saved expense', async () => {
+      const { result } = await renderHook(() => useSaveExpense(), { wrapper });
+      result.current.mutate({ input, itemization });
+      await waitFor(() => expect(api.setExpenseItems).toHaveBeenCalledWith('e1', itemization));
+    });
+
+    it('removes them when an itemized expense is switched to a regular split', async () => {
+      const { result } = await renderHook(() => useSaveExpense(), { wrapper });
+      result.current.mutate({ input: { ...input, expenseId: 'e1' }, itemization: null });
+      await waitFor(() => expect(api.setExpenseItems).toHaveBeenCalledWith('e1', null));
+    });
+
+    it('leaves items alone when nothing was said about them', async () => {
+      const { result } = await renderHook(() => useSaveExpense(), { wrapper });
+      result.current.mutate({ input });
+      await waitFor(() => expect(api.saveExpense).toHaveBeenCalled());
+      expect(api.setExpenseItems).not.toHaveBeenCalled();
+    });
+  });
+
   it('does not create one when editing an existing expense', async () => {
     const { result } = await renderHook(() => useSaveExpense(), { wrapper });
     result.current.mutate({ input: { ...input, expenseId: 'e1' }, repeat: 'weekly' });

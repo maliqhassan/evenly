@@ -73,7 +73,7 @@
     "test:watch": "jest --watch",
     "format": "prettier --write .",
     "check": "npm run typecheck && npm run lint && npm test -- --ci && npm run test:db",
-    "test:db": "node --test supabase/tests/db.test.mjs supabase/tests/recurring.test.mjs"
+    "test:db": "node --test supabase/tests/db.test.mjs supabase/tests/recurring.test.mjs supabase/tests/itemized.test.mjs"
   },
   "private": true,
   "jest": {

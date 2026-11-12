@@ -1,9 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { router } from 'expo-router';
 
 import Split from '@/app/(app)/add-expense/split';
 import { useExpenseDraft } from '@/stores/drafts';
 
-jest.mock('expo-router', () => ({ router: { back: jest.fn(), canGoBack: () => true, replace: jest.fn() } }));
+jest.mock('expo-router', () => ({
+  router: { back: jest.fn(), push: jest.fn(), canGoBack: () => true, replace: jest.fn() },
+}));
 jest.mock('expo-haptics', () => ({ selectionAsync: jest.fn(() => Promise.resolve()) }));
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 jest.mock('@/features/people', () => {
@@ -119,6 +122,56 @@ describe('Split screen', () => {
       useExpenseDraft.setState({ expenseId: 'e1' });
       await render(<Split />);
       expect(screen.queryByLabelText(SAVE)).toBeNull();
+    });
+  });
+
+  describe('splitting by item', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      useExpenseDraft.setState({ itemized: false, items: [], extraText: '', expenseId: null });
+    });
+
+    it('offers to split by item from the regular split screen', async () => {
+      seed('percent', { you: '25', malik: '25', jordan: '25', priya: '25' });
+      await render(<Split />);
+      await fireEvent.press(screen.getByLabelText('Split by item'));
+      expect(router.push).toHaveBeenCalledWith('/add-expense/items');
+    });
+
+    it('shows each person’s total once the bill is itemized, and can go back to a regular split', async () => {
+      seed('percent', {});
+      useExpenseDraft.setState({
+        itemized: true,
+        amountText: '88.00',
+        extraText: '8',
+        items: [
+          { id: 'a', name: 'Pizza', amountText: '60', memberIds: ['you', 'malik'] },
+          { id: 'b', name: 'Salad', amountText: '20', memberIds: ['malik'] },
+        ],
+      });
+      await render(<Split />);
+      expect(screen.getByText('By item')).toBeTruthy();
+      expect(screen.getByText('$33.00')).toBeTruthy();
+      expect(screen.getByText('$55.00')).toBeTruthy();
+      expect(screen.getByLabelText('Done').props.accessibilityState).toMatchObject({ disabled: false });
+
+      await fireEvent.press(screen.getByLabelText('Edit items'));
+      expect(router.push).toHaveBeenCalledWith('/add-expense/items');
+
+      await fireEvent.press(screen.getByLabelText('Use a regular split instead'));
+      expect(useExpenseDraft.getState().itemized).toBe(false);
+    });
+
+    it('explains why Done is disabled when the items are incomplete', async () => {
+      seed('percent', {});
+      useExpenseDraft.setState({
+        itemized: true,
+        amountText: '10.00',
+        items: [{ id: 'a', name: '', amountText: '', memberIds: ['you'] }],
+      });
+      await render(<Split />);
+      expect(screen.getByText('Enter an amount for item 1')).toBeTruthy();
+      expect(screen.getByLabelText('Done').props.accessibilityState).toMatchObject({ disabled: true });
     });
   });
 });

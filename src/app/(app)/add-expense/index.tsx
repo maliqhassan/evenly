@@ -33,7 +33,7 @@ import { chooseImage } from '@/lib/media';
 import { track } from '@/lib/monitoring';
 import { useCategories, useGroupSplitDefault, useGroups, useSaveExpense } from '@/queries';
 import { expenseSchema } from '@/schemas';
-import { draftAmount, draftRows, evaluateDraft, useExpenseDraft } from '@/stores/drafts';
+import { draftAmount, draftItemization, draftRows, evaluateDraft, useExpenseDraft } from '@/stores/drafts';
 import { useSession } from '@/stores/session';
 import { colors, fontFamily, radii, typography } from '@/theme';
 
@@ -104,7 +104,7 @@ export default function AddExpense() {
   const evaluation = useMemo(() => evaluateDraft(d), [d]);
   const myShare = evaluation.ok ? (evaluation.allocations.find((a) => a.id === myId)?.amount ?? 0) : null;
   const participants =
-    d.method === 'exact'
+    d.method === 'exact' || d.itemized
       ? evaluation.ok
         ? evaluation.allocations.filter((a) => a.amount > 0).length
         : 0
@@ -149,13 +149,15 @@ export default function AddExpense() {
           currency: d.currency,
           paidBy: d.paidBy!,
           splits,
-          splitMethod: d.method,
+          splitMethod: d.itemized ? 'exact' : d.method,
           categoryId: d.categoryId,
           date: d.date,
           notes: d.notes.trim() || null,
         },
         receipt: d.receipt,
         repeat: !d.expenseId && d.repeat !== 'never' ? d.repeat : undefined,
+        // Items are saved with the expense; turning them off on an itemized expense removes them.
+        itemization: d.itemized ? draftItemization(d) : d.hadItems ? null : undefined,
       });
       track('expense_saved', { method: d.method, edit: !!d.expenseId, receipt: !!d.receipt, repeat: d.repeat });
       toast.success(
@@ -175,9 +177,10 @@ export default function AddExpense() {
   /** Server payload: exact drops zero rows; inputs are kept so the split can be re-edited. */
   const buildSplits = (allocs: Allocation[]) => {
     const raw = new Map(draftRows(d).map((r) => [r.id, r.value]));
-    const keepInput = d.method === 'percent' || d.method === 'shares' || d.method === 'adjust';
+    const method = d.itemized ? 'exact' : d.method;
+    const keepInput = method === 'percent' || method === 'shares' || method === 'adjust';
     return allocs
-      .filter((a) => d.method !== 'exact' || a.amount > 0)
+      .filter((a) => method !== 'exact' || a.amount > 0)
       .map((a) => ({ profileId: a.id, amount: a.amount, inputValue: keepInput ? (raw.get(a.id) ?? null) : null }));
   };
 
@@ -248,6 +251,7 @@ export default function AddExpense() {
             style={[typography.display, styles.amountInput, { color: colors.ink }]}
             autoFocus={!d.expenseId && !keepDraft}
             maxLength={14}
+            editable={!d.itemized}
           />
         </View>
         <Pressable
@@ -257,6 +261,18 @@ export default function AddExpense() {
         >
           <Text variant="captionStrong">{d.currency}</Text>
         </Pressable>
+        {d.itemized ? (
+          <Pressable
+            onPress={() => router.push('/add-expense/items')}
+            accessibilityRole="button"
+            accessibilityLabel="Total comes from the items. Edit items"
+            hitSlop={8}
+          >
+            <Text variant="captionStrong" color={colors.positive}>
+              Total from items · Edit items
+            </Text>
+          </Pressable>
+        ) : null}
         {errors.amount ? (
           <Text variant="caption" color={colors.negative}>
             {errors.amount}
@@ -337,7 +353,7 @@ export default function AddExpense() {
           </Text>
           <View style={{ flex: 1, gap: 2 }}>
             <Text variant="bodyMedium">
-              {meta.summary} · {participants} {participants === 1 ? 'person' : 'people'}
+              {d.itemized ? 'By item' : meta.summary} · {participants} {participants === 1 ? 'person' : 'people'}
             </Text>
             {evaluation.ok ? (
               <View style={{ flexDirection: 'row' }}>
@@ -424,7 +440,8 @@ export default function AddExpense() {
         title="Currency"
         options={currencyOptions}
         value={d.currency}
-        onSelect={(currency) => d.patch({ currency })}
+        // Item amounts are typed in one currency, so changing it starts the items over.
+        onSelect={(currency) => d.patch({ currency, itemized: false, items: [], extraText: '' })}
         searchable
         searchPlaceholder="Search currencies"
       />

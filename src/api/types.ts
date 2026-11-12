@@ -119,9 +119,23 @@ export interface Receipt {
   url: string | null;
 }
 
+/** One line of an itemized bill, shared equally by the people who had it. */
+export interface ExpenseItem {
+  name: string;
+  amount: Minor;
+  memberIds: string[];
+}
+
+/** The items an expense was split from, plus tax / tip shared in proportion. */
+export interface ExpenseItemization {
+  items: ExpenseItem[];
+  extra: Minor;
+}
+
 export interface ExpenseDetail extends Expense {
   audit: AuditEntry[];
   receipts: Receipt[];
+  itemization: ExpenseItemization | null;
 }
 
 export interface Settlement {
@@ -357,6 +371,8 @@ export interface Api {
 
   listGroupExpenses(groupId: string): Promise<Expense[]>;
   getExpense(expenseId: string): Promise<ExpenseDetail>;
+  /** Attach the items an expense was split from; null removes them. */
+  setExpenseItems(expenseId: string, value: ExpenseItemization | null): Promise<void>;
   saveExpense(input: SaveExpenseInput): Promise<string>;
   deleteExpense(expenseId: string): Promise<void>;
   uploadReceipt(expense: { id: string; groupId: string }, file: UploadFile): Promise<void>;

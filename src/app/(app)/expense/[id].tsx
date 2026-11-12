@@ -13,6 +13,7 @@ import {
   Header,
   IconButton,
   IconTile,
+  Overline,
   Pressable,
   Screen,
   SkeletonRows,
@@ -170,6 +171,35 @@ export default function ExpenseDetails() {
           );
         })}
       </Card>
+
+      {e.itemization ? (
+        <View style={{ gap: 8 }}>
+          <Overline>ITEMS</Overline>
+          <Card style={{ paddingVertical: 6, paddingHorizontal: 16 }}>
+            {e.itemization.items.map((it, i) => (
+              <View key={i} style={[styles.shareRow, { alignItems: 'flex-start' }]}>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text variant="bodyMedium">{it.name}</Text>
+                  <Text variant="caption" color={colors.textSubtle}>
+                    {it.memberIds.length === 1
+                      ? `${people.label(it.memberIds[0]!)} only`
+                      : `Shared by ${it.memberIds.map((m) => people.label(m)).join(', ')}`}
+                  </Text>
+                </View>
+                <AmountText minor={it.amount} currency={e.currency} variant="secondaryStrong" />
+              </View>
+            ))}
+            {e.itemization.extra > 0 ? (
+              <View style={styles.shareRow}>
+                <Text variant="secondary" color={colors.textMuted} style={{ flex: 1 }}>
+                  Tax & tip, shared in proportion
+                </Text>
+                <AmountText minor={e.itemization.extra} currency={e.currency} variant="secondaryStrong" />
+              </View>
+            ) : null}
+          </Card>
+        </View>
+      ) : null}
 
       {e.notes ? (
         <Card padded style={{ gap: 4 }}>
