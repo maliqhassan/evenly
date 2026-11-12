@@ -48,9 +48,17 @@ export async function registerForPush(): Promise<void> {
     if (status !== 'granted') status = (await Notifications.requestPermissionsAsync()).status;
     if (status !== 'granted') return;
 
-    const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
-    if (!projectId) return; // requires an EAS project (eas init)
-    const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
+    let token: string | null = null;
+    if (Platform.OS === 'android') {
+      // Native FCM token: the push-dispatch function sends to it through
+      // Firebase Cloud Messaging directly (needs google-services.json in the build).
+      token = (await Notifications.getDevicePushTokenAsync()).data as string;
+    } else {
+      // iOS goes through Expo's push service, which needs an EAS project.
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+      if (!projectId) return;
+      token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    }
     if (token && token !== registeredToken) {
       await api.registerPushToken(token, Platform.OS === 'ios' ? 'ios' : 'android');
       registeredToken = token;

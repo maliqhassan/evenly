@@ -74,7 +74,8 @@ npx eas-cli@latest init            # writes the project id; put it in EAS_PROJEC
 npx eas-cli@latest build --profile development --platform android
 ```
 
-- **Push notifications:** run `npx eas-cli credentials` to add an APNs key (iOS). For Android, upload an FCM V1 service-account key under _Push Notifications (FCM V1)_.
+- **Push notifications (Android):** sent through Firebase Cloud Messaging directly; no Expo account needed. Download `google-services.json` from Firebase (Project settings → Your apps → Android app) into the project root (it's gitignored), then rebuild. `push-dispatch` signs FCM requests with the `FIREBASE_SERVICE_ACCOUNT` secret from section 3.
+- **Push notifications (iOS):** go through Expo's push service, which needs an EAS project (`EAS_PROJECT_ID`) and an APNs key added with `npx eas-cli credentials`.
 - **Invite links** (`https://evenly.app/j/<code>`): host `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json` on your invite domain, or set `EXPO_PUBLIC_INVITE_BASE_URL` to a domain you control. The `evenly://join/<code>` scheme works without any hosting.
 
 ## 5. Monitoring (optional)
