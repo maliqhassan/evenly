@@ -89,10 +89,15 @@ async function fcmAccessToken(sa: ServiceAccount): Promise<string> {
   return j.access_token;
 }
 
+/** Android notification channel (created by the app in src/lib/push.ts). */
+const ANDROID_CHANNEL_ID = 'activity';
+
 /**
- * Send to native FCM tokens. Data-only messages in the shape expo-notifications
- * reads (title / message / body as JSON / channelId), so the app builds the
- * notification itself and gets the data back when it is tapped.
+ * Send to native FCM tokens as notification messages, so Android displays them
+ * itself even when the app is closed (data-only messages depend on the app
+ * waking up, which OEM battery savers often block). The data also carries the
+ * keys expo-notifications reads (title / message / body as JSON / channelId),
+ * so in the foreground and on tap the app gets the payload back.
  */
 async function sendFcm(tokens: string[], push: Push): Promise<SendResult> {
   const raw = Deno.env.get('FIREBASE_SERVICE_ACCOUNT');
@@ -103,7 +108,7 @@ async function sendFcm(tokens: string[], push: Push): Promise<SendResult> {
 
   // FCM data values must all be strings.
   const data: Record<string, string> = {
-    channelId: 'default',
+    channelId: ANDROID_CHANNEL_ID,
     title: push.title,
     message: push.body,
     body: JSON.stringify(push.data),
@@ -118,7 +123,21 @@ async function sendFcm(tokens: string[], push: Push): Promise<SendResult> {
       const res = await fetch(url, {
         method: 'POST',
         headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: { token, data, android: { priority: 'HIGH' } } }),
+        body: JSON.stringify({
+          message: {
+            token,
+            notification: { title: push.title, body: push.body },
+            data,
+            android: {
+              priority: 'HIGH',
+              notification: {
+                channel_id: ANDROID_CHANNEL_ID,
+                sound: 'default',
+                ...(push.badge !== undefined ? { notification_count: push.badge } : {}),
+              },
+            },
+          },
+        }),
       });
       if (res.ok) {
         sent++;

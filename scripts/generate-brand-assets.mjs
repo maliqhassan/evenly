@@ -100,6 +100,9 @@ const files = {
   // the in-app splash can draw the ring (see SplashView).
   'splash-icon.png': render(288, { fg: LIGHT, radius: 0, stroke: 0 }),
   'favicon.png': render(96, { bg: FOREST, fg: LIGHT, ...full }),
+  // Android status-bar icon for notifications: white ring on transparent
+  // (Android tints it; colour comes from the expo-notifications plugin).
+  'notification-icon.png': render(96, { fg: WHITE, radius: 0.33, stroke: 0.18 }),
 };
 
 for (const [name, png] of Object.entries(files)) {

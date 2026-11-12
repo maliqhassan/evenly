@@ -31,6 +31,9 @@ const load = (): NotificationsModule | null => {
 
 let registeredToken: string | null = null;
 
+/** Android notification channel for pushes; must match push-dispatch and app.config.ts. */
+const PUSH_CHANNEL_ID = 'activity';
+
 /** Set once the user answers "Not now", so the app doesn't ask on every launch. */
 const DECLINED_KEY = 'evenly.push.declined.v1';
 
@@ -52,10 +55,17 @@ export async function registerForPush(opts: { fromSettings?: boolean } = {}): Pr
   if (!Notifications || !Device.isDevice) return;
   try {
     if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'Evenly',
-        importance: Notifications.AndroidImportance.DEFAULT,
+      // High importance so pushes pop up as banners. Android never raises the
+      // importance of an existing channel, so this replaces the old "default"
+      // channel (created at DEFAULT importance by earlier builds).
+      await Notifications.setNotificationChannelAsync(PUSH_CHANNEL_ID, {
+        name: 'Activity',
+        description: 'Expenses, payments and invites in your groups',
+        importance: Notifications.AndroidImportance.HIGH,
+        vibrationPattern: [0, 250, 200, 250],
+        showBadge: true,
       });
+      await Notifications.deleteNotificationChannelAsync('default').catch(() => undefined);
     }
     let perm = await Notifications.getPermissionsAsync();
     if (!perm.granted) {

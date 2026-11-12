@@ -69,7 +69,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-secure-store',
     'expo-sqlite',
     'expo-localization',
-    ['expo-notifications', { color: '#26302A' }],
+    [
+      'expo-notifications',
+      // Status-bar icon and colour for notifications, and the channel Android
+      // uses for pushes it displays itself (created in src/lib/push.ts).
+      { color: '#26302A', icon: './assets/images/notification-icon.png', defaultChannel: 'activity' },
+    ],
     // Android: start with the system navigation buttons hidden (swipe up to show them).
     ['expo-navigation-bar', { hidden: true }],
     [
