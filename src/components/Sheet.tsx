@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { FlatList, Modal, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { colors, radii, spacing } from '@/theme';
 
 import { SearchField } from './Field';
@@ -21,25 +22,36 @@ interface SheetProps {
 /** Bottom sheet built on RN Modal (no extra native dependency). */
 export function Sheet({ visible, onClose, title, children, tall }: SheetProps) {
   const insets = useSafeAreaInsets();
+  // Android (edge-to-edge): the modal window isn't resized for the keyboard, so
+  // lift the sheet above it and let it use the space that is left.
+  const keyboard = useKeyboardHeight();
+  const keyboardInset = keyboard > 0 ? keyboard + insets.bottom : 0;
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
-      <View style={styles.backdrop}>
+      <View style={[styles.backdrop, { paddingBottom: keyboardInset }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} scaleOnPress={false} accessibilityLabel="Close" />
-        <View
-          style={[styles.sheet, { paddingBottom: insets.bottom + spacing['3xl'], maxHeight: tall ? '88%' : '75%' }]}
-        >
-          <View style={styles.grabber} />
-          {title ? (
-            <View style={styles.titleRow}>
-              <Text variant="nav" accessibilityRole="header">
-                {title}
-              </Text>
-              <Pressable onPress={onClose} accessibilityLabel="Close" hitSlop={12} style={styles.close}>
-                <Icon name="x" size={18} color={colors.ink} />
-              </Pressable>
-            </View>
-          ) : null}
-          {children}
+        <View style={[styles.fit, { paddingTop: insets.top + spacing.xl }]} pointerEvents="box-none">
+          <View
+            style={[
+              styles.sheet,
+              keyboardInset
+                ? { paddingBottom: spacing.xl, maxHeight: '100%' }
+                : { paddingBottom: insets.bottom + spacing['3xl'], maxHeight: tall ? '88%' : '75%' },
+            ]}
+          >
+            <View style={styles.grabber} />
+            {title ? (
+              <View style={styles.titleRow}>
+                <Text variant="nav" accessibilityRole="header">
+                  {title}
+                </Text>
+                <Pressable onPress={onClose} accessibilityLabel="Close" hitSlop={12} style={styles.close}>
+                  <Icon name="x" size={18} color={colors.ink} />
+                </Pressable>
+              </View>
+            ) : null}
+            {children}
+          </View>
         </View>
       </View>
     </Modal>
@@ -135,7 +147,9 @@ export function SelectSheet<T extends string>({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: colors.scrim },
+  backdrop: { flex: 1, backgroundColor: colors.scrim },
+  // The area the sheet may occupy: below the status bar, above the keyboard.
+  fit: { flex: 1, justifyContent: 'flex-end' },
   sheet: { backgroundColor: colors.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: spacing.md },
   grabber: {
     alignSelf: 'center',
