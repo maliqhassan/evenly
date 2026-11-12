@@ -14,12 +14,15 @@ import {
   ProgressBar,
   Screen,
   Text,
+  toast,
 } from '@/components';
 import { currencySymbol, formatBp, formatMoney, FULL_PERCENT_BP } from '@/domain/money';
 import { SPLIT_MODES, splitModeMeta } from '@/features/expenses/split-summary';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
-import { draftAmount, draftRows, evaluateDraft, useExpenseDraft } from '@/stores/drafts';
+import { errorMessage } from '@/api';
+import { useGroup, useGroupSplitDefault, useSaveSplitDefault } from '@/queries';
+import { draftAmount, draftAsDefault, draftRows, evaluateDraft, sameDefault, useExpenseDraft } from '@/stores/drafts';
 import { colors, fontFamily, radii } from '@/theme';
 
 /** 16 / 16b — Split expense: five modes with live validation. */
@@ -67,6 +70,21 @@ export default function Split() {
   const suffix = d.method === 'percent' ? '%' : d.method === 'shares' ? '×' : null;
   const prefix = d.method === 'exact' || d.method === 'adjust' ? currencySymbol(d.currency, locale) : null;
   const meta = splitModeMeta(d.method);
+
+  // "Save as default": only for splits that don't depend on this bill's total.
+  const { group } = useGroup(d.groupId);
+  const saved = useGroupSplitDefault(d.expenseId ? null : d.groupId);
+  const saveDefault = useSaveSplitDefault();
+  const current = evaluation.ok && !d.expenseId ? draftAsDefault(d) : null;
+  const isSaved = !!current && sameDefault(current, saved.data);
+  const changeDefault = (value: typeof current) =>
+    saveDefault.mutate(
+      { groupId: d.groupId!, value },
+      {
+        onSuccess: () => toast.success(value ? 'Saved as your default split' : 'Default split cleared'),
+        onError: (e) => toast.error(errorMessage(e)),
+      },
+    );
 
   return (
     <Screen
@@ -178,6 +196,39 @@ export default function Split() {
         })}
       </Card>
 
+      {current && d.groupId ? (
+        <View style={styles.defaultRow}>
+          {isSaved ? (
+            <>
+              <Icon name="circle-check" size={18} color={colors.positive} />
+              <Text variant="secondary" color={colors.textMuted} style={{ flex: 1 }}>
+                Your default split for {group?.name ?? 'this group'}
+              </Text>
+              <Pressable
+                onPress={() => changeDefault(null)}
+                accessibilityRole="button"
+                accessibilityLabel="Clear your default split for this group"
+                hitSlop={10}
+              >
+                <Text variant="captionStrong" color={colors.negative}>
+                  Clear
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <Button
+              label="Save as my default for this group"
+              icon="check"
+              size="md"
+              variant="muted"
+              loading={saveDefault.isPending}
+              onPress={() => changeDefault(current)}
+              accessibilityHint="New expenses in this group will start with this split"
+            />
+          )}
+        </View>
+      ) : null}
+
       <View
         style={[styles.status, { backgroundColor: status.ok ? colors.positiveSoft : colors.negativeSoft }]}
         accessibilityLiveRegion="polite"
@@ -219,6 +270,7 @@ export default function Split() {
 }
 
 const styles = StyleSheet.create({
+  defaultRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
   modes: { flexDirection: 'row', gap: 6 },
   mode: { flex: 1, height: 64, borderRadius: 16, alignItems: 'center', justifyContent: 'center', gap: 4 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16 },

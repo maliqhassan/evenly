@@ -555,3 +555,102 @@ describe('notifications, reports, account deletion', () => {
     assert.notEqual(again.profile_id, pid);
   });
 });
+
+describe('saved default splits', () => {
+  let gid;
+  before(async () => {
+    gid = await createGroupWith('vanessa', ['malik', 'jordan'], 'Default splits');
+  });
+
+  // Domain rejections carry the reason in the error's detail.
+  const rejectsWith = async (promise, detail) =>
+    assert.rejects(promise, (e) => {
+      assert.equal(e.message, 'invalid_input');
+      assert.equal(e.detail, detail);
+      return true;
+    });
+  const members = (rows) =>
+    JSON.stringify(rows.map(([pid, included, value]) => ({ profile_id: pid, included, value })));
+  const save = (actor, method, rows, group = gid) =>
+    as(db, actor, `select public.set_group_split_default($1, $2::public.split_method, $3::jsonb)`, [
+      group,
+      method,
+      members(rows),
+    ]);
+  const mine = (actor) =>
+    as(db, actor, `select method, members from public.group_split_defaults where group_id = $1`, [gid]);
+
+  it('saves a percent default and reads it back; saving again replaces it', async () => {
+    await save('vanessa', 'percent', [
+      [P.vanessa, true, 6000],
+      [P.malik, true, 4000],
+      [P.jordan, false, 0],
+    ]);
+    let [row] = await mine('vanessa');
+    assert.equal(row.method, 'percent');
+    assert.equal(row.members.length, 3);
+
+    await save('vanessa', 'equal', [
+      [P.vanessa, true, 0],
+      [P.malik, true, 0],
+      [P.jordan, true, 0],
+    ]);
+    const rows = await mine('vanessa');
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].method, 'equal');
+  });
+
+  it('is private: other members never see it, and clearing removes it', async () => {
+    assert.equal((await mine('malik')).length, 0);
+    await as(db, 'vanessa', `select public.clear_group_split_default($1)`, [gid]);
+    assert.equal((await mine('vanessa')).length, 0);
+  });
+
+  it('only members can save one', async () => {
+    await rejects(save('outsider', 'equal', [[P.vanessa, true, 0]]), /not_member/);
+  });
+
+  it('rejects people outside the group, bad percentages and nobody included', async () => {
+    await rejectsWith(save('vanessa', 'equal', [[P.outsider, true, 0]]), 'member_not_in_group');
+    await rejectsWith(
+      save('vanessa', 'percent', [
+        [P.vanessa, true, 5000],
+        [P.malik, true, 4000],
+      ]),
+      'percent_total',
+    );
+    await rejectsWith(save('vanessa', 'equal', [[P.vanessa, false, 0]]), 'nobody_included');
+    await rejectsWith(save('vanessa', 'shares', [[P.vanessa, true, 0]]), 'shares_total');
+  });
+
+  it('exact and adjust splits cannot be saved as defaults', async () => {
+    await rejects(save('vanessa', 'exact', [[P.vanessa, true, 100]]), /invalid_input|check/);
+    await rejects(save('vanessa', 'adjust', [[P.vanessa, true, 100]]), /invalid_input|check/);
+  });
+
+  it('rejects malformed rows and negative or fractional values', async () => {
+    await rejects(save('vanessa', 'shares', [[P.vanessa, true, -100]]), /invalid_input/);
+    await rejects(save('vanessa', 'shares', [[P.vanessa, true, 150.5]]), /invalid_input/);
+    await rejects(
+      as(
+        db,
+        'vanessa',
+        `select public.set_group_split_default($1, 'equal', '[{"profile_id":"nope","included":true}]'::jsonb)`,
+        [gid],
+      ),
+      /invalid_input/,
+    );
+  });
+
+  it('anon and direct writes are blocked', async () => {
+    await rejects(
+      as(
+        db,
+        'vanessa',
+        `insert into public.group_split_defaults (group_id, profile_id, method, members) values ($1, $2, 'equal', '[{}]')`,
+        [gid, P.vanessa],
+      ),
+      /permission denied/,
+    );
+  });
+});

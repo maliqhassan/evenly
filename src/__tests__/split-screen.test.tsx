@@ -17,6 +17,14 @@ jest.mock('@/features/people', () => {
   };
 });
 
+const mockMutate = jest.fn();
+let mockSaved: unknown = null;
+jest.mock('@/queries', () => ({
+  useGroup: () => ({ group: { id: 'g1', name: 'Flatmates' }, isLoading: false }),
+  useGroupSplitDefault: () => ({ data: mockSaved }),
+  useSaveSplitDefault: () => ({ mutate: mockMutate, isPending: false }),
+}));
+
 const members = ['you', 'malik', 'jordan', 'priya'];
 
 function seed(method: 'exact' | 'percent', inputs: Record<string, string>) {
@@ -62,5 +70,55 @@ describe('Split screen', () => {
     seed('percent', { you: '25', malik: '25', jordan: '20', priya: '20' });
     await render(<Split />);
     expect(screen.getByText('10% left to assign')).toBeTruthy();
+  });
+
+  describe('saving a default split', () => {
+    const SAVE = 'Save as my default for this group';
+    const quarters = { you: '25', malik: '25', jordan: '25', priya: '25' };
+    const quartersDefault = {
+      method: 'percent',
+      members: members.map((profileId) => ({ profileId, included: true, value: 2500 })),
+    };
+    beforeEach(() => {
+      mockMutate.mockClear();
+      mockSaved = null;
+      seed('percent', quarters);
+      useExpenseDraft.setState({ groupId: 'g1', expenseId: null });
+    });
+
+    it('offers to save a split that adds up and sends it for this group', async () => {
+      await render(<Split />);
+      await fireEvent.press(screen.getByLabelText(SAVE));
+      expect(mockMutate).toHaveBeenCalledWith({ groupId: 'g1', value: quartersDefault }, expect.anything());
+    });
+
+    it('shows it as saved, with Clear, when it matches the saved default', async () => {
+      mockSaved = quartersDefault;
+      await render(<Split />);
+      expect(screen.getByText('Your default split for Flatmates')).toBeTruthy();
+      expect(screen.queryByLabelText(SAVE)).toBeNull();
+      await fireEvent.press(screen.getByLabelText('Clear your default split for this group'));
+      expect(mockMutate).toHaveBeenCalledWith({ groupId: 'g1', value: null }, expect.anything());
+    });
+
+    it('does not offer it while the split does not add up', async () => {
+      seed('percent', { you: '25', malik: '25', jordan: '25', priya: '10' });
+      useExpenseDraft.setState({ groupId: 'g1', expenseId: null });
+      await render(<Split />);
+      expect(screen.queryByLabelText(SAVE)).toBeNull();
+    });
+
+    it('does not offer exact splits, which depend on this bill', async () => {
+      seed('exact', { you: '30.00', malik: '30.00', jordan: '30.00', priya: '30.00' });
+      useExpenseDraft.setState({ groupId: 'g1', expenseId: null });
+      await render(<Split />);
+      expect(screen.queryByLabelText(SAVE)).toBeNull();
+    });
+
+    it('does not offer it when editing an existing expense', async () => {
+      useExpenseDraft.setState({ expenseId: 'e1' });
+      await render(<Split />);
+      expect(screen.queryByLabelText(SAVE)).toBeNull();
+    });
   });
 });

@@ -22,6 +22,7 @@ import type {
   Member,
   Me,
   Settlement,
+  SplitDefault,
 } from './types';
 
 const ME = 'p-v';
@@ -594,6 +595,18 @@ export const demoApi: Api = {
     requireMember(groupId).archivedAt = archived ? now() : null;
     return delay(undefined);
   },
+  async getGroupSplitDefault(groupId) {
+    return delay(splitDefaults.get(groupId) ?? null, 40);
+  },
+  async setGroupSplitDefault(groupId, d) {
+    requireMember(groupId);
+    splitDefaults.set(groupId, structuredClone(d));
+    return delay(undefined, 40);
+  },
+  async clearGroupSplitDefault(groupId) {
+    splitDefaults.delete(groupId);
+    return delay(undefined, 40);
+  },
   async leaveGroup(groupId) {
     const g = requireMember(groupId);
     for (const [, m] of memberNets(groupId)) if ((m.get(ME) ?? 0) !== 0) throw new AppError('balances_outstanding');
@@ -825,20 +838,18 @@ export const demoApi: Api = {
         version: e.version + 1,
         updatedAt: now(),
       });
-      audit
-        .get(e.id)!
-        .unshift({
-          id: auditSeq++,
-          action: 'update',
-          actorId: ME,
-          before,
-          after: {
-            amount_minor: e.amount,
-            description: e.description,
-            splits: Object.fromEntries(e.splits.map((s) => [s.profileId, s.amount])),
-          },
-          createdAt: now(),
-        });
+      audit.get(e.id)!.unshift({
+        id: auditSeq++,
+        action: 'update',
+        actorId: ME,
+        before,
+        after: {
+          amount_minor: e.amount,
+          description: e.description,
+          splits: Object.fromEntries(e.splits.map((s) => [s.profileId, s.amount])),
+        },
+        createdAt: now(),
+      });
       return delay(e.id, 350);
     }
     const id = uid('e');
@@ -878,16 +889,14 @@ export const demoApi: Api = {
     if (!e) throw new AppError('not_found');
     requireMember(e.groupId);
     e.deletedAt = now();
-    audit
-      .get(id)!
-      .unshift({
-        id: auditSeq++,
-        action: 'delete',
-        actorId: ME,
-        before: { amount_minor: e.amount },
-        after: null,
-        createdAt: now(),
-      });
+    audit.get(id)!.unshift({
+      id: auditSeq++,
+      action: 'delete',
+      actorId: ME,
+      before: { amount_minor: e.amount },
+      after: null,
+      createdAt: now(),
+    });
     return delay(undefined);
   },
   async uploadReceipt(expense, file) {
@@ -1042,4 +1051,5 @@ export const demoApi: Api = {
   },
 };
 
+const splitDefaults = new Map<string, SplitDefault>();
 const receiptStore = new Map<string, { id: string; storagePath: string; mimeType: string; url: string | null }[]>();

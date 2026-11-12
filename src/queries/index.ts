@@ -11,6 +11,7 @@ import {
   type Profile,
   type RecordSettlementInput,
   type SaveExpenseInput,
+  type SplitDefault,
   type UploadFile,
 } from '@/api';
 import type { CurrencyCode } from '@/domain/money';
@@ -27,6 +28,7 @@ export const qk = {
   groupSettlements: (id: string) => ['group', id, 'settlements'] as const,
   groupTotals: (id: string) => ['group', id, 'totals'] as const,
   groupInvites: (id: string) => ['group', id, 'invites'] as const,
+  splitDefault: (id: string) => ['group', id, 'split-default'] as const,
   inviteLink: (id: string) => ['group', id, 'link'] as const,
   expense: (id: string) => ['expense', id] as const,
   settlement: (id: string) => ['settlement', id] as const,
@@ -67,6 +69,20 @@ export const useGroupSettlements = (id: string) =>
   useQuery({ queryKey: qk.groupSettlements(id), queryFn: () => api.listGroupSettlements(id), enabled: !!id });
 export const useGroupTotals = (id: string) =>
   useQuery({ queryKey: qk.groupTotals(id), queryFn: () => api.getGroupTotals(id), enabled: !!id });
+export const useGroupSplitDefault = (id: string | null | undefined) =>
+  useQuery({
+    queryKey: qk.splitDefault(id ?? ''),
+    queryFn: () => api.getGroupSplitDefault(id!),
+    enabled: !!id,
+  });
+export const useSaveSplitDefault = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ groupId, value }: { groupId: string; value: SplitDefault | null }) =>
+      value ? api.setGroupSplitDefault(groupId, value) : api.clearGroupSplitDefault(groupId),
+    onSuccess: (_d, { groupId }) => qc.invalidateQueries({ queryKey: qk.splitDefault(groupId) }),
+  });
+};
 export const useGroupInvitations = (id: string) =>
   useQuery({ queryKey: qk.groupInvites(id), queryFn: () => api.listGroupInvitations(id), enabled: !!id });
 export const useInviteLink = (id: string) =>

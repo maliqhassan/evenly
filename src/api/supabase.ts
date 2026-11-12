@@ -320,6 +320,30 @@ export const supabaseApi: Api = {
   async leaveGroup(groupId) {
     await rpc('leave_group', { p_group_id: groupId });
   },
+  async getGroupSplitDefault(groupId) {
+    const row = await q<Row | null>(
+      getSupabase().from('group_split_defaults').select('method, members').eq('group_id', groupId).maybeSingle(),
+    );
+    if (!row) return null;
+    return {
+      method: row.method,
+      members: (row.members as Row[]).map((m) => ({
+        profileId: m.profile_id,
+        included: !!m.included,
+        value: num(m.value),
+      })),
+    };
+  },
+  async setGroupSplitDefault(groupId, d) {
+    await rpc('set_group_split_default', {
+      p_group_id: groupId,
+      p_method: d.method,
+      p_members: d.members.map((m) => ({ profile_id: m.profileId, included: m.included, value: m.value })),
+    });
+  },
+  async clearGroupSplitDefault(groupId) {
+    await rpc('clear_group_split_default', { p_group_id: groupId });
+  },
   async removeMember(groupId, profileId) {
     await rpc('remove_member', { p_group_id: groupId, p_profile_id: profileId });
   },

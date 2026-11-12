@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { api, errorMessage } from '@/api';
@@ -31,7 +31,7 @@ import { usePreferences } from '@/hooks/usePreferences';
 import { formatRelativeDay } from '@/lib/dates';
 import { chooseImage } from '@/lib/media';
 import { track } from '@/lib/monitoring';
-import { useCategories, useGroups, useSaveExpense } from '@/queries';
+import { useCategories, useGroupSplitDefault, useGroups, useSaveExpense } from '@/queries';
 import { expenseSchema } from '@/schemas';
 import { draftAmount, draftRows, evaluateDraft, useExpenseDraft } from '@/stores/drafts';
 import { useSession } from '@/stores/session';
@@ -78,6 +78,19 @@ export default function AddExpense() {
     if (!d.groupId && activeGroups[0] && !expenseId) useExpenseDraft.getState().setGroup(activeGroups[0], myId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groups.data]);
+
+  // Start a new expense from the split the user saved for this group, once per draft and group.
+  const splitDefault = useGroupSplitDefault(expenseId ? null : d.groupId);
+  const defaultAppliedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (expenseId || !d.groupId || !splitDefault.isSuccess) return;
+    const key = `${d.clientId}:${d.groupId}`;
+    if (defaultAppliedFor.current === key) return;
+    defaultAppliedFor.current = key;
+    // Only if the user hasn't already chosen a split for this draft.
+    if (splitDefault.data && d.method === 'equal') useExpenseDraft.getState().applyDefault(splitDefault.data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expenseId, d.groupId, d.clientId, splitDefault.isSuccess, splitDefault.data]);
 
   const amount = draftAmount(d);
   const evaluation = useMemo(() => evaluateDraft(d), [d]);

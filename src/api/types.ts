@@ -60,6 +60,17 @@ export interface Group {
   members: Member[];
 }
 
+/** How the current user usually splits in a group; new expenses there start from it. */
+export interface SplitDefault {
+  /** Only methods that don't depend on the bill's total can be saved. */
+  method: Extract<SplitMethod, 'equal' | 'percent' | 'shares'>;
+  members: {
+    profileId: string;
+    included: boolean;
+    /** basis points (percent) or scaled shares; 0 for equal */ value: number;
+  }[];
+}
+
 export interface BalanceRow {
   groupId: string;
   profileId: string;
@@ -292,6 +303,9 @@ export interface Api {
   updateGroup(groupId: string, input: Omit<CreateGroupInput, 'inviteeIds'>): Promise<void>;
   setGroupArchived(groupId: string, archived: boolean): Promise<void>;
   leaveGroup(groupId: string): Promise<void>;
+  getGroupSplitDefault(groupId: string): Promise<SplitDefault | null>;
+  setGroupSplitDefault(groupId: string, d: SplitDefault): Promise<void>;
+  clearGroupSplitDefault(groupId: string): Promise<void>;
   removeMember(groupId: string, profileId: string): Promise<void>;
 
   getInviteLink(groupId: string): Promise<{ code: string; expiresAt: string }>;

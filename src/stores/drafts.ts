@@ -1,11 +1,12 @@
 import * as Crypto from 'expo-crypto';
 import { create } from 'zustand';
 
-import type { Expense, Group, PaymentMethod } from '@/api';
+import type { Expense, Group, PaymentMethod, SplitDefault } from '@/api';
 import {
   defaultSplitValues,
   evaluateSplit,
   formatBp,
+  FULL_PERCENT_BP,
   minorToDecimalString,
   parseBp,
   parseMinor,
@@ -157,6 +158,34 @@ interface ExpenseDraftStore extends ExpenseDraft {
   setInput: (id: string, text: string) => void;
   /** Re-seed the current mode's inputs from the amount (e.g. after the amount changes). */
   reseed: () => void;
+  /** Start from the user's saved default split for this group (ignored if it no longer fits). */
+  applyDefault: (def: SplitDefault) => void;
+}
+
+/** The current split as a saveable default, or null for modes that depend on the total (exact, adjust). */
+export function draftAsDefault(d: ExpenseDraft): SplitDefault | null {
+  if (d.method !== 'equal' && d.method !== 'percent' && d.method !== 'shares') return null;
+  return {
+    method: d.method,
+    members: d.memberIds.map((id) => ({
+      profileId: id,
+      included: !!d.included[id],
+      value: d.method === 'equal' ? 0 : (parseSplitInput(d.method, d.inputs[d.method][id] ?? '', d.currency) ?? 0),
+    })),
+  };
+}
+
+/** True when two defaults describe the same split (order-independent). */
+export function sameDefault(a: SplitDefault | null | undefined, b: SplitDefault | null | undefined): boolean {
+  if (!a || !b) return !a && !b;
+  if (a.method !== b.method) return false;
+  const key = (d: SplitDefault) =>
+    d.members
+      .filter((m) => m.included)
+      .map((m) => `${m.profileId}:${d.method === 'equal' ? 0 : m.value}`)
+      .sort()
+      .join('|');
+  return key(a) === key(b);
 }
 
 const activeMemberIds = (group: Group, me: string) => {
@@ -236,6 +265,24 @@ export const useExpenseDraft = create<ExpenseDraftStore>((set, get) => ({
   },
 
   setInput: (id, text) => set((d) => ({ inputs: { ...d.inputs, [d.method]: { ...d.inputs[d.method], [id]: text } } })),
+
+  applyDefault: (def) => {
+    const d = get();
+    // Only people still in the group count; anyone new since it was saved is left out.
+    const byId = new Map(def.members.map((m) => [m.profileId, m]));
+    const included = Object.fromEntries(d.memberIds.map((id) => [id, byId.get(id)?.included ?? false]));
+    const ids = d.memberIds.filter((id) => included[id]);
+    if (ids.length === 0) return;
+    const total = ids.reduce((sum, id) => sum + (byId.get(id)?.value ?? 0), 0);
+    if (def.method === 'percent' && total !== FULL_PERCENT_BP) return; // someone left: no longer adds to 100%
+    if (def.method === 'shares' && total <= 0) return;
+    const text: Record<string, string> = {};
+    for (const id of d.memberIds) {
+      text[id] =
+        def.method === 'equal' ? '' : formatSplitInput(def.method, included[id] ? byId.get(id)!.value : 0, d.currency);
+    }
+    set({ method: def.method, included, inputs: { ...emptyInputs(), [def.method]: text } });
+  },
 
   reseed: () => {
     const d = get();
