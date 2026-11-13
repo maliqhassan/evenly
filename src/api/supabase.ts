@@ -365,6 +365,17 @@ export const supabaseApi: Api = {
   async deleteRecurring(id) {
     await rpc('delete_recurring_expense', { p_id: id });
   },
+  async getFxRates() {
+    const rows = await q<Row[]>(getSupabase().from('fx_rates').select('quote, rate, fetched_at'));
+    const rates: Record<string, string> = {};
+    let fetchedAt: string | null = null;
+    for (const r of rows) {
+      // toFixed gives a plain decimal (never 1e-7) with the precision the rates are stored at.
+      rates[r.quote] = Number(r.rate).toFixed(10);
+      if (!fetchedAt || r.fetched_at > fetchedAt) fetchedAt = r.fetched_at;
+    }
+    return { rates, fetchedAt };
+  },
   async getGroupSplitDefault(groupId) {
     const row = await q<Row | null>(
       getSupabase().from('group_split_defaults').select('method, members').eq('group_id', groupId).maybeSingle(),

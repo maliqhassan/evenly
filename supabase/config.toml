@@ -420,3 +420,6 @@ verify_jwt = false
 # Verifies the Firebase ID token itself (the token has no Supabase role yet).
 [functions.firebase-role]
 verify_jwt = false
+
+[functions.fx-refresh]
+verify_jwt = false

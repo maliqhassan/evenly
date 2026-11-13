@@ -32,6 +32,7 @@ export const qk = {
   groupInvites: (id: string) => ['group', id, 'invites'] as const,
   splitDefault: (id: string) => ['group', id, 'split-default'] as const,
   recurring: (id: string) => ['group', id, 'recurring'] as const,
+  fxRates: ['fx-rates'] as const,
   inviteLink: (id: string) => ['group', id, 'link'] as const,
   expense: (id: string) => ['expense', id] as const,
   settlement: (id: string) => ['settlement', id] as const,
@@ -88,6 +89,9 @@ export const useDeleteRecurring = (groupId: string) => {
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.recurring(groupId) }),
   });
 };
+/** Today's exchange rates; they only change daily, so cache them for hours. */
+export const useFxRates = () =>
+  useQuery({ queryKey: qk.fxRates, queryFn: api.getFxRates, staleTime: 6 * 60 * 60 * 1000 });
 export const useGroupSplitDefault = (id: string | null | undefined) =>
   useQuery({
     queryKey: qk.splitDefault(id ?? ''),

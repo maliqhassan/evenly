@@ -634,6 +634,11 @@ export const demoApi: Api = {
     if (i >= 0) recurring.splice(i, 1);
     return delay(undefined, 40);
   },
+  async getFxRates() {
+    // Rough rates, so demo mode can show the conversion line.
+    const rates = { USD: '1', PKR: '276.6', EUR: '0.90', GBP: '0.76', INR: '94.1', AED: '3.6725', SAR: '3.75' };
+    return delay({ rates, fetchedAt: now() }, 60);
+  },
   async getGroupSplitDefault(groupId) {
     return delay(splitDefaults.get(groupId) ?? null, 40);
   },

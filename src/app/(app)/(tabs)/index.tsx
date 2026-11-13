@@ -20,13 +20,13 @@ import {
   Text,
 } from '@/components';
 import { dashboardSummary, myGroupNets, type CurrencySummary } from '@/domain/ledger';
-import { formatMoney, type CurrencyCode } from '@/domain/money';
+import { formatMoney, sumConverted, type CurrencyCode } from '@/domain/money';
 import { describeActivity } from '@/features/activity/describe';
 import { GroupBalanceLabel } from '@/features/groups/GroupBalanceLabel';
 import { activeMembers, firstNameOf } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
 import { chooseImage } from '@/lib/media';
-import { useActivity, useBalances, useGroups, useUnreadCount } from '@/queries';
+import { useActivity, useBalances, useFxRates, useGroups, useUnreadCount } from '@/queries';
 import { useExpenseDraft } from '@/stores/drafts';
 import { useSession } from '@/stores/session';
 import { colors, radii } from '@/theme';
@@ -47,6 +47,19 @@ export default function Dashboard() {
   );
   const primary = summaries[0]!;
   const others = summaries.slice(1);
+  // With balances in several currencies, show what they add up to, approximately, at today's rates.
+  const fx = useFxRates();
+  const approxTotal = useMemo(
+    () =>
+      others.length > 0 && fx.data
+        ? sumConverted(
+            summaries.map((s) => ({ amount: s.net, currency: s.currency })),
+            preferred,
+            fx.data.rates,
+          )
+        : null,
+    [summaries, others.length, fx.data, preferred],
+  );
   const activeGroups = (groups.data ?? []).filter((g) => !g.archivedAt);
   const groupName = (id: string) => groups.data?.find((g) => g.id === id)?.name ?? '';
   const recent = (activity.data?.pages[0]?.items ?? [])
@@ -62,13 +75,11 @@ export default function Dashboard() {
   const scanBill = async () => {
     const file = await chooseImage('Scan a bill');
     if (!file) return;
-    useExpenseDraft
-      .getState()
-      .start({
-        group: activeGroups[0] ?? null,
-        me: myId,
-        receipt: { uri: file.uri, mimeType: file.mimeType, size: file.size ?? null },
-      });
+    useExpenseDraft.getState().start({
+      group: activeGroups[0] ?? null,
+      me: myId,
+      receipt: { uri: file.uri, mimeType: file.mimeType, size: file.size ?? null },
+    });
     router.push({ pathname: '/add-expense', params: { keepDraft: '1' } });
   };
 
@@ -139,6 +150,13 @@ export default function Dashboard() {
           {otherCurrencyCaption(o, locale, o.groupIds.map(groupName).filter(Boolean))}
         </Text>
       ))}
+
+      {approxTotal !== null ? (
+        <Text variant="caption" color={colors.textSubtle} align="center" style={{ marginTop: -6 }}>
+          About {formatMoney(approxTotal, preferred, { locale, sign: 'always' })} in total at today’s rates. Rates by
+          Exchange Rate API.
+        </Text>
+      ) : null}
 
       <View style={{ gap: 10 }}>
         <SectionHeader title="Recent Activity" action="See All" onAction={() => router.push('/activity')} />

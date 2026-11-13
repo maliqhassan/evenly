@@ -1,4 +1,4 @@
-import type { CurrencyCode, Minor, SplitMethod } from '@/domain/money';
+import type { CurrencyCode, FxRates, Minor, SplitMethod } from '@/domain/money';
 
 export type GroupType = 'home' | 'trip' | 'couple' | 'work' | 'other';
 export type MemberRole = 'owner' | 'admin' | 'member';
@@ -347,6 +347,8 @@ export interface Api {
   createRecurring(input: CreateRecurringInput): Promise<string>;
   setRecurringActive(id: string, active: boolean): Promise<void>;
   deleteRecurring(id: string): Promise<void>;
+  /** Today's exchange rates (units per USD), for approximate totals. fetchedAt is null if none are loaded yet. */
+  getFxRates(): Promise<{ rates: FxRates; fetchedAt: string | null }>;
   getGroupSplitDefault(groupId: string): Promise<SplitDefault | null>;
   setGroupSplitDefault(groupId: string, d: SplitDefault): Promise<void>;
   clearGroupSplitDefault(groupId: string): Promise<void>;
