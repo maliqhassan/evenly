@@ -81,7 +81,6 @@ const dict: Record<string, string> = {
   'Create group': 'Crear grupo',
   Currency: 'Moneda',
   'Currency & region': 'Moneda y región',
-  'Currency conversion': 'Conversión de moneda',
   'Dark mode is on its way. Evenly uses the light theme for now.':
     'El modo oscuro llegará pronto. Por ahora Evenly usa el tema claro.',
   Date: 'Fecha',
@@ -109,9 +108,6 @@ const dict: Record<string, string> = {
   Equally: 'A partes iguales',
   'Evenly needs the camera to take receipt and profile photos. Turn on camera access for Evenly in your phone’s settings.':
     'Evenly necesita la cámara para fotografiar recibos y tu foto de perfil. Activa el acceso a la cámara para Evenly en los ajustes del teléfono.',
-  'Evenly Plus': 'Evenly Plus',
-  'Evenly Plus is coming soon. Everything you need to split and settle stays free.':
-    'Evenly Plus llegará pronto. Todo lo necesario para dividir y saldar seguirá siendo gratis.',
   'Evenly sends a notification when someone adds an expense, settles up or invites you. Turn on notifications for Evenly in your phone’s settings.':
     'Evenly te avisa cuando alguien añade un gasto, salda cuentas o te invita. Activa las notificaciones de Evenly en los ajustes del teléfono.',
   'Evenly stores your name, email, profile photo and the expenses you share so your groups can see who owes whom. Evenly records payments you make elsewhere — it never moves money. Analytics never include amounts or descriptions. You can delete your account from your profile at any time.':
@@ -134,8 +130,6 @@ const dict: Record<string, string> = {
   'Expense updated': 'Gasto actualizado',
   Expenses: 'Gastos',
   'Expenses, payments and invites in your groups': 'Gastos, pagos e invitaciones de tus grupos',
-  'Export to CSV and PDF': 'Exportar a CSV y PDF',
-  'Exports, currency conversion · $3.99/mo': 'Exportaciones, conversión de moneda · 3,99 $/mes',
   'Filter by group': 'Filtrar por grupo',
   'Finishes the tour': 'Termina el recorrido',
   Friends: 'Amigos',
@@ -152,7 +146,6 @@ const dict: Record<string, string> = {
   'Give each person a number of shares — e.g. 2 for a couple, 1 for everyone else.':
     'Da a cada persona un número de partes: p. ej., 2 a una pareja y 1 a los demás.',
   'Go home': 'Ir al inicio',
-  'Got it': 'Entendido',
   Group: 'Grupo',
   'Group currency': 'Moneda del grupo',
   'Group name': 'Nombre del grupo',
@@ -429,6 +422,54 @@ const dict: Record<string, string> = {
   'Split equally between everyone in this group': 'A partes iguales entre todos los del grupo',
   'Importing the same file again won’t add duplicates.': 'Importar el mismo archivo otra vez no crea duplicados.',
   '{count} rows skipped': '{count} filas omitidas',
+  // Evenly Pro
+  'See everything added up in {currency} with Pro': 'Ve todo sumado en {currency} con Pro',
+  '{used} of {limit} free expenses used this month. Go Pro':
+    '{used} de {limit} gastos gratis usados este mes. Hazte Pro',
+  Pro: 'Pro',
+  'Free includes {count} groups you create. Go Pro for unlimited groups.':
+    'Gratis incluye {count} grupos creados por ti. Hazte Pro para tener grupos ilimitados.',
+  'Free includes {count} expenses a month. Go Pro for unlimited expenses.':
+    'Gratis incluye {count} gastos al mes. Hazte Pro para tener gastos ilimitados.',
+  'Receipt scanning is part of Pro.': 'Escanear recibos es parte de Pro.',
+  'Splitting by item is part of Pro.': 'Dividir por artículo es parte de Pro.',
+  'Totals across currencies are part of Pro.': 'Los totales entre monedas son parte de Pro.',
+  'Importing from CSV is part of Pro.': 'Importar desde CSV es parte de Pro.',
+  'Groups you create': 'Grupos que creas',
+  Unlimited: 'Ilimitado',
+  'Expenses each month': 'Gastos al mes',
+  'Join groups, settle up, reminders': 'Unirte a grupos, saldar cuentas, recordatorios',
+  'Recurring expenses and saved splits': 'Gastos recurrentes y divisiones guardadas',
+  'Receipt scanning': 'Escaneo de recibos',
+  'Total across currencies': 'Total entre monedas',
+  'You’re on Pro': 'Tienes Pro',
+  'You’re on Free': 'Tienes el plan Gratis',
+  '{count} a month': '{count} al mes',
+  'Switch back to Free': 'Volver a Gratis',
+  'Coming soon': 'Próximamente',
+  'Switch to Pro': 'Cambiar a Pro',
+  'EVENLY PRO': 'EVENLY PRO',
+  'Split without limits': 'Divide sin límites',
+  'Unlimited groups and expenses, receipt scanning and every Pro tool. Thanks for your support.':
+    'Grupos y gastos ilimitados, escaneo de recibos y todas las herramientas Pro. Gracias por tu apoyo.',
+  'Unlimited groups and expenses, plus receipt scanning, item splits, currency totals and CSV import.':
+    'Grupos y gastos ilimitados, además de escaneo de recibos, división por artículo, totales entre monedas e importación CSV.',
+  'YOUR FREE PLAN': 'TU PLAN GRATIS',
+  'Expenses this month': 'Gastos este mes',
+  'Groups you created': 'Grupos que creaste',
+  'Your expense count starts again on {date}.': 'Tu contador de gastos se reinicia el {date}.',
+  FEATURE: 'FUNCIÓN',
+  Free: 'Gratis',
+  Monthly: 'Mensual',
+  'a month': 'al mes',
+  Yearly: 'Anual',
+  'a year': 'al año',
+  'Save {pct}%': 'Ahorra un {pct}%',
+  'Testing: no payment is taken. The switch changes your plan straight away.':
+    'Prueba: no se cobra nada. El cambio de plan es inmediato.',
+  '{used} of {limit}': '{used} de {limit}',
+  'Evenly Pro': 'Evenly Pro',
+  'Free plan · {used} of {limit} expenses this month': 'Plan Gratis · {used} de {limit} gastos este mes',
 };
 
 export default dict;

@@ -6,6 +6,7 @@ import { errorMessage } from '@/api';
 import { Avatar, Button, Card, Header, Icon, Pressable, Screen, Text, toast } from '@/components';
 import { FriendPicker } from '@/features/groups/FriendPicker';
 import { GroupFormFields, type GroupFormValue } from '@/features/groups/GroupForm';
+import { handlePlanLimit } from '@/features/plan';
 import { t } from '@/i18n';
 import { track } from '@/lib/monitoring';
 import { useCreateGroup, useFriends } from '@/queries';
@@ -43,6 +44,7 @@ export default function NewGroup() {
       router.push({ pathname: '/groups/[id]', params: { id } });
       if (!invitees.length) setTimeout(() => router.push({ pathname: '/groups/[id]/invite', params: { id } }), 350);
     } catch (e) {
+      if (handlePlanLimit(e)) return;
       toast.error(errorMessage(e));
     }
   };

@@ -10,6 +10,7 @@ import {
   Checkbox,
   Header,
   Icon,
+  Pill,
   Pressable,
   ProgressBar,
   Screen,
@@ -19,6 +20,7 @@ import {
 import { currencySymbol, formatBp, formatMoney, FULL_PERCENT_BP } from '@/domain/money';
 import { SPLIT_MODES, splitModeMeta } from '@/features/expenses/split-summary';
 import { usePeople } from '@/features/people';
+import { openPricing, useIsPro } from '@/features/plan';
 import { usePreferences } from '@/hooks/usePreferences';
 import { errorMessage } from '@/api';
 import { t } from '@/i18n';
@@ -29,6 +31,7 @@ import { colors, fontFamily, radii } from '@/theme';
 /** 16 / 16b — Split expense: five modes with live validation. */
 export default function Split() {
   const d = useExpenseDraft();
+  const isPro = useIsPro();
   const people = usePeople();
   const { locale } = usePreferences();
   const amount = draftAmount(d);
@@ -173,7 +176,7 @@ export default function Split() {
       </Text>
 
       <Pressable
-        onPress={() => router.push('/add-expense/items')}
+        onPress={() => (isPro ? router.push('/add-expense/items') : openPricing('items'))}
         accessibilityRole="button"
         accessibilityLabel="Split by item"
         accessibilityHint="Add each item from the bill and choose who had it"
@@ -186,6 +189,7 @@ export default function Split() {
             {t('Everyone pays for what they had, tax and tip shared fairly')}
           </Text>
         </View>
+        {isPro ? null : <Pill label={t('Pro')} tone="positive" variant="soft" />}
         <Icon name="chevron-right" size={18} color={colors.textFaint} />
       </Pressable>
 

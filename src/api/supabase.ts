@@ -376,6 +376,21 @@ export const supabaseApi: Api = {
     }
     return { rates, fetchedAt };
   },
+  async getPlan() {
+    const p = await rpc<Row>('get_my_plan');
+    return {
+      plan: p.plan,
+      groupLimit: p.group_limit,
+      groupsUsed: p.groups_used,
+      expenseLimit: p.expense_limit,
+      expensesUsed: p.expenses_used,
+      resetsOn: p.resets_on,
+      selfService: p.self_service,
+    };
+  },
+  async setPlan(plan) {
+    await rpc('set_my_plan', { p_plan: plan });
+  },
   async getGroupSplitDefault(groupId) {
     const row = await q<Row | null>(
       getSupabase().from('group_split_defaults').select('method, members').eq('group_id', groupId).maybeSingle(),

@@ -17,21 +17,22 @@ import {
   Pressable,
   Screen,
   SelectSheet,
-  Sheet,
   Text,
   toast,
 } from '@/components';
+import { openPricing } from '@/features/plan';
 import { LANGUAGES, t, useLanguage, type LanguageCode } from '@/i18n';
 import { authClient } from '@/lib/auth';
 import { config, isDemo } from '@/lib/config';
 import { forgetLocalData, signOut } from '@/lib/session';
+import { usePlan } from '@/queries';
 import { useSession } from '@/stores/session';
-import { colors, radii, spacing } from '@/theme';
+import { colors, radii } from '@/theme';
 
 /** 23 — Profile & settings */
 export default function Profile() {
   const me = useSession((s) => s.me!);
-  const [plus, setPlus] = useState(false);
+  const plan = usePlan().data;
   const [deleting, setDeleting] = useState(false);
   const [languageSheet, setLanguageSheet] = useState(false);
   const language = useLanguage((s) => s.code);
@@ -158,14 +159,21 @@ export default function Profile() {
         />
       </View>
 
-      <Pressable onPress={() => setPlus(true)} accessibilityLabel="Evenly Plus" style={styles.plus}>
+      <Pressable onPress={() => openPricing()} accessibilityLabel={t('Evenly Pro')} style={styles.plus}>
         <IconTile icon="crown" size={44} radius={14} bg={colors.mint} fg={colors.forest} iconSize={20} />
         <View style={{ flex: 1, gap: 2 }}>
           <Text variant="bodyLgStrong" color={colors.onDark}>
-            {t('Evenly Plus')}
+            {t('Evenly Pro')}
           </Text>
           <Text variant="caption" color={colors.onDarkMuted}>
-            {t('Exports, currency conversion · $3.99/mo')}
+            {!plan
+              ? ' '
+              : plan.plan === 'pro'
+                ? t('You’re on Pro')
+                : t('Free plan · {used} of {limit} expenses this month', {
+                    used: Math.min(plan.expensesUsed, plan.expenseLimit),
+                    limit: plan.expenseLimit,
+                  })}
           </Text>
         </View>
         <Icon name="chevron-right" size={18} color={colors.onDark} />
@@ -215,20 +223,6 @@ export default function Profile() {
         </Text>
       ) : null}
 
-      <Sheet visible={plus} onClose={() => setPlus(false)} title={t('Evenly Plus')}>
-        <View style={{ paddingHorizontal: spacing.screen, gap: 14 }}>
-          {[t('Export to CSV and PDF'), t('Currency conversion')].map((f) => (
-            <View key={f} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-              <Icon name="check" size={18} color={colors.positive} />
-              <Text variant="bodyLg">{f}</Text>
-            </View>
-          ))}
-          <Text variant="secondary" color={colors.textMuted}>
-            {t('Evenly Plus is coming soon. Everything you need to split and settle stays free.')}
-          </Text>
-          <Button label={t('Got it')} onPress={() => setPlus(false)} />
-        </View>
-      </Sheet>
       <SelectSheet
         visible={languageSheet}
         onClose={() => setLanguageSheet(false)}

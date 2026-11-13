@@ -82,7 +82,6 @@ const dict: Record<string, string> = {
   'Create group': 'Buat grup',
   Currency: 'Mata uang',
   'Currency & region': 'Mata uang & wilayah',
-  'Currency conversion': 'Konversi mata uang',
   'Dark mode is on its way. Evenly uses the light theme for now.':
     'Mode gelap segera hadir. Untuk saat ini Evenly memakai tema terang.',
   Date: 'Tanggal',
@@ -110,9 +109,6 @@ const dict: Record<string, string> = {
   Equally: 'Dibagi rata',
   'Evenly needs the camera to take receipt and profile photos. Turn on camera access for Evenly in your phone’s settings.':
     'Evenly butuh kamera untuk memotret struk dan foto profil. Nyalakan akses kamera untuk Evenly di pengaturan ponsel.',
-  'Evenly Plus': 'Evenly Plus',
-  'Evenly Plus is coming soon. Everything you need to split and settle stays free.':
-    'Evenly Plus segera hadir. Semua yang kamu perlukan untuk berbagi dan melunasi tetap gratis.',
   'Evenly sends a notification when someone adds an expense, settles up or invites you. Turn on notifications for Evenly in your phone’s settings.':
     'Evenly mengirim notifikasi saat seseorang menambah pengeluaran, melunasi, atau mengundangmu. Nyalakan notifikasi Evenly di pengaturan ponsel.',
   'Evenly stores your name, email, profile photo and the expenses you share so your groups can see who owes whom. Evenly records payments you make elsewhere — it never moves money. Analytics never include amounts or descriptions. You can delete your account from your profile at any time.':
@@ -135,8 +131,6 @@ const dict: Record<string, string> = {
   'Expense updated': 'Pengeluaran diperbarui',
   Expenses: 'Pengeluaran',
   'Expenses, payments and invites in your groups': 'Pengeluaran, pembayaran, dan undangan di grupmu',
-  'Export to CSV and PDF': 'Ekspor ke CSV dan PDF',
-  'Exports, currency conversion · $3.99/mo': 'Ekspor, konversi mata uang · $3,99/bln',
   'Filter by group': 'Saring per grup',
   'Finishes the tour': 'Menyelesaikan tur',
   Friends: 'Teman',
@@ -153,7 +147,6 @@ const dict: Record<string, string> = {
   'Give each person a number of shares — e.g. 2 for a couple, 1 for everyone else.':
     'Beri tiap orang jumlah porsi — mis. 2 untuk pasangan, 1 untuk yang lain.',
   'Go home': 'Ke beranda',
-  'Got it': 'Mengerti',
   Group: 'Grup',
   'Group currency': 'Mata uang grup',
   'Group name': 'Nama grup',
@@ -430,6 +423,54 @@ const dict: Record<string, string> = {
   'Split equally between everyone in this group': 'Dibagi rata ke semua anggota grup',
   'Importing the same file again won’t add duplicates.': 'Mengimpor file yang sama lagi tidak membuat duplikat.',
   '{count} rows skipped': '{count} baris dilewati',
+  // Evenly Pro
+  'See everything added up in {currency} with Pro': 'Lihat total semuanya dalam {currency} dengan Pro',
+  '{used} of {limit} free expenses used this month. Go Pro':
+    '{used} dari {limit} pengeluaran gratis terpakai bulan ini. Pakai Pro',
+  Pro: 'Pro',
+  'Free includes {count} groups you create. Go Pro for unlimited groups.':
+    'Paket Gratis mencakup {count} grup buatanmu. Pakai Pro untuk grup tanpa batas.',
+  'Free includes {count} expenses a month. Go Pro for unlimited expenses.':
+    'Paket Gratis mencakup {count} pengeluaran per bulan. Pakai Pro untuk pengeluaran tanpa batas.',
+  'Receipt scanning is part of Pro.': 'Pindai struk termasuk dalam Pro.',
+  'Splitting by item is part of Pro.': 'Bagi per item termasuk dalam Pro.',
+  'Totals across currencies are part of Pro.': 'Total lintas mata uang termasuk dalam Pro.',
+  'Importing from CSV is part of Pro.': 'Impor dari CSV termasuk dalam Pro.',
+  'Groups you create': 'Grup yang kamu buat',
+  Unlimited: 'Tanpa batas',
+  'Expenses each month': 'Pengeluaran per bulan',
+  'Join groups, settle up, reminders': 'Gabung grup, lunasi, pengingat',
+  'Recurring expenses and saved splits': 'Pengeluaran berulang dan pembagian tersimpan',
+  'Receipt scanning': 'Pindai struk',
+  'Total across currencies': 'Total lintas mata uang',
+  'You’re on Pro': 'Kamu pakai Pro',
+  'You’re on Free': 'Kamu pakai paket Gratis',
+  '{count} a month': '{count} per bulan',
+  'Switch back to Free': 'Kembali ke Gratis',
+  'Coming soon': 'Segera hadir',
+  'Switch to Pro': 'Beralih ke Pro',
+  'EVENLY PRO': 'EVENLY PRO',
+  'Split without limits': 'Bagi tanpa batas',
+  'Unlimited groups and expenses, receipt scanning and every Pro tool. Thanks for your support.':
+    'Grup dan pengeluaran tanpa batas, pindai struk, dan semua fitur Pro. Terima kasih atas dukunganmu.',
+  'Unlimited groups and expenses, plus receipt scanning, item splits, currency totals and CSV import.':
+    'Grup dan pengeluaran tanpa batas, plus pindai struk, bagi per item, total lintas mata uang, dan impor CSV.',
+  'YOUR FREE PLAN': 'PAKET GRATISMU',
+  'Expenses this month': 'Pengeluaran bulan ini',
+  'Groups you created': 'Grup buatanmu',
+  'Your expense count starts again on {date}.': 'Hitungan pengeluaranmu mulai lagi pada {date}.',
+  FEATURE: 'FITUR',
+  Free: 'Gratis',
+  Monthly: 'Bulanan',
+  'a month': 'per bulan',
+  Yearly: 'Tahunan',
+  'a year': 'per tahun',
+  'Save {pct}%': 'Hemat {pct}%',
+  'Testing: no payment is taken. The switch changes your plan straight away.':
+    'Uji coba: tidak ada pembayaran. Paket langsung berganti.',
+  '{used} of {limit}': '{used} dari {limit}',
+  'Evenly Pro': 'Evenly Pro',
+  'Free plan · {used} of {limit} expenses this month': 'Paket Gratis · {used} dari {limit} pengeluaran bulan ini',
 };
 
 export default dict;

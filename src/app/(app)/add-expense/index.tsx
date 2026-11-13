@@ -29,13 +29,14 @@ import { currencyLabel, currencySymbol, type Allocation } from '@/domain/money';
 import { categoryIcon, categoryName } from '@/features/expenses/categories';
 import { splitModeMeta } from '@/features/expenses/split-summary';
 import { activeMembers, usePeople } from '@/features/people';
+import { handlePlanLimit, openPricing } from '@/features/plan';
 import { currencyOptions } from '@/features/profile/options';
 import { usePreferences } from '@/hooks/usePreferences';
 import { msg, t } from '@/i18n';
 import { formatRelativeDay } from '@/lib/dates';
 import { chooseImage } from '@/lib/media';
 import { track } from '@/lib/monitoring';
-import { useCategories, useGroupSplitDefault, useGroups, useSaveExpense } from '@/queries';
+import { useCategories, useGroupSplitDefault, useGroups, usePlan, useSaveExpense } from '@/queries';
 import { expenseSchema } from '@/schemas';
 import { draftAmount, draftItemization, draftRows, evaluateDraft, useExpenseDraft } from '@/stores/drafts';
 import { useSession } from '@/stores/session';
@@ -64,6 +65,8 @@ export default function AddExpense() {
   const [sheet, setSheet] = useState<SheetName>(null);
   const [touched, setTouched] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(!!expenseId);
+  const plan = usePlan().data;
+  const isPro = plan?.plan === 'pro';
 
   const activeGroups = (groups.data ?? []).filter((g) => !g.archivedAt);
   const group = (groups.data ?? []).find((g) => g.id === d.groupId);
@@ -109,7 +112,7 @@ export default function AddExpense() {
   const scannedUri = useRef<string | null>(null);
   const receiptUri = d.receipt?.uri;
   useEffect(() => {
-    if (expenseId || !receiptUri || scannedUri.current === receiptUri) return;
+    if (expenseId || !receiptUri || !isPro || scannedUri.current === receiptUri) return;
     scannedUri.current = receiptUri;
     toast.info(t('Reading your receipt…'));
     void scanReceipt(receiptUri, { currency: d.currency, dateFormat }).then((r) => {
@@ -121,7 +124,7 @@ export default function AddExpense() {
       setScan(r);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expenseId, receiptUri]);
+  }, [expenseId, receiptUri, isPro]);
 
   const amount = draftAmount(d);
   const evaluation = useMemo(() => evaluateDraft(d), [d]);
@@ -193,6 +196,7 @@ export default function AddExpense() {
       router.dismiss();
       if (!d.expenseId && !keepDraft) router.push({ pathname: '/expense/[id]', params: { id } });
     } catch (e) {
+      if (handlePlanLimit(e)) return;
       toast.error(errorMessage(e));
     }
   };
@@ -239,7 +243,13 @@ export default function AddExpense() {
       <Header
         title={d.expenseId ? t('Edit expense') : t('Add expense')}
         left="close"
-        right={<IconButton icon="scan-line" label={t('Scan receipt')} onPress={pickReceipt} />}
+        right={
+          <IconButton
+            icon="scan-line"
+            label={t('Scan receipt')}
+            onPress={isPro ? pickReceipt : () => openPricing('scan')}
+          />
+        }
       />
 
       <Pressable
@@ -256,6 +266,27 @@ export default function AddExpense() {
         </Text>
         {!d.expenseId ? <Icon name="chevron-down" size={16} color={colors.textFaint} /> : null}
       </Pressable>
+
+      {!d.expenseId && plan && !isPro && plan.expensesUsed >= plan.expenseLimit - 3 ? (
+        <Pressable
+          onPress={() => openPricing('expenses')}
+          accessibilityRole="button"
+          accessibilityLabel={t('{used} of {limit} free expenses used this month. Go Pro', {
+            used: Math.min(plan.expensesUsed, plan.expenseLimit),
+            limit: plan.expenseLimit,
+          })}
+          style={styles.limitNote}
+        >
+          <Icon name="sparkles" size={14} color={colors.warning} />
+          <Text variant="caption" style={{ flex: 1 }}>
+            {t('{used} of {limit} free expenses used this month. Go Pro', {
+              used: Math.min(plan.expensesUsed, plan.expenseLimit),
+              limit: plan.expenseLimit,
+            })}
+          </Text>
+          <Icon name="chevron-right" size={14} color={colors.textFaint} />
+        </Pressable>
+      ) : null}
 
       <View style={styles.amountBlock}>
         <View style={styles.amountRow}>
@@ -580,6 +611,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.forestCard,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  limitNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minHeight: 44,
+    paddingHorizontal: 12,
+    borderRadius: radii.input,
+    backgroundColor: colors.warningSoft,
   },
   amountBlock: { alignItems: 'center', gap: 8, paddingTop: 6, paddingBottom: 4 },
   amountRow: { flexDirection: 'row', alignItems: 'baseline', gap: 4 },

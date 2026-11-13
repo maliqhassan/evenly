@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { errorMessage, type Group } from '@/api';
-import { alert, Avatar, Button, Card, Header, Icon, Overline, Pressable, Screen, Text, toast } from '@/components';
+import { alert, Avatar, Button, Card, Header, Icon, Overline, Pill, Pressable, Screen, Text, toast } from '@/components';
 import { GroupFormFields, type GroupFormValue } from '@/features/groups/GroupForm';
 import { activeMembers } from '@/features/people';
+import { handlePlanLimit, openPricing, useIsPro } from '@/features/plan';
 import { t } from '@/i18n';
 import { useGroup, useGroupMembership, useUpdateGroup } from '@/queries';
 import { groupSchema } from '@/schemas';
@@ -41,6 +42,7 @@ function GroupSettingsForm({ group }: { group: Group }) {
 
   const myRole = group.members.find((m) => m.profileId === myId)?.role;
   const isAdmin = myRole === 'owner' || myRole === 'admin';
+  const isPro = useIsPro();
   const parsed = groupSchema.safeParse(value);
   const dirty =
     value.name !== group.name ||
@@ -153,12 +155,15 @@ function GroupSettingsForm({ group }: { group: Group }) {
           style={[styles.row, styles.divider]}
           scaleOnPress={false}
           accessibilityLabel={t('Import from CSV')}
-          onPress={() => router.push({ pathname: '/groups/[id]/import', params: { id } })}
+          onPress={() =>
+            isPro ? router.push({ pathname: '/groups/[id]/import', params: { id } }) : openPricing('csv')
+          }
         >
           <Icon name="download" size={18} color={colors.forest} />
           <Text variant="bodyMedium" style={{ flex: 1 }}>
             {t('Import from CSV')}
           </Text>
+          {isPro ? null : <Pill label={t('Pro')} tone="positive" variant="soft" />}
           <Icon name="chevron-right" size={18} color={colors.textFaint} />
         </Pressable>
         {isAdmin ? (
@@ -171,7 +176,9 @@ function GroupSettingsForm({ group }: { group: Group }) {
                 ? archive
                     .mutateAsync({ groupId: id, archived: false })
                     .then(() => toast.success(t('Group restored')))
-                    .catch((e) => toast.error(errorMessage(e)))
+                    .catch((e) => {
+                      if (!handlePlanLimit(e)) toast.error(errorMessage(e));
+                    })
                 : confirm(
                     'Archive this group?',
                     'It moves to Archived. History and balances are kept, and you can restore it any time.',

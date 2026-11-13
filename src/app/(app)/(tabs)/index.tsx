@@ -24,6 +24,7 @@ import { formatMoney, sumConverted, type CurrencyCode } from '@/domain/money';
 import { describeActivity } from '@/features/activity/describe';
 import { GroupBalanceLabel } from '@/features/groups/GroupBalanceLabel';
 import { activeMembers, firstNameOf } from '@/features/people';
+import { openPricing, useIsPro } from '@/features/plan';
 import { usePreferences } from '@/hooks/usePreferences';
 import { t } from '@/i18n';
 import { chooseImage } from '@/lib/media';
@@ -49,17 +50,18 @@ export default function Dashboard() {
   const primary = summaries[0]!;
   const others = summaries.slice(1);
   // With balances in several currencies, show what they add up to, approximately, at today's rates.
+  const isPro = useIsPro();
   const fx = useFxRates();
   const approxTotal = useMemo(
     () =>
-      others.length > 0 && fx.data
+      isPro && others.length > 0 && fx.data
         ? sumConverted(
             summaries.map((s) => ({ amount: s.net, currency: s.currency })),
             preferred,
             fx.data.rates,
           )
         : null,
-    [summaries, others.length, fx.data, preferred],
+    [isPro, summaries, others.length, fx.data, preferred],
   );
   const activeGroups = (groups.data ?? []).filter((g) => !g.archivedAt);
   const groupName = (id: string) => groups.data?.find((g) => g.id === id)?.name ?? '';
@@ -74,6 +76,7 @@ export default function Dashboard() {
   };
 
   const scanBill = async () => {
+    if (!isPro) return openPricing('scan');
     const file = await chooseImage(t('Scan a bill'));
     if (!file) return;
     useExpenseDraft.getState().start({
@@ -157,8 +160,18 @@ export default function Dashboard() {
           {t('About {amount} in total at today’s rates. Rates by Exchange Rate API.', {
             amount: formatMoney(approxTotal, preferred, { locale, sign: 'always' }),
           })}
-          Exchange Rate API.
         </Text>
+      ) : !isPro && others.length > 0 ? (
+        <Pressable
+          onPress={() => openPricing('fx')}
+          accessibilityRole="button"
+          hitSlop={8}
+          style={{ marginTop: -6, alignSelf: 'center' }}
+        >
+          <Text variant="caption" color={colors.positive} align="center">
+            {t('See everything added up in {currency} with Pro', { currency: preferred })}
+          </Text>
+        </Pressable>
       ) : null}
 
       <View style={{ gap: 10 }}>

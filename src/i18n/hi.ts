@@ -80,7 +80,6 @@ const dict: Record<string, string> = {
   'Create group': 'ग्रुप बनाएँ',
   Currency: 'मुद्रा',
   'Currency & region': 'मुद्रा और क्षेत्र',
-  'Currency conversion': 'मुद्रा रूपांतरण',
   'Dark mode is on its way. Evenly uses the light theme for now.':
     'डार्क मोड जल्द आ रहा है। अभी Evenly लाइट थीम इस्तेमाल करता है।',
   Date: 'तारीख़',
@@ -108,9 +107,6 @@ const dict: Record<string, string> = {
   Equally: 'बराबर',
   'Evenly needs the camera to take receipt and profile photos. Turn on camera access for Evenly in your phone’s settings.':
     'रसीद और प्रोफ़ाइल फ़ोटो के लिए Evenly को कैमरा चाहिए। फ़ोन की सेटिंग्स में Evenly के लिए कैमरा की अनुमति चालू करें।',
-  'Evenly Plus': 'Evenly Plus',
-  'Evenly Plus is coming soon. Everything you need to split and settle stays free.':
-    'Evenly Plus जल्द आ रहा है। बाँटने और चुकाने की हर ज़रूरी चीज़ मुफ़्त रहेगी।',
   'Evenly sends a notification when someone adds an expense, settles up or invites you. Turn on notifications for Evenly in your phone’s settings.':
     'जब कोई खर्च जोड़ता है, हिसाब चुकाता है या आपको आमंत्रित करता है, तो Evenly सूचना भेजता है। फ़ोन की सेटिंग्स में Evenly की सूचनाएँ चालू करें।',
   'Evenly stores your name, email, profile photo and the expenses you share so your groups can see who owes whom. Evenly records payments you make elsewhere — it never moves money. Analytics never include amounts or descriptions. You can delete your account from your profile at any time.':
@@ -132,8 +128,6 @@ const dict: Record<string, string> = {
   'Expense updated': 'खर्च अपडेट हुआ',
   Expenses: 'खर्च',
   'Expenses, payments and invites in your groups': 'आपके ग्रुप के खर्च, भुगतान और आमंत्रण',
-  'Export to CSV and PDF': 'CSV और PDF में निर्यात',
-  'Exports, currency conversion · $3.99/mo': 'निर्यात, मुद्रा रूपांतरण · $3.99/माह',
   'Filter by group': 'ग्रुप से छाँटें',
   'Finishes the tour': 'टूर पूरा करता है',
   Friends: 'दोस्त',
@@ -150,7 +144,6 @@ const dict: Record<string, string> = {
   'Give each person a number of shares — e.g. 2 for a couple, 1 for everyone else.':
     'हर व्यक्ति को हिस्से दें — जैसे जोड़े को 2, बाकी सबको 1।',
   'Go home': 'होम पर जाएँ',
-  'Got it': 'समझ गया',
   Group: 'ग्रुप',
   'Group currency': 'ग्रुप की मुद्रा',
   'Group name': 'ग्रुप का नाम',
@@ -426,6 +419,54 @@ const dict: Record<string, string> = {
   'Split equally between everyone in this group': 'ग्रुप के सभी लोगों में बराबर',
   'Importing the same file again won’t add duplicates.': 'वही फ़ाइल दोबारा आयात करने से डुप्लिकेट नहीं बनते।',
   '{count} rows skipped': '{count} पंक्तियाँ छोड़ी गईं',
+  // Evenly Pro
+  'See everything added up in {currency} with Pro': 'Pro के साथ सब कुछ {currency} में जोड़कर देखें',
+  '{used} of {limit} free expenses used this month. Go Pro':
+    'इस महीने {limit} में से {used} मुफ़्त खर्च इस्तेमाल हुए। Pro लें',
+  Pro: 'Pro',
+  'Free includes {count} groups you create. Go Pro for unlimited groups.':
+    'Free में आपके बनाए {count} ग्रुप शामिल हैं। असीमित ग्रुप के लिए Pro लें।',
+  'Free includes {count} expenses a month. Go Pro for unlimited expenses.':
+    'Free में हर महीने {count} खर्च शामिल हैं। असीमित खर्च के लिए Pro लें।',
+  'Receipt scanning is part of Pro.': 'रसीद स्कैन करना Pro का हिस्सा है।',
+  'Splitting by item is part of Pro.': 'आइटम के हिसाब से बाँटना Pro का हिस्सा है।',
+  'Totals across currencies are part of Pro.': 'सभी मुद्राओं का कुल Pro का हिस्सा है।',
+  'Importing from CSV is part of Pro.': 'CSV से आयात Pro का हिस्सा है।',
+  'Groups you create': 'आपके बनाए ग्रुप',
+  Unlimited: 'असीमित',
+  'Expenses each month': 'हर महीने खर्च',
+  'Join groups, settle up, reminders': 'ग्रुप में जुड़ें, हिसाब चुकाएँ, रिमाइंडर',
+  'Recurring expenses and saved splits': 'दोहराए जाने वाले खर्च और सहेजे गए बँटवारे',
+  'Receipt scanning': 'रसीद स्कैन',
+  'Total across currencies': 'सभी मुद्राओं का कुल',
+  'You’re on Pro': 'आप Pro पर हैं',
+  'You’re on Free': 'आप Free पर हैं',
+  '{count} a month': 'हर महीने {count}',
+  'Switch back to Free': 'वापस Free पर जाएँ',
+  'Coming soon': 'जल्द आ रहा है',
+  'Switch to Pro': 'Pro पर जाएँ',
+  'EVENLY PRO': 'EVENLY PRO',
+  'Split without limits': 'बिना सीमा के बाँटें',
+  'Unlimited groups and expenses, receipt scanning and every Pro tool. Thanks for your support.':
+    'असीमित ग्रुप और खर्च, रसीद स्कैन और हर Pro टूल। आपके समर्थन के लिए धन्यवाद।',
+  'Unlimited groups and expenses, plus receipt scanning, item splits, currency totals and CSV import.':
+    'असीमित ग्रुप और खर्च, साथ में रसीद स्कैन, आइटम के हिसाब से बँटवारा, मुद्राओं का कुल और CSV आयात।',
+  'YOUR FREE PLAN': 'आपका FREE प्लान',
+  'Expenses this month': 'इस महीने के खर्च',
+  'Groups you created': 'बनाए गए ग्रुप',
+  'Your expense count starts again on {date}.': 'आपकी खर्च गिनती {date} को फिर से शुरू होगी।',
+  FEATURE: 'सुविधा',
+  Free: 'Free',
+  Monthly: 'मासिक',
+  'a month': 'हर महीने',
+  Yearly: 'सालाना',
+  'a year': 'हर साल',
+  'Save {pct}%': '{pct}% बचाएँ',
+  'Testing: no payment is taken. The switch changes your plan straight away.':
+    'टेस्टिंग: कोई भुगतान नहीं लिया जाता। प्लान तुरंत बदल जाता है।',
+  '{used} of {limit}': '{limit} में से {used}',
+  'Evenly Pro': 'Evenly Pro',
+  'Free plan · {used} of {limit} expenses this month': 'Free प्लान · इस महीने {limit} में से {used} खर्च',
 };
 
 export default dict;

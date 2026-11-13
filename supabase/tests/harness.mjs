@@ -44,7 +44,8 @@ const SUPABASE_STUBS = `
   $$;
 `;
 
-export async function createDb() {
+/** `planLimits: true` keeps the real Free limits; other suites get effectively unlimited ones. */
+export async function createDb({ planLimits = false } = {}) {
   const db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(SUPABASE_STUBS);
   const files = readdirSync(migrationsDir)
@@ -62,6 +63,10 @@ export async function createDb() {
     }
   }
   await db.exec(`insert into private.app_settings (key, value) values ('firebase_project_id', '${FIREBASE_PROJECT}')`);
+  if (!planLimits)
+    await db.exec(
+      `update private.app_settings set value = '1000000' where key in ('free_group_limit', 'free_monthly_expense_limit')`,
+    );
   return db;
 }
 

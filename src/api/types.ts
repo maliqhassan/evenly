@@ -31,6 +31,21 @@ export interface Preferences {
   notifyReminders: boolean;
 }
 
+export type PlanName = 'free' | 'pro';
+
+/** The user's plan and how much of the Free allowance they've used. */
+export interface PlanInfo {
+  plan: PlanName;
+  groupLimit: number;
+  groupsUsed: number;
+  expenseLimit: number;
+  expensesUsed: number;
+  /** First day of next month (YYYY-MM-DD), when the expense count starts again. */
+  resetsOn: string;
+  /** Testing: users may switch plans themselves (no payments yet). */
+  selfService: boolean;
+}
+
 export interface Me {
   profile: Profile;
   preferences: Preferences;
@@ -349,6 +364,9 @@ export interface Api {
   deleteRecurring(id: string): Promise<void>;
   /** Today's exchange rates (units per USD), for approximate totals. fetchedAt is null if none are loaded yet. */
   getFxRates(): Promise<{ rates: FxRates; fetchedAt: string | null }>;
+  getPlan(): Promise<PlanInfo>;
+  /** Testing only, while there are no payments: switch your own plan. */
+  setPlan(plan: PlanName): Promise<void>;
   getGroupSplitDefault(groupId: string): Promise<SplitDefault | null>;
   setGroupSplitDefault(groupId: string, d: SplitDefault): Promise<void>;
   clearGroupSplitDefault(groupId: string): Promise<void>;

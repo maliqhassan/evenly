@@ -26,6 +26,7 @@ jest.mock('@/queries', () => ({
   useGroup: () => ({ group: { id: 'g1', name: 'Flatmates' }, isLoading: false }),
   useGroupSplitDefault: () => ({ data: mockSaved }),
   useSaveSplitDefault: () => ({ mutate: mockMutate, isPending: false }),
+  usePlan: () => ({ data: { plan: 'pro' } }),
 }));
 
 const members = ['you', 'malik', 'jordan', 'priya'];

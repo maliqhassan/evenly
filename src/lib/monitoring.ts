@@ -59,6 +59,7 @@ export type AnalyticsEvent =
   | 'onboarding_completed'
   | 'group_created'
   | 'invite_link_shared'
+  | 'plan_switched'
   | 'invite_accepted'
   | 'expense_saved'
   | 'expense_deleted'

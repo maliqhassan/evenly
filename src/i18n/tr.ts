@@ -79,7 +79,6 @@ const dict: Record<string, string> = {
   'Create group': 'Grup oluştur',
   Currency: 'Para birimi',
   'Currency & region': 'Para birimi ve bölge',
-  'Currency conversion': 'Döviz çevirme',
   'Dark mode is on its way. Evenly uses the light theme for now.':
     'Karanlık mod yolda. Evenly şimdilik açık temayı kullanıyor.',
   Date: 'Tarih',
@@ -107,9 +106,6 @@ const dict: Record<string, string> = {
   Equally: 'Eşit',
   'Evenly needs the camera to take receipt and profile photos. Turn on camera access for Evenly in your phone’s settings.':
     'Evenly fiş ve profil fotoğrafları için kameraya ihtiyaç duyar. Telefon ayarlarından Evenly için kamera erişimini aç.',
-  'Evenly Plus': 'Evenly Plus',
-  'Evenly Plus is coming soon. Everything you need to split and settle stays free.':
-    'Evenly Plus yakında geliyor. Bölüşmek ve hesaplaşmak için gereken her şey ücretsiz kalacak.',
   'Evenly sends a notification when someone adds an expense, settles up or invites you. Turn on notifications for Evenly in your phone’s settings.':
     'Evenly biri harcama eklediğinde, hesaplaştığında ya da seni davet ettiğinde bildirim gönderir. Telefon ayarlarından Evenly bildirimlerini aç.',
   'Evenly stores your name, email, profile photo and the expenses you share so your groups can see who owes whom. Evenly records payments you make elsewhere — it never moves money. Analytics never include amounts or descriptions. You can delete your account from your profile at any time.':
@@ -132,8 +128,6 @@ const dict: Record<string, string> = {
   'Expense updated': 'Harcama güncellendi',
   Expenses: 'Harcamalar',
   'Expenses, payments and invites in your groups': 'Gruplarındaki harcamalar, ödemeler ve davetler',
-  'Export to CSV and PDF': 'CSV ve PDF olarak dışa aktar',
-  'Exports, currency conversion · $3.99/mo': 'Dışa aktarma, döviz çevirme · 3,99 $/ay',
   'Filter by group': 'Gruba göre filtrele',
   'Finishes the tour': 'Turu bitirir',
   Friends: 'Arkadaşlar',
@@ -150,7 +144,6 @@ const dict: Record<string, string> = {
   'Give each person a number of shares — e.g. 2 for a couple, 1 for everyone else.':
     'Herkese pay ver — örn. bir çifte 2, diğerlerine 1.',
   'Go home': 'Ana sayfaya dön',
-  'Got it': 'Anladım',
   Group: 'Grup',
   'Group currency': 'Grup para birimi',
   'Group name': 'Grup adı',
@@ -426,6 +419,54 @@ const dict: Record<string, string> = {
   'Split equally between everyone in this group': 'Gruptaki herkes arasında eşit bölünür',
   'Importing the same file again won’t add duplicates.': 'Aynı dosyayı tekrar aktarmak kopya oluşturmaz.',
   '{count} rows skipped': '{count} satır atlandı',
+  // Evenly Pro
+  'See everything added up in {currency} with Pro': 'Pro ile hepsinin {currency} toplamını gör',
+  '{used} of {limit} free expenses used this month. Go Pro':
+    'Bu ay {limit} ücretsiz harcamanın {used} tanesi kullanıldı. Pro’ya geç',
+  Pro: 'Pro',
+  'Free includes {count} groups you create. Go Pro for unlimited groups.':
+    'Ücretsiz planda oluşturduğun {count} grup var. Sınırsız grup için Pro’ya geç.',
+  'Free includes {count} expenses a month. Go Pro for unlimited expenses.':
+    'Ücretsiz planda ayda {count} harcama var. Sınırsız harcama için Pro’ya geç.',
+  'Receipt scanning is part of Pro.': 'Fiş tarama Pro’ya dahildir.',
+  'Splitting by item is part of Pro.': 'Ürün bazında bölme Pro’ya dahildir.',
+  'Totals across currencies are part of Pro.': 'Para birimleri arası toplamlar Pro’ya dahildir.',
+  'Importing from CSV is part of Pro.': 'CSV’den içe aktarma Pro’ya dahildir.',
+  'Groups you create': 'Oluşturduğun gruplar',
+  Unlimited: 'Sınırsız',
+  'Expenses each month': 'Aylık harcama',
+  'Join groups, settle up, reminders': 'Gruplara katılma, hesaplaşma, hatırlatmalar',
+  'Recurring expenses and saved splits': 'Tekrarlayan harcamalar ve kayıtlı bölüşümler',
+  'Receipt scanning': 'Fiş tarama',
+  'Total across currencies': 'Para birimleri arası toplam',
+  'You’re on Pro': 'Pro kullanıyorsun',
+  'You’re on Free': 'Ücretsiz plan kullanıyorsun',
+  '{count} a month': 'Ayda {count}',
+  'Switch back to Free': 'Ücretsiz plana dön',
+  'Coming soon': 'Yakında',
+  'Switch to Pro': 'Pro’ya geç',
+  'EVENLY PRO': 'EVENLY PRO',
+  'Split without limits': 'Sınırsız bölüş',
+  'Unlimited groups and expenses, receipt scanning and every Pro tool. Thanks for your support.':
+    'Sınırsız grup ve harcama, fiş tarama ve tüm Pro araçları. Desteğin için teşekkürler.',
+  'Unlimited groups and expenses, plus receipt scanning, item splits, currency totals and CSV import.':
+    'Sınırsız grup ve harcama; ayrıca fiş tarama, ürün bazında bölme, para birimi toplamları ve CSV içe aktarma.',
+  'YOUR FREE PLAN': 'ÜCRETSİZ PLANIN',
+  'Expenses this month': 'Bu ayki harcamalar',
+  'Groups you created': 'Oluşturulan gruplar',
+  'Your expense count starts again on {date}.': 'Harcama sayın {date} tarihinde sıfırlanır.',
+  FEATURE: 'ÖZELLİK',
+  Free: 'Ücretsiz',
+  Monthly: 'Aylık',
+  'a month': 'her ay',
+  Yearly: 'Yıllık',
+  'a year': 'her yıl',
+  'Save {pct}%': '%{pct} tasarruf',
+  'Testing: no payment is taken. The switch changes your plan straight away.':
+    'Test: ödeme alınmaz. Plan değişikliği hemen uygulanır.',
+  '{used} of {limit}': '{used} / {limit}',
+  'Evenly Pro': 'Evenly Pro',
+  'Free plan · {used} of {limit} expenses this month': 'Ücretsiz plan · bu ay {used} / {limit} harcama',
 };
 
 export default dict;

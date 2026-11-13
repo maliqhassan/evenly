@@ -7,6 +7,7 @@ import {
   type CreateGroupInput,
   type Group,
   type OnboardingInput,
+  type PlanName,
   type Preferences,
   type Profile,
   type RecordSettlementInput,
@@ -33,6 +34,7 @@ export const qk = {
   splitDefault: (id: string) => ['group', id, 'split-default'] as const,
   recurring: (id: string) => ['group', id, 'recurring'] as const,
   fxRates: ['fx-rates'] as const,
+  plan: ['plan'] as const,
   inviteLink: (id: string) => ['group', id, 'link'] as const,
   expense: (id: string) => ['expense', id] as const,
   settlement: (id: string) => ['settlement', id] as const,
@@ -50,6 +52,7 @@ export function invalidateLedger(qc: QueryClient, groupId?: string) {
   qc.invalidateQueries({ queryKey: ['report'] });
   qc.invalidateQueries({ queryKey: qk.awaitingMe });
   qc.invalidateQueries({ queryKey: qk.notifications });
+  qc.invalidateQueries({ queryKey: qk.plan });
   if (groupId) qc.invalidateQueries({ queryKey: ['group', groupId] });
   else qc.invalidateQueries({ queryKey: ['group'] });
 }
@@ -92,6 +95,15 @@ export const useDeleteRecurring = (groupId: string) => {
 /** Today's exchange rates; they only change daily, so cache them for hours. */
 export const useFxRates = () =>
   useQuery({ queryKey: qk.fxRates, queryFn: api.getFxRates, staleTime: 6 * 60 * 60 * 1000 });
+/** The user's plan and Free allowance. */
+export const usePlan = () => useQuery({ queryKey: qk.plan, queryFn: api.getPlan, staleTime: 60 * 1000 });
+export function useSetPlan() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (plan: PlanName) => api.setPlan(plan),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.plan }),
+  });
+}
 export const useGroupSplitDefault = (id: string | null | undefined) =>
   useQuery({
     queryKey: qk.splitDefault(id ?? ''),
@@ -190,6 +202,7 @@ export function useCreateGroup() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: qk.groups });
       qc.invalidateQueries({ queryKey: ['activity'] });
+      qc.invalidateQueries({ queryKey: qk.plan });
     },
   });
 }
@@ -208,6 +221,7 @@ export function useGroupMembership() {
     qc.invalidateQueries({ queryKey: qk.groups });
     qc.invalidateQueries({ queryKey: qk.balances });
     qc.invalidateQueries({ queryKey: qk.friends });
+    qc.invalidateQueries({ queryKey: qk.plan });
   };
   return {
     archive: useMutation({

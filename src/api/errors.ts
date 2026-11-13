@@ -15,6 +15,7 @@ export type AppErrorCode =
   | 'balances_outstanding'
   | 'invite_invalid'
   | 'rate_limited'
+  | 'plan_limit'
   | 'network'
   | 'unknown';
 
@@ -31,6 +32,7 @@ const MESSAGES: Record<AppErrorCode, string> = {
   balances_outstanding: 'Settle all balances first.',
   invite_invalid: 'This invite link is invalid or has expired.',
   rate_limited: 'You’ve already sent a reminder recently.',
+  plan_limit: 'You’ve reached the Free plan limit. Upgrade to Pro to keep going.',
   network: 'You appear to be offline. Check your connection and try again.',
   unknown: 'Something went wrong. Please try again.',
 };

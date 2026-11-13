@@ -28,6 +28,8 @@ import type {
 } from './types';
 
 const ME = 'p-v';
+// Demo mode starts on Pro so every feature can be tried.
+let demoPlan: 'free' | 'pro' = 'pro';
 const now = () => new Date().toISOString();
 const delay = <T>(v: T, ms = 220) => new Promise<T>((r) => setTimeout(() => r(v), ms));
 let seq = 1;
@@ -638,6 +640,37 @@ export const demoApi: Api = {
     // Rough rates, so demo mode can show the conversion line.
     const rates = { USD: '1', PKR: '276.6', EUR: '0.90', GBP: '0.76', INR: '94.1', AED: '3.6725', SAR: '3.75' };
     return delay({ rates, fetchedAt: now() }, 60);
+  },
+  async getPlan() {
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    const next = new Date(monthStart);
+    next.setMonth(next.getMonth() + 1);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return delay(
+      {
+        plan: demoPlan,
+        groupLimit: 3,
+        groupsUsed: groups.filter(
+          (g) =>
+            g.createdBy === ME &&
+            !g.archivedAt &&
+            g.members.some((m) => m.profileId === ME && m.status === 'active'),
+        ).length,
+        expenseLimit: 15,
+        expensesUsed: expenses.filter(
+          (e) => e.createdBy === ME && !e.deletedAt && new Date(e.createdAt) >= monthStart,
+        ).length,
+        resetsOn: `${next.getFullYear()}-${pad(next.getMonth() + 1)}-01`,
+        selfService: true,
+      },
+      40,
+    );
+  },
+  async setPlan(plan) {
+    demoPlan = plan;
+    return delay(undefined, 40);
   },
   async getGroupSplitDefault(groupId) {
     return delay(splitDefaults.get(groupId) ?? null, 40);
