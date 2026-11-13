@@ -16,6 +16,7 @@ import {
   type SplitMethod,
   type SplitRowInput,
 } from '@/domain/money';
+import type { ParsedReceipt } from '@/domain/receipt';
 import { todayISO } from '@/lib/dates';
 
 /* --------------------------- onboarding draft --------------------------- */
@@ -220,6 +221,12 @@ interface ExpenseDraftStore extends ExpenseDraft {
   reseed: () => void;
   /** Start from the user's saved default split for this group (ignored if it no longer fits). */
   applyDefault: (def: SplitDefault) => void;
+  /**
+   * Fill the draft from a scanned receipt. 'total' sets the amount; 'items' also
+   * lists the items (everyone had each one) ready to adjust on the Items screen.
+   * Details already typed (the description) are kept.
+   */
+  applyReceipt: (receipt: ParsedReceipt, mode: 'total' | 'items') => void;
 }
 
 /** The current split as a saveable default, or null for modes that depend on the total (exact, adjust). */
@@ -337,6 +344,27 @@ export const useExpenseDraft = create<ExpenseDraftStore>((set, get) => ({
   },
 
   setInput: (id, text) => set((d) => ({ inputs: { ...d.inputs, [d.method]: { ...d.inputs[d.method], [id]: text } } })),
+
+  applyReceipt: (r, mode) => {
+    const d = get();
+    const p: Partial<ExpenseDraft> = { itemized: false };
+    if (r.merchant && !d.description.trim()) p.description = r.merchant;
+    if (r.date) p.date = r.date;
+    if (r.total !== null) p.amountText = minorToDecimalString(r.total, d.currency);
+    if (mode === 'items') {
+      p.items = r.items.map((it, n) => ({
+        id: `scan-${n}`,
+        name: it.name,
+        amountText: minorToDecimalString(it.amount, d.currency),
+        memberIds: [...d.memberIds],
+      }));
+      p.extraText = r.extra > 0 ? minorToDecimalString(r.extra, d.currency) : '';
+    } else {
+      p.items = [];
+      p.extraText = '';
+    }
+    set(p);
+  },
 
   applyDefault: (def) => {
     const d = get();

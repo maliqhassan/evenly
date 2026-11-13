@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.receipttext'
+version = '1.0.0'
+
+android {
+  namespace "expo.modules.receipttext"
+  defaultConfig {
+    versionCode 1
+    versionName "1.0.0"
+  }
+}
+
+dependencies {
+  // On-device text recognition, Latin script. The model ships inside the app,
+  // so it works offline and needs no Google Play services download.
+  implementation 'com.google.mlkit:text-recognition:16.0.1'
+}

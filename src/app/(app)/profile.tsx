@@ -147,7 +147,7 @@ export default function Profile() {
             Evenly Plus
           </Text>
           <Text variant="caption" color={colors.onDarkMuted}>
-            Receipt scan, exports · $3.99/mo
+            Exports, currency conversion · $3.99/mo
           </Text>
         </View>
         <Icon name="chevron-right" size={18} color={colors.onDark} />
@@ -199,7 +199,7 @@ export default function Profile() {
 
       <Sheet visible={plus} onClose={() => setPlus(false)} title="Evenly Plus">
         <View style={{ paddingHorizontal: spacing.screen, gap: 14 }}>
-          {['Scan receipts automatically', 'Export to CSV and PDF', 'Currency conversion'].map((f) => (
+          {['Export to CSV and PDF', 'Currency conversion'].map((f) => (
             <View key={f} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <Icon name="check" size={18} color={colors.positive} />
               <Text variant="bodyLg">{f}</Text>

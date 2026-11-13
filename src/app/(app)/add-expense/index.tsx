@@ -4,6 +4,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { api, errorMessage } from '@/api';
+import type { ParsedReceipt } from '@/domain/receipt';
+import { ReceiptScanSheet } from '@/features/expenses/ReceiptScanSheet';
+import { scanReceipt } from '@/lib/receipt-scan';
 import {
   alert,
   AmountText,
@@ -99,6 +102,25 @@ export default function AddExpense() {
     if (splitDefault.data && d.method === 'equal') useExpenseDraft.getState().applyDefault(splitDefault.data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expenseId, d.groupId, d.clientId, splitDefault.isSuccess, splitDefault.data]);
+
+  // Read the receipt photo on the device, once per photo, and offer what it found.
+  const [scan, setScan] = useState<ParsedReceipt | null>(null);
+  const scannedUri = useRef<string | null>(null);
+  const receiptUri = d.receipt?.uri;
+  useEffect(() => {
+    if (expenseId || !receiptUri || scannedUri.current === receiptUri) return;
+    scannedUri.current = receiptUri;
+    toast.info('Reading your receipt…');
+    void scanReceipt(receiptUri, { currency: d.currency, dateFormat }).then((r) => {
+      if (!r) return; // no recognizer in this build, or the photo couldn't be read
+      if (r.total === null && r.items.length === 0 && !r.merchant && !r.date) {
+        toast.info('Couldn’t read this receipt. You can enter the amount yourself.');
+        return;
+      }
+      setScan(r);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expenseId, receiptUri]);
 
   const amount = draftAmount(d);
   const evaluation = useMemo(() => evaluateDraft(d), [d]);
@@ -444,6 +466,20 @@ export default function AddExpense() {
         onSelect={(currency) => d.patch({ currency, itemized: false, items: [], extraText: '' })}
         searchable
         searchPlaceholder="Search currencies"
+      />
+      <ReceiptScanSheet
+        receipt={scan}
+        currency={d.currency}
+        onClose={() => setScan(null)}
+        onUseTotal={() => {
+          if (scan) useExpenseDraft.getState().applyReceipt(scan, 'total');
+          setScan(null);
+        }}
+        onSplitByItem={() => {
+          if (scan) useExpenseDraft.getState().applyReceipt(scan, 'items');
+          setScan(null);
+          router.push('/add-expense/items');
+        }}
       />
       <SelectSheet
         visible={sheet === 'repeat'}

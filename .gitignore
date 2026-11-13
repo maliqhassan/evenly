@@ -62,3 +62,8 @@ dist/
 
 # Firebase Android config (downloaded per environment)
 google-services.json
+
+# Gradle output inside local native modules
+/modules/**/android/build/
+/modules/**/android/.gradle/
+/modules/**/android/.cxx/
