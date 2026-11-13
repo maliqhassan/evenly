@@ -18,6 +18,7 @@ import {
 import { myGroupNets } from '@/domain/ledger';
 import { GroupBalanceLabel } from '@/features/groups/GroupBalanceLabel';
 import { activeMembers } from '@/features/people';
+import { t } from '@/i18n';
 import { useBalances, useGroups } from '@/queries';
 import { useSession } from '@/stores/session';
 import { colors, radii } from '@/theme';
@@ -45,10 +46,10 @@ export default function Groups() {
     >
       <View style={styles.header}>
         <Text variant="h1" accessibilityRole="header">
-          Groups
+          {t('Groups')}
         </Text>
         <Button
-          label="New"
+          label={t('New')}
           icon="plus"
           size="md"
           onPress={() => router.push('/new-group')}
@@ -61,8 +62,8 @@ export default function Groups() {
         value={tab}
         onChange={setTab}
         options={[
-          { value: 'active', label: `Active · ${active.length}` },
-          { value: 'archived', label: `Archived · ${archived.length}` },
+          { value: 'active', label: `${t('Active')} · ${active.length}` },
+          { value: 'archived', label: `${t('Archived')} · ${archived.length}` },
         ]}
       />
 
@@ -74,16 +75,16 @@ export default function Groups() {
         tab === 'active' ? (
           <EmptyState
             icon="users"
-            title="No groups yet"
-            body="Create a group for your home, a trip, or anyone you share costs with."
-            action="Create group"
+            title={t('No groups yet')}
+            body={t('Create a group for your home, a trip, or anyone you share costs with.')}
+            action={t('Create group')}
             onAction={() => router.push('/new-group')}
           />
         ) : (
           <EmptyState
             icon="archive"
-            title="Nothing archived"
-            body="Archived groups keep their history but leave your active list."
+            title={t('Nothing archived')}
+            body={t('Archived groups keep their history but leave your active list.')}
           />
         )
       ) : (

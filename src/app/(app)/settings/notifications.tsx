@@ -2,6 +2,7 @@ import { StyleSheet, Switch, View } from 'react-native';
 
 import { errorMessage, type Preferences } from '@/api';
 import { Card, Header, InfoNote, Screen, Text, toast } from '@/components';
+import { t } from '@/i18n';
 import { registerForPush } from '@/lib/push';
 import { useUpdatePreferences } from '@/queries';
 import { useSession } from '@/stores/session';
@@ -27,11 +28,11 @@ export default function NotificationSettings() {
 
   return (
     <Screen>
-      <Header title="Notifications" />
+      <Header title={t('Notifications')} />
       <Card>
         <Row
-          title="Push notifications"
-          body="Get alerts on this device"
+          title={t('Push notifications')}
+          body={t('Get alerts on this device')}
           value={prefs.notifyPush}
           onChange={(v) => set('notifyPush', v)}
           last
@@ -50,7 +51,9 @@ export default function NotificationSettings() {
           />
         ))}
       </Card>
-      <InfoNote>You’ll always see everything in the in-app notification list, even with push turned off.</InfoNote>
+      <InfoNote>
+        {t('You’ll always see everything in the in-app notification list, even with push turned off.')}
+      </InfoNote>
     </Screen>
   );
 }

@@ -24,6 +24,7 @@ import { formatMoney, type CurrencyCode } from '@/domain/money';
 import { categoryIcon } from '@/features/expenses/categories';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { formatDate, formatTimestamp } from '@/lib/dates';
 import { track } from '@/lib/monitoring';
 import { useDeleteExpense, useExpense, useGroup } from '@/queries';
@@ -71,7 +72,7 @@ export default function ExpenseDetails() {
           try {
             await del.mutateAsync({ id: e.id, groupId: e.groupId });
             track('expense_deleted');
-            toast.success('Expense deleted');
+            toast.success(t('Expense deleted'));
             router.back();
           } catch (err) {
             toast.error(errorMessage(err));
@@ -102,13 +103,13 @@ export default function ExpenseDetails() {
               <IconButton
                 icon="pencil"
                 iconSize={19}
-                label="Edit expense"
+                label={t('Edit expense')}
                 onPress={() => router.push({ pathname: '/add-expense', params: { expenseId: e.id } })}
               />
               <IconButton
                 icon="trash-2"
                 iconSize={19}
-                label="Delete expense"
+                label={t('Delete expense')}
                 color={colors.negative}
                 onPress={confirmDelete}
               />
@@ -174,7 +175,7 @@ export default function ExpenseDetails() {
 
       {e.itemization ? (
         <View style={{ gap: 8 }}>
-          <Overline>ITEMS</Overline>
+          <Overline>{t('ITEMS')}</Overline>
           <Card style={{ paddingVertical: 6, paddingHorizontal: 16 }}>
             {e.itemization.items.map((it, i) => (
               <View key={i} style={[styles.shareRow, { alignItems: 'flex-start' }]}>
@@ -192,7 +193,7 @@ export default function ExpenseDetails() {
             {e.itemization.extra > 0 ? (
               <View style={styles.shareRow}>
                 <Text variant="secondary" color={colors.textMuted} style={{ flex: 1 }}>
-                  Tax & tip, shared in proportion
+                  {t('Tax & tip, shared in proportion')}
                 </Text>
                 <AmountText minor={e.itemization.extra} currency={e.currency} variant="secondaryStrong" />
               </View>
@@ -204,7 +205,7 @@ export default function ExpenseDetails() {
       {e.notes ? (
         <Card padded style={{ gap: 4 }}>
           <Text variant="caption" color={colors.textFaint}>
-            Note
+            {t('Note')}
           </Text>
           <Text variant="body">{e.notes}</Text>
         </Card>
@@ -240,7 +241,7 @@ export default function ExpenseDetails() {
           ))}
           {e.audit.length > 1 && !showAll ? (
             <Text variant="captionMedium" color={colors.positive}>
-              Show all
+              {t('Show all')}
             </Text>
           ) : null}
         </Pressable>

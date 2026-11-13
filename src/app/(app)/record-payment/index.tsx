@@ -22,6 +22,7 @@ import { currencySymbol, formatMoney, minorToDecimalString, parseMinor } from '@
 import { PAYMENT_METHOD_LABELS } from '@/features/expenses/categories';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { formatDate, todayISO } from '@/lib/dates';
 import { track } from '@/lib/monitoring';
 import { useGroup, useRecordSettlement } from '@/queries';
@@ -60,7 +61,7 @@ export default function RecordPayment() {
   const label = formatMoney(amount, params.currency, { locale });
 
   const submit = async () => {
-    if (amount <= 0) return toast.error('Enter an amount greater than zero');
+    if (amount <= 0) return toast.error(t('Enter an amount greater than zero'));
     try {
       const id = await record.mutateAsync({
         groupId: params.groupId,
@@ -86,7 +87,7 @@ export default function RecordPayment() {
       gap={18}
       footer={<Button label={`Record ${label}`} onPress={submit} loading={record.isPending} disabled={amount <= 0} />}
     >
-      <Header title="Record payment" left="close" />
+      <Header title={t('Record payment')} left="close" />
 
       <View style={styles.parties}>
         <Party
@@ -135,7 +136,7 @@ export default function RecordPayment() {
 
       <View style={{ gap: 8 }}>
         <Text variant="secondary" color={colors.textMuted}>
-          Payment method
+          {t('Payment method')}
         </Text>
         <View style={styles.chips}>
           {METHODS.map((m) => (
@@ -147,12 +148,12 @@ export default function RecordPayment() {
       <Card radius={radii.card}>
         <View style={[styles.row, styles.divider]}>
           <Text variant="body" color={colors.textMuted}>
-            Reference
+            {t('Reference')}
           </Text>
           <TextInput
             value={reference}
             onChangeText={setReference}
-            placeholder="Optional"
+            placeholder={t('Optional')}
             placeholderTextColor={colors.textFaint}
             maxLength={64}
             accessibilityLabel="Reference"
@@ -167,13 +168,13 @@ export default function RecordPayment() {
           accessibilityLabel={`Date ${formatDate(date, dateFormat)}`}
         >
           <Text variant="body" color={colors.textMuted}>
-            Date
+            {t('Date')}
           </Text>
           <Text variant="bodyMedium">{formatDate(date, dateFormat)}</Text>
         </Pressable>
         <View style={styles.row}>
           <Text variant="body" color={colors.textMuted}>
-            Group
+            {t('Group')}
           </Text>
           <Text variant="bodyMedium">{group?.name ?? '—'}</Text>
         </View>

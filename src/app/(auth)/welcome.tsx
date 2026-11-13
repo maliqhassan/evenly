@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, Icon, LinearFill, Pressable, Screen, Text, Wordmark } from '@/components';
+import { t } from '@/i18n';
 import { colors, radii, shadows, spacing } from '@/theme';
 
 const WELCOME_PHOTO = require('../../../assets/images/welcome-friends.jpg');
@@ -18,7 +19,7 @@ export default function Welcome() {
         gap={0}
         footer={
           <View style={styles.footer}>
-            <Button label="Get Started" onPress={() => router.push('/sign-in')} />
+            <Button label={t('Get Started')} onPress={() => router.push('/sign-in')} />
             <Pressable
               onPress={() => router.push('/sign-in')}
               accessibilityRole="link"
@@ -26,7 +27,7 @@ export default function Welcome() {
               hitSlop={10}
             >
               <Text variant="body" color={colors.textMuted}>
-                Already use Evenly? <Text variant="bodyStrong">Sign in</Text>
+                {t('Already use Evenly?')} <Text variant="bodyStrong">{t('Sign in')}</Text>
               </Text>
             </Pressable>
           </View>
@@ -48,7 +49,7 @@ export default function Welcome() {
                 $42.50
               </Text>
               <Text variant="caption" color={colors.textSubtle}>
-                Successfully settled
+                {t('Successfully settled')}
               </Text>
             </View>
           </View>
@@ -56,13 +57,13 @@ export default function Welcome() {
 
         <View style={styles.copy}>
           <Text variant="headline" align="center" accessibilityRole="header">
-            Settle with
+            {t('Settle with')}
           </Text>
           <Text variant="headlineItalic" align="center">
-            Confidence
+            {t('Confidence')}
           </Text>
           <Text variant="body" color={colors.textMuted} align="center" style={{ marginTop: 14, lineHeight: 21 }}>
-            Split bills, track who owes what, and settle up without the awkward conversations.
+            {t('Split bills, track who owes what, and settle up without the awkward conversations.')}
           </Text>
         </View>
       </Screen>

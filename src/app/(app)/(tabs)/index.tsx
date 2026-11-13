@@ -25,6 +25,7 @@ import { describeActivity } from '@/features/activity/describe';
 import { GroupBalanceLabel } from '@/features/groups/GroupBalanceLabel';
 import { activeMembers, firstNameOf } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { chooseImage } from '@/lib/media';
 import { useActivity, useBalances, useFxRates, useGroups, useUnreadCount } from '@/queries';
 import { useExpenseDraft } from '@/stores/drafts';
@@ -73,7 +74,7 @@ export default function Dashboard() {
   };
 
   const scanBill = async () => {
-    const file = await chooseImage('Scan a bill');
+    const file = await chooseImage(t('Scan a bill'));
     if (!file) return;
     useExpenseDraft.getState().start({
       group: activeGroups[0] ?? null,
@@ -103,11 +104,11 @@ export default function Dashboard() {
           <Avatar id={myId} name={me.profile.fullName} uri={me.profile.avatarUrl} size={42} />
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text variant="nav" numberOfLines={1}>
-              Hi, {firstNameOf(me.profile.fullName)}!
+              {t('Hi, {name}!', { name: firstNameOf(me.profile.fullName) })}
             </Text>
             <View style={styles.profileLink}>
               <Text variant="captionMedium" color={colors.positive}>
-                View profile
+                {t('View profile')}
               </Text>
               <Icon name="chevron-right" size={14} color={colors.positive} />
             </View>
@@ -137,11 +138,11 @@ export default function Dashboard() {
           )}
         </View>
         <View style={styles.actions}>
-          <Action icon="plus" label="Add Expense" primary onPress={() => router.push('/add-expense')} />
+          <Action icon="plus" label={t('Add Expense')} primary onPress={() => router.push('/add-expense')} />
           <View style={styles.vr} />
-          <Action icon="banknote" label="Settle Up" onPress={() => router.push('/settle')} />
+          <Action icon="banknote" label={t('Settle Up')} onPress={() => router.push('/settle')} />
           <View style={styles.vr} />
-          <Action icon="scan-line" label="Scan Bill" onPress={scanBill} />
+          <Action icon="scan-line" label={t('Scan Bill')} onPress={scanBill} />
         </View>
       </View>
 
@@ -153,18 +154,24 @@ export default function Dashboard() {
 
       {approxTotal !== null ? (
         <Text variant="caption" color={colors.textSubtle} align="center" style={{ marginTop: -6 }}>
-          About {formatMoney(approxTotal, preferred, { locale, sign: 'always' })} in total at today’s rates. Rates by
+          {t('About {amount} in total at today’s rates. Rates by Exchange Rate API.', {
+            amount: formatMoney(approxTotal, preferred, { locale, sign: 'always' }),
+          })}
           Exchange Rate API.
         </Text>
       ) : null}
 
       <View style={{ gap: 10 }}>
-        <SectionHeader title="Recent Activity" action="See All" onAction={() => router.push('/activity')} />
+        <SectionHeader title={t('Recent Activity')} action={t('See All')} onAction={() => router.push('/activity')} />
         {activity.isLoading ? (
           <SkeletonRows count={2} bg={colors.bg} />
         ) : recent.length === 0 ? (
           <Card tone="bg" radius={radii.card}>
-            <EmptyState icon="receipt" title="No activity yet" body="Add your first expense to see it here." />
+            <EmptyState
+              icon="receipt"
+              title={t('No activity yet')}
+              body={t('Add your first expense to see it here.')}
+            />
           </Card>
         ) : (
           recent.map((a) => <RecentRow key={a.id} item={a} me={myId} />)
@@ -173,7 +180,7 @@ export default function Dashboard() {
 
       <View style={{ gap: 10 }}>
         <SectionHeader
-          title="My Groups"
+          title={t('My Groups')}
           action={activeGroups.length ? 'See All' : undefined}
           onAction={() => router.push('/groups')}
         />
@@ -186,9 +193,9 @@ export default function Dashboard() {
           <Card tone="bg" radius={radii.card}>
             <EmptyState
               icon="users"
-              title="Start your first group"
-              body="Groups keep shared costs for a home, trip or team in one place."
-              action="Create group"
+              title={t('Start your first group')}
+              body={t('Groups keep shared costs for a home, trip or team in one place.')}
+              action={t('Create group')}
               onAction={() => router.push('/new-group')}
             />
           </Card>
@@ -228,7 +235,7 @@ function BalanceCard({ s }: { s: CurrencySummary }) {
         {s.currency}
       </Text>
       <Text variant="overlineSm" color={colors.textMuted} style={{ letterSpacing: 0.88 }}>
-        NET BALANCE
+        {t('NET BALANCE')}
       </Text>
       <AmountText
         minor={s.net}
@@ -241,14 +248,14 @@ function BalanceCard({ s }: { s: CurrencySummary }) {
       <View style={styles.split}>
         <View style={styles.splitCol}>
           <Text variant="overlineSm" color={colors.textMuted}>
-            OWED TO YOU
+            {t('OWED TO YOU')}
           </Text>
           <AmountText minor={s.owedToYou} currency={s.currency} tone="positive" variant="section" />
         </View>
         <View style={styles.splitDivider} />
         <View style={styles.splitCol}>
           <Text variant="overlineSm" color={colors.textMuted}>
-            YOU OWE
+            {t('YOU OWE')}
           </Text>
           <AmountText minor={s.youOwe} currency={s.currency} tone="negative" variant="section" />
         </View>
@@ -287,8 +294,8 @@ function RecentRow({ item, me }: { item: Parameters<typeof describeActivity>[0];
   const cur = (v.total?.currency ?? 'USD') as CurrencyCode;
   const tag =
     v.tag && v.tag.kind !== 'none'
-      ? `${{ lent: 'YOU LENT', owe: 'YOU OWE', paid: 'YOU PAID', received: 'YOU GOT' }[v.tag.kind]} ${formatMoney(v.tag.minor, cur, { locale, trimZeroFraction: true })}`
-      : 'NOT INVOLVED';
+      ? `${{ lent: t('YOU LENT'), owe: t('YOU OWE'), paid: t('YOU PAID'), received: t('YOU GOT') }[v.tag.kind]} ${formatMoney(v.tag.minor, cur, { locale, trimZeroFraction: true })}`
+      : t('NOT INVOLVED');
   const tagColor =
     v.tag?.kind === 'lent' || v.tag?.kind === 'received'
       ? colors.positive
@@ -328,17 +335,17 @@ function relativeDay(ts: string) {
   const today = new Date();
   const y = new Date();
   y.setDate(today.getDate() - 1);
-  if (d.toDateString() === today.toDateString()) return 'Today';
-  if (d.toDateString() === y.toDateString()) return 'Yesterday';
+  if (d.toDateString() === today.toDateString()) return t('Today');
+  if (d.toDateString() === y.toDateString()) return t('Yesterday');
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function otherCurrencyCaption(s: CurrencySummary, locale: string, groupNames: string[]) {
   const amt = formatMoney(Math.abs(s.net), s.currency, { locale });
   const where = groupNames.length ? ` · ${groupNames.slice(0, 2).join(', ')}${groupNames.length > 2 ? '…' : ''}` : '';
-  if (s.net < 0) return `Excludes ${amt} you owe in ${s.currency}${where}`;
-  if (s.net > 0) return `Excludes ${amt} owed to you in ${s.currency}${where}`;
-  return `Settled up in ${s.currency}${where}`;
+  if (s.net < 0) return t('Excludes {amount} you owe in {currency}', { amount: amt, currency: s.currency }) + where;
+  if (s.net > 0) return t('Excludes {amount} owed to you in {currency}', { amount: amt, currency: s.currency }) + where;
+  return t('Settled up in {currency}', { currency: s.currency }) + where;
 }
 
 const styles = StyleSheet.create({

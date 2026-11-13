@@ -7,6 +7,7 @@ import { View } from 'react-native';
 import { api, errorMessage } from '@/api';
 import { Button, Field, Header, Screen, Text, toast } from '@/components';
 import { AvatarPicker } from '@/features/profile/AvatarPicker';
+import { t } from '@/i18n';
 import { chooseImage } from '@/lib/media';
 import { useUpdateProfile } from '@/queries';
 import { profileSchema, type ProfileForm } from '@/schemas';
@@ -28,7 +29,7 @@ export default function PersonalInfo() {
     try {
       const avatarUrl = avatar ? await api.uploadAvatar(avatar) : undefined;
       await update.mutateAsync({ fullName: v.fullName, phone: v.phone ?? null, ...(avatarUrl ? { avatarUrl } : {}) });
-      toast.success('Profile updated');
+      toast.success(t('Profile updated'));
       router.back();
     } catch (e) {
       toast.error(errorMessage(e));
@@ -40,14 +41,14 @@ export default function PersonalInfo() {
       gap={20}
       footer={
         <Button
-          label="Save"
+          label={t('Save')}
           onPress={save}
           loading={update.isPending}
           disabled={!formState.isValid || (!formState.isDirty && !avatar)}
         />
       }
     >
-      <Header title="Personal info" />
+      <Header title={t('Personal info')} />
       <View style={{ alignItems: 'center' }}>
         <AvatarPicker
           uri={avatar?.uri ?? p.avatarUrl}
@@ -64,7 +65,7 @@ export default function PersonalInfo() {
         name="fullName"
         render={({ field, fieldState }) => (
           <Field
-            label="Display name"
+            label={t('Display name')}
             value={field.value}
             onChangeText={field.onChange}
             onBlur={field.onBlur}
@@ -78,8 +79,8 @@ export default function PersonalInfo() {
         name="phone"
         render={({ field, fieldState }) => (
           <Field
-            label="Phone (optional)"
-            placeholder="Helps friends find you"
+            label={t('Phone (optional)')}
+            placeholder={t('Helps friends find you')}
             value={field.value ?? ''}
             onChangeText={field.onChange}
             keyboardType="phone-pad"
@@ -89,11 +90,11 @@ export default function PersonalInfo() {
       />
       <View style={{ gap: 6 }}>
         <Text variant="secondary" color={colors.textMuted}>
-          Email
+          {t('Email')}
         </Text>
         <Text variant="bodyLg">{p.email ?? '—'}</Text>
         <Text variant="caption" color={colors.textFaint}>
-          From your Google account. Only people in your groups can see it.
+          {t('From your Google account. Only people in your groups can see it.')}
         </Text>
       </View>
     </Screen>

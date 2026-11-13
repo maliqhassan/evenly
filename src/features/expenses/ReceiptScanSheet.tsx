@@ -4,6 +4,7 @@ import { AmountText, Button, Card, Icon, Sheet, Text, type IconName } from '@/co
 import type { CurrencyCode } from '@/domain/money';
 import type { ParsedReceipt } from '@/domain/receipt';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { formatDate } from '@/lib/dates';
 import { colors, radii, spacing } from '@/theme';
 
@@ -39,33 +40,33 @@ export function ReceiptScanSheet({ receipt, currency, onUseTotal, onSplitByItem,
   const offerItems = !!r && r.items.length > 0 && r.itemsMatchTotal;
 
   return (
-    <Sheet visible={!!r} onClose={onClose} title="Receipt scanned">
+    <Sheet visible={!!r} onClose={onClose} title={t('Receipt scanned')}>
       {r ? (
         <View style={styles.body}>
           <Card radius={radii.card} padded style={{ gap: 12 }}>
             {r.merchant ? (
-              <Row icon="receipt" label="Place">
+              <Row icon="receipt" label={t('Place')}>
                 <Text variant="bodyMedium" numberOfLines={1}>
                   {r.merchant}
                 </Text>
               </Row>
             ) : null}
-            <Row icon="banknote" label="Total">
+            <Row icon="banknote" label={t('Total')}>
               {r.total !== null ? (
                 <AmountText minor={r.total} currency={currency} variant="bodyLgStrong" />
               ) : (
                 <Text variant="bodyMedium" color={colors.textFaint}>
-                  Not found
+                  {t('Not found')}
                 </Text>
               )}
             </Row>
             {r.date ? (
-              <Row icon="calendar" label="Date">
+              <Row icon="calendar" label={t('Date')}>
                 <Text variant="bodyMedium">{formatDate(r.date, dateFormat)}</Text>
               </Row>
             ) : null}
             {r.items.length > 0 ? (
-              <Row icon="file-text" label="Items">
+              <Row icon="file-text" label={t('Items')}>
                 <Text variant="bodyMedium">
                   {r.items.length} {r.items.length === 1 ? 'item' : 'items'}
                   {r.extra > 0 ? ' + tax & tip' : ''}
@@ -76,12 +77,12 @@ export function ReceiptScanSheet({ receipt, currency, onUseTotal, onSplitByItem,
 
           {r.totalIsGuess && r.total !== null ? (
             <Text variant="caption" color={colors.textSubtle}>
-              There was no total line, so this is our best guess. Check it before saving.
+              {t('There was no total line, so this is our best guess. Check it before saving.')}
             </Text>
           ) : null}
           {r.items.length > 0 && !offerItems ? (
             <Text variant="caption" color={colors.textSubtle}>
-              The items didn’t add up to the total, so they aren’t offered. You can still enter them yourself.
+              {t('The items didn’t add up to the total, so they aren’t offered. You can still enter them yourself.')}
             </Text>
           ) : null}
           <Text variant="caption" color={colors.textSubtle}>
@@ -89,11 +90,11 @@ export function ReceiptScanSheet({ receipt, currency, onUseTotal, onSplitByItem,
           </Text>
 
           <View style={{ gap: spacing.md }}>
-            <Button label="Use these details" onPress={onUseTotal} />
+            <Button label={t('Use these details')} onPress={onUseTotal} />
             {offerItems ? (
-              <Button label="Split by item" icon="receipt" variant="muted" onPress={onSplitByItem} />
+              <Button label={t('Split by item')} icon="receipt" variant="muted" onPress={onSplitByItem} />
             ) : null}
-            <Button label="Not now" variant="outline" size="md" onPress={onClose} />
+            <Button label={t('Not now')} variant="outline" size="md" onPress={onClose} />
           </View>
         </View>
       ) : null}

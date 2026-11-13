@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Animated, Easing, Modal, StyleSheet, View } from 'react-native';
 import { create } from 'zustand';
 
+import { t } from '@/i18n';
 import { colors, radii, shadows, spacing } from '@/theme';
 
 import { Button } from './Button';
@@ -40,14 +41,14 @@ const useDialog = create<DialogState>((set, get) => ({
 /**
  * Themed replacement for Alert.alert — same call shape:
  *   alert('Delete this expense?', 'It will be removed…', [{ text: 'Cancel', style: 'cancel' }, …])
- * With no buttons it shows a single "OK".
+ * With no buttons it shows a single t('OK').
  */
 export function alert(title: string, message?: string, buttons?: DialogButton[], opts: { icon?: IconName } = {}) {
   useDialog.getState().show({
     title,
     message,
     icon: opts.icon,
-    buttons: buttons?.length ? buttons : [{ text: 'OK' }],
+    buttons: buttons?.length ? buttons : [{ text: t('OK') }],
   });
 }
 

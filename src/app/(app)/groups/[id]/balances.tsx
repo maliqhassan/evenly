@@ -22,6 +22,7 @@ import {
 } from '@/components';
 import { groupTransfers, indexBalances } from '@/domain/ledger';
 import { usePeople } from '@/features/people';
+import { t } from '@/i18n';
 import { track } from '@/lib/monitoring';
 import { useBalances, useGroup, useSendReminder } from '@/queries';
 import { colors, radii } from '@/theme';
@@ -70,7 +71,7 @@ export default function Balances() {
       footer={
         <View style={styles.footer}>
           <Button
-            label="Remind"
+            label={t('Remind')}
             icon="bell-ring"
             variant="secondary"
             style={{ flex: 1 }}
@@ -78,14 +79,14 @@ export default function Balances() {
             onPress={() => (owedToMe.length === 1 ? sendReminder(owedToMe[0]!.from) : setRemindOpen(true))}
           />
           <Button
-            label="Settle up"
+            label={t('Settle up')}
             style={{ flex: 1.4 }}
             onPress={() => router.push({ pathname: '/settle', params: { groupId: id } })}
           />
         </View>
       }
     >
-      <Header title="Balances" subtitle={group ? `${group.name} · ${currency}` : undefined} />
+      <Header title={t('Balances')} subtitle={group ? `${group.name} · ${currency}` : undefined} />
 
       {currencies.length > 1 ? (
         <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -99,12 +100,16 @@ export default function Balances() {
         <SkeletonRows count={4} />
       ) : rows.length === 0 ? (
         <Card>
-          <EmptyState icon="circle-check" title="Everyone is settled up" body="New expenses will show up here." />
+          <EmptyState
+            icon="circle-check"
+            title={t('Everyone is settled up')}
+            body={t('New expenses will show up here.')}
+          />
         </Card>
       ) : (
         <>
           <Card padded style={{ gap: 14 }}>
-            <Overline>NET BALANCES</Overline>
+            <Overline>{t('NET BALANCES')}</Overline>
             {rows.map((r) => {
               const p = people.get(r.pid);
               const pct = Math.abs(r.net) / maxAbs;
@@ -141,8 +146,8 @@ export default function Balances() {
 
           <View style={{ gap: 8 }}>
             <View style={styles.titleRow}>
-              <Text variant="section">Who owes whom</Text>
-              <Pill label="Simplified" tone="positive" variant="soft" />
+              <Text variant="section">{t('Who owes whom')}</Text>
+              <Pill label={t('Simplified')} tone="positive" variant="soft" />
             </View>
             {transfers.map((t) => {
               const from = people.get(t.from);
@@ -188,7 +193,7 @@ export default function Balances() {
       <SelectSheet
         visible={remindOpen}
         onClose={() => setRemindOpen(false)}
-        title="Send a reminder"
+        title={t('Send a reminder')}
         options={owedToMe.map((t) => ({
           value: t.from,
           label: people.get(t.from).name,

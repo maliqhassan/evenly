@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
 import { api } from '@/api';
+import { t } from '@/i18n';
 import { isDemo } from '@/lib/config';
 import { confirmDialog, showPermissionBlocked } from '@/lib/media';
 import { captureError } from '@/lib/monitoring';
@@ -59,8 +60,8 @@ export async function registerForPush(opts: { fromSettings?: boolean } = {}): Pr
       // importance of an existing channel, so this replaces the old "default"
       // channel (created at DEFAULT importance by earlier builds).
       await Notifications.setNotificationChannelAsync(PUSH_CHANNEL_ID, {
-        name: 'Activity',
-        description: 'Expenses, payments and invites in your groups',
+        name: t('Activity'),
+        description: t('Expenses, payments and invites in your groups'),
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 200, 250],
         showBadge: true,
@@ -72,8 +73,10 @@ export async function registerForPush(opts: { fromSettings?: boolean } = {}): Pr
       if (!perm.canAskAgain) {
         if (opts.fromSettings) {
           showPermissionBlocked(
-            'Notification',
-            'Evenly sends a notification when someone adds an expense, settles up or invites you.',
+            t('Notifications are off'),
+            t(
+              'Evenly sends a notification when someone adds an expense, settles up or invites you. Turn on notifications for Evenly in your phone’s settings.',
+            ),
             'bell',
           );
         }
@@ -82,9 +85,9 @@ export async function registerForPush(opts: { fromSettings?: boolean } = {}): Pr
       if (!opts.fromSettings) {
         if (await secureStorage.getItem(DECLINED_KEY).catch(() => null)) return;
         const ok = await confirmDialog(
-          'Turn on notifications?',
-          'Get a notification when someone adds an expense, settles up with you or invites you to a group.',
-          'Turn on',
+          t('Turn on notifications?'),
+          t('Get a notification when someone adds an expense, settles up with you or invites you to a group.'),
+          t('Turn on'),
           { icon: 'bell' },
         );
         if (!ok) {

@@ -16,6 +16,7 @@ import {
 import { dashboardSummary, friendBalances } from '@/domain/ledger';
 import { formatMoney } from '@/domain/money';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { useBalances, useFriends, useGroups } from '@/queries';
 import { useSession } from '@/stores/session';
 import { colors, radii } from '@/theme';
@@ -66,15 +67,20 @@ export default function Friends() {
     >
       <View style={styles.header}>
         <Text variant="h1" accessibilityRole="header">
-          Friends
+          {t('Friends')}
         </Text>
-        <IconButton icon="user-plus" tone="muted" label="Add a friend to a group" onPress={() => setPickGroup(true)} />
+        <IconButton
+          icon="user-plus"
+          tone="muted"
+          label={t('Add a friend to a group')}
+          onPress={() => setPickGroup(true)}
+        />
       </View>
 
       <View style={styles.tiles}>
         <View style={[styles.tile, { backgroundColor: colors.positiveSoft }]}>
           <Text variant="caption" color={colors.forest}>
-            Owed to you
+            {t('Owed to you')}
           </Text>
           <AmountText
             minor={summary.owedToYou}
@@ -86,7 +92,7 @@ export default function Friends() {
         </View>
         <View style={[styles.tile, { backgroundColor: colors.negativeSoft }]}>
           <Text variant="caption" color={colors.forest}>
-            You owe
+            {t('You owe')}
           </Text>
           <AmountText
             minor={summary.youOwe}
@@ -103,9 +109,9 @@ export default function Friends() {
       ) : rows.length === 0 ? (
         <EmptyState
           icon="users"
-          title="No friends yet"
-          body="People you share a group with appear here."
-          action="Invite someone"
+          title={t('No friends yet')}
+          body={t('People you share a group with appear here.')}
+          action={t('Invite someone')}
           onAction={() => setPickGroup(true)}
         />
       ) : (
@@ -157,7 +163,7 @@ export default function Friends() {
                     </>
                   ) : (
                     <Text variant="bodyLgStrong" color={colors.textSubtle}>
-                      Settled up
+                      {t('Settled up')}
                     </Text>
                   )}
                 </View>
@@ -170,7 +176,7 @@ export default function Friends() {
       <SelectSheet
         visible={pickGroup}
         onClose={() => setPickGroup(false)}
-        title="Invite to which group?"
+        title={t('Invite to which group?')}
         options={(groups.data ?? [])
           .filter((g) => !g.archivedAt)
           .map((g) => ({ value: g.id, label: g.name, icon: g.icon }))}

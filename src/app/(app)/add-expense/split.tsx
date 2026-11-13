@@ -21,6 +21,7 @@ import { SPLIT_MODES, splitModeMeta } from '@/features/expenses/split-summary';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
 import { errorMessage } from '@/api';
+import { t } from '@/i18n';
 import { useGroup, useGroupSplitDefault, useSaveSplitDefault } from '@/queries';
 import { draftAmount, draftAsDefault, draftRows, evaluateDraft, sameDefault, useExpenseDraft } from '@/stores/drafts';
 import { colors, fontFamily, radii } from '@/theme';
@@ -40,8 +41,8 @@ export default function Split() {
     if (evaluation.ok) {
       return {
         ok: true,
-        label: d.method === 'percent' ? '100% allocated' : 'Fully allocated',
-        detail: `${fmt(amount)} of ${fmt(amount)}`,
+        label: d.method === 'percent' ? t('100% allocated') : t('Fully allocated'),
+        detail: t('{done} of {total}', { done: fmt(amount), total: fmt(amount) }),
         progress: 1,
       };
     }
@@ -57,8 +58,8 @@ export default function Split() {
       d.method === 'percent' && evaluation.remainingBp !== undefined
         ? evaluation.message
         : evaluation.remaining > 0
-          ? `${fmt(evaluation.remaining)} left to assign`
-          : `${fmt(-evaluation.remaining)} over the total`;
+          ? t('{amount} left to assign', { amount: fmt(evaluation.remaining) })
+          : t('{amount} over the total', { amount: fmt(-evaluation.remaining) });
     return {
       ok: false,
       label,
@@ -81,15 +82,15 @@ export default function Split() {
     saveDefault.mutate(
       { groupId: d.groupId!, value },
       {
-        onSuccess: () => toast.success(value ? 'Saved as your default split' : 'Default split cleared'),
+        onSuccess: () => toast.success(value ? t('Saved as your default split') : t('Default split cleared')),
         onError: (e) => toast.error(errorMessage(e)),
       },
     );
 
   if (d.itemized) {
     return (
-      <Screen gap={18} footer={<Button label="Done" onPress={() => router.back()} disabled={!evaluation.ok} />}>
-        <Header title={`Split ${fmt(amount)}`} subtitle="By item" />
+      <Screen gap={18} footer={<Button label={t('Done')} onPress={() => router.back()} disabled={!evaluation.ok} />}>
+        <Header title={`Split ${fmt(amount)}`} subtitle={t('By item')} />
         <Card>
           {evaluation.allocations.map((a, i, arr) => {
             const p = people.get(a.id);
@@ -110,14 +111,14 @@ export default function Split() {
           </Text>
         )}
         <Button
-          label="Edit items"
+          label={t('Edit items')}
           icon="pencil"
           variant="muted"
           size="md"
           onPress={() => router.push('/add-expense/items')}
         />
         <Button
-          label="Use a regular split instead"
+          label={t('Use a regular split instead')}
           variant="outline"
           size="md"
           onPress={() => d.patch({ itemized: false })}
@@ -132,10 +133,10 @@ export default function Split() {
       gap={18}
       footer={
         <Button
-          label="Done"
+          label={t('Done')}
           onPress={() => router.back()}
           disabled={!evaluation.ok}
-          accessibilityHint={evaluation.ok ? undefined : 'The split must add up first'}
+          accessibilityHint={evaluation.ok ? undefined : t('The split must add up first')}
         />
       }
     >
@@ -151,7 +152,7 @@ export default function Split() {
               haptic
               accessibilityRole="tab"
               accessibilityState={{ selected: on }}
-              accessibilityLabel={`Split ${m.label}`}
+              accessibilityLabel={`Split ${t(m.label)}`}
               style={[styles.mode, { backgroundColor: on ? colors.forest : colors.surface }]}
             >
               <Icon name={m.icon} size={18} color={on ? colors.onDarkStrong : colors.ink} />
@@ -160,7 +161,7 @@ export default function Split() {
                 color={on ? colors.onDarkStrong : colors.ink}
                 style={{ fontFamily: fontFamily.medium }}
               >
-                {m.label}
+                {t(m.label)}
               </Text>
             </Pressable>
           );
@@ -168,7 +169,7 @@ export default function Split() {
       </View>
 
       <Text variant="secondary" color={colors.textMuted}>
-        {meta.help}
+        {t(meta.help)}
       </Text>
 
       <Pressable
@@ -180,9 +181,9 @@ export default function Split() {
       >
         <Icon name="receipt" size={18} color={colors.forest} />
         <View style={{ flex: 1, gap: 1 }}>
-          <Text variant="bodyMedium">Split by item</Text>
+          <Text variant="bodyMedium">{t('Split by item')}</Text>
           <Text variant="caption" color={colors.textSubtle}>
-            Everyone pays for what they had, tax and tip shared fairly
+            {t('Everyone pays for what they had, tax and tip shared fairly')}
           </Text>
         </View>
         <Icon name="chevron-right" size={18} color={colors.textFaint} />
@@ -213,7 +214,7 @@ export default function Split() {
                     <AmountText minor={share} currency={d.currency} variant="caption" color={colors.textSubtle} />
                   ) : (
                     <Text variant="caption" color={colors.textFaint}>
-                      {included ? '—' : 'Not included'}
+                      {included ? '—' : t('Not included')}
                     </Text>
                   )
                 ) : null}
@@ -260,7 +261,7 @@ export default function Split() {
             <>
               <Icon name="circle-check" size={18} color={colors.positive} />
               <Text variant="secondary" color={colors.textMuted} style={{ flex: 1 }}>
-                Your default split for {group?.name ?? 'this group'}
+                {t('Your default split for {group}', { group: group?.name ?? t('this group') })}
               </Text>
               <Pressable
                 onPress={() => changeDefault(null)}
@@ -269,13 +270,13 @@ export default function Split() {
                 hitSlop={10}
               >
                 <Text variant="captionStrong" color={colors.negative}>
-                  Clear
+                  {t('Clear')}
                 </Text>
               </Pressable>
             </>
           ) : (
             <Button
-              label="Save as my default for this group"
+              label={t('Save as my default for this group')}
               icon="check"
               size="md"
               variant="muted"

@@ -7,6 +7,7 @@ import type { ActivityItem, ActivityQuery } from '@/api';
 import { Chip, EmptyState, ErrorState, IconButton, SearchField, SelectSheet, SkeletonRows, Text } from '@/components';
 import { ActivityRow } from '@/features/activity/ActivityRow';
 import { useDebounced } from '@/hooks/useDebounced';
+import { t } from '@/i18n';
 import { dayHeader, isoDateOf } from '@/lib/dates';
 import { useActivity, useGroups } from '@/queries';
 import { useSession } from '@/stores/session';
@@ -58,18 +59,18 @@ export default function Activity() {
     <View style={{ gap: 16, paddingBottom: 4 }}>
       <View style={styles.titleRow}>
         <Text variant="h1" accessibilityRole="header">
-          Activity
+          {t('Activity')}
         </Text>
         <IconButton
           icon="sliders-horizontal"
           tone="plain"
           iconSize={22}
-          label="Filter by group"
+          label={t('Filter by group')}
           badge={!!groupId}
           onPress={() => setFilterOpen(true)}
         />
       </View>
-      <SearchField value={search} onChangeText={setSearch} placeholder="Search expenses, people, groups" />
+      <SearchField value={search} onChangeText={setSearch} placeholder={t('Search expenses, people, groups')} />
       <View style={styles.chips}>
         {FILTERS.map((f) => (
           <Chip
@@ -133,7 +134,7 @@ export default function Activity() {
       <SelectSheet
         visible={filterOpen}
         onClose={() => setFilterOpen(false)}
-        title="Filter by group"
+        title={t('Filter by group')}
         options={groupOptions}
         value={groupId ?? '__all'}
         onSelect={(v) => setGroupId(v === '__all' ? null : v)}

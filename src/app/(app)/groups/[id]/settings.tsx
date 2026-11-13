@@ -6,6 +6,7 @@ import { errorMessage, type Group } from '@/api';
 import { alert, Avatar, Button, Card, Header, Icon, Overline, Pressable, Screen, Text, toast } from '@/components';
 import { GroupFormFields, type GroupFormValue } from '@/features/groups/GroupForm';
 import { activeMembers } from '@/features/people';
+import { t } from '@/i18n';
 import { useGroup, useGroupMembership, useUpdateGroup } from '@/queries';
 import { groupSchema } from '@/schemas';
 import { useSession } from '@/stores/session';
@@ -18,7 +19,7 @@ export default function GroupSettings() {
   if (!group) {
     return (
       <Screen>
-        <Header title="Group settings" />
+        <Header title={t('Group settings')} />
       </Screen>
     );
   }
@@ -51,7 +52,7 @@ function GroupSettingsForm({ group }: { group: Group }) {
     if (!parsed.success) return;
     try {
       await update.mutateAsync({ ...parsed.data, description: group.description });
-      toast.success('Group updated');
+      toast.success(t('Group updated'));
       router.back();
     } catch (e) {
       toast.error(errorMessage(e));
@@ -73,21 +74,26 @@ function GroupSettingsForm({ group }: { group: Group }) {
       gap={16}
       footer={
         isAdmin ? (
-          <Button label="Save changes" onPress={save} disabled={!dirty || !parsed.success} loading={update.isPending} />
+          <Button
+            label={t('Save changes')}
+            onPress={save}
+            disabled={!dirty || !parsed.success}
+            loading={update.isPending}
+          />
         ) : undefined
       }
     >
-      <Header title="Group settings" />
+      <Header title={t('Group settings')} />
       {isAdmin ? (
         <GroupFormFields value={value} onChange={setValue} />
       ) : (
         <Text variant="secondary" color={colors.textMuted}>
-          Only group admins can change the name, type or currency.
+          {t('Only group admins can change the name, type or currency.')}
         </Text>
       )}
 
       <View style={{ gap: 8 }}>
-        <Overline>MEMBERS</Overline>
+        <Overline>{t('MEMBERS')}</Overline>
         <Card radius={radii.card}>
           {activeMembers(group).map((m, i, arr) => (
             <View key={m.profileId} style={[styles.row, i < arr.length - 1 && styles.divider]}>
@@ -124,7 +130,7 @@ function GroupSettingsForm({ group }: { group: Group }) {
           >
             <Icon name="user-plus" size={18} color={colors.positive} />
             <Text variant="bodyMedium" color={colors.positive}>
-              Invite members
+              {t('Invite members')}
             </Text>
           </Pressable>
         </Card>
@@ -139,7 +145,7 @@ function GroupSettingsForm({ group }: { group: Group }) {
         >
           <Icon name="refresh-cw" size={18} color={colors.forest} />
           <Text variant="bodyMedium" style={{ flex: 1 }}>
-            Recurring expenses
+            {t('Recurring expenses')}
           </Text>
           <Icon name="chevron-right" size={18} color={colors.textFaint} />
         </Pressable>
@@ -152,7 +158,7 @@ function GroupSettingsForm({ group }: { group: Group }) {
               group.archivedAt
                 ? archive
                     .mutateAsync({ groupId: id, archived: false })
-                    .then(() => toast.success('Group restored'))
+                    .then(() => toast.success(t('Group restored')))
                     .catch((e) => toast.error(errorMessage(e)))
                 : confirm(
                     'Archive this group?',
@@ -180,7 +186,7 @@ function GroupSettingsForm({ group }: { group: Group }) {
         >
           <Icon name="log-out" size={18} color={colors.negative} />
           <Text variant="bodyMedium" color={colors.negative}>
-            Leave group
+            {t('Leave group')}
           </Text>
         </Pressable>
       </Card>

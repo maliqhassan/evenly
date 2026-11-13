@@ -16,10 +16,12 @@ import {
   Overline,
   Pressable,
   Screen,
+  SelectSheet,
   Sheet,
   Text,
   toast,
 } from '@/components';
+import { LANGUAGES, t, useLanguage, type LanguageCode } from '@/i18n';
 import { authClient } from '@/lib/auth';
 import { config, isDemo } from '@/lib/config';
 import { forgetLocalData, signOut } from '@/lib/session';
@@ -31,23 +33,31 @@ export default function Profile() {
   const me = useSession((s) => s.me!);
   const [plus, setPlus] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [languageSheet, setLanguageSheet] = useState(false);
+  const language = useLanguage((s) => s.code);
+  const changeLanguage = async (code: LanguageCode) => {
+    const reopen = await useLanguage.getState().set(code);
+    if (reopen) {
+      alert(t('Reopen Evenly'), t('Close Evenly and open it again to switch the layout direction for this language.'));
+    }
+  };
   const p = me.profile;
   const prefs = me.preferences;
 
   const logOut = () =>
-    alert('Log out of Evenly?', undefined, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Log out', style: 'destructive', onPress: () => void signOut() },
+    alert(t('Log out of Evenly?'), undefined, [
+      { text: t('Cancel'), style: 'cancel' },
+      { text: t('Log out'), style: 'destructive', onPress: () => void signOut() },
     ]);
 
   const deleteAccount = () =>
     alert(
-      'Delete your account?',
-      'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.',
+      t('Delete your account?'),
+      t('Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('Cancel'), style: 'cancel' },
         {
-          text: 'Delete account',
+          text: t('Delete account'),
           style: 'destructive',
           onPress: async () => {
             setDeleting(true);
@@ -55,7 +65,7 @@ export default function Profile() {
               await api.deleteAccount();
               await forgetLocalData(p.id);
               await authClient.deleteUser().catch(() => authClient.signOut());
-              toast.success('Your account was deleted');
+              toast.success(t('Your account was deleted'));
             } catch (e) {
               toast.error(errorMessage(e));
             } finally {
@@ -68,57 +78,65 @@ export default function Profile() {
 
   const sections = [
     {
-      title: 'ACCOUNT',
+      title: t('ACCOUNT'),
       items: [
-        { icon: 'user', label: 'Personal info', value: '', onPress: () => router.push('/settings/personal') },
+        { icon: 'user', label: t('Personal info'), value: '', onPress: () => router.push('/settings/personal') },
         {
           icon: 'link',
-          label: 'Sign-in method',
+          label: t('Sign-in method'),
           value: 'Google',
           onPress: () =>
             alert(
-              'Sign-in method',
-              `You sign in with Google${p.email ? ` (${p.email})` : ''}. Evenly never stores a password.`,
+              t('Sign-in method'),
+              p.email
+                ? t('You sign in with Google ({email}). Evenly never stores a password.', { email: p.email })
+                : t('You sign in with Google. Evenly never stores a password.'),
             ),
         },
         {
           icon: 'banknote',
-          label: 'Currency & region',
+          label: t('Currency & region'),
           value: `${p.defaultCurrency} · ${prefs.region}`,
           onPress: () => router.push('/settings/region'),
         },
         {
           icon: 'bell',
-          label: 'Notifications',
-          value: prefs.notifyPush ? 'On' : 'Off',
+          label: t('Notifications'),
+          value: prefs.notifyPush ? t('On') : t('Off'),
           onPress: () => router.push('/settings/notifications'),
         },
       ],
     },
     {
-      title: 'APP',
+      title: t('APP'),
       items: [
-        { icon: 'chart-pie', label: 'Reports', value: '', onPress: () => router.push('/reports') },
+        {
+          icon: 'globe',
+          label: t('Language'),
+          value: LANGUAGES.find((l) => l.code === language)?.name ?? 'English',
+          onPress: () => setLanguageSheet(true),
+        },
+        { icon: 'chart-pie', label: t('Reports'), value: '', onPress: () => router.push('/reports') },
         {
           icon: 'moon',
-          label: 'Appearance',
-          value: 'Light',
-          onPress: () => alert('Appearance', 'Dark mode is on its way. Evenly uses the light theme for now.'),
+          label: t('Appearance'),
+          value: t('Light'),
+          onPress: () => alert(t('Appearance'), t('Dark mode is on its way. Evenly uses the light theme for now.')),
         },
         {
           icon: 'circle-help',
-          label: 'Help & support',
+          label: t('Help & support'),
           value: '',
           onPress: () => Linking.openURL(`mailto:${config.supportEmail}?subject=Evenly%20support`),
         },
-        { icon: 'shield', label: 'Privacy & terms', value: '', onPress: () => router.push('/settings/legal') },
+        { icon: 'shield', label: t('Privacy & terms'), value: '', onPress: () => router.push('/settings/legal') },
       ],
     },
   ];
 
   return (
     <Screen gap={16}>
-      <Header title="Profile" />
+      <Header title={t('Profile')} />
 
       <View style={styles.identity}>
         <Avatar id={p.id} name={p.fullName} uri={p.avatarUrl} size={64} />
@@ -127,11 +145,11 @@ export default function Profile() {
             {p.fullName}
           </Text>
           <Text variant="secondary" color={colors.textSubtle} numberOfLines={1}>
-            {p.email ?? 'Signed in with Google'}
+            {p.email ?? t('Signed in with Google')}
           </Text>
         </View>
         <Button
-          label="Edit"
+          label={t('Edit')}
           size="sm"
           variant="secondary"
           fullWidth={false}
@@ -144,10 +162,10 @@ export default function Profile() {
         <IconTile icon="crown" size={44} radius={14} bg={colors.mint} fg={colors.forest} iconSize={20} />
         <View style={{ flex: 1, gap: 2 }}>
           <Text variant="bodyLgStrong" color={colors.onDark}>
-            Evenly Plus
+            {t('Evenly Plus')}
           </Text>
           <Text variant="caption" color={colors.onDarkMuted}>
-            Exports, currency conversion · $3.99/mo
+            {t('Exports, currency conversion · $3.99/mo')}
           </Text>
         </View>
         <Icon name="chevron-right" size={18} color={colors.onDark} />
@@ -172,10 +190,10 @@ export default function Profile() {
         </View>
       ))}
 
-      <Pressable onPress={logOut} accessibilityLabel="Log out" style={styles.logout}>
+      <Pressable onPress={logOut} accessibilityLabel={t('Log out')} style={styles.logout}>
         <Icon name="log-out" size={18} color={colors.negative} />
         <Text variant="bodyStrong" color={colors.negative}>
-          Log out
+          {t('Log out')}
         </Text>
       </Pressable>
 
@@ -183,34 +201,42 @@ export default function Profile() {
         onPress={deleteAccount}
         disabled={deleting}
         accessibilityRole="button"
-        accessibilityLabel="Delete account"
+        accessibilityLabel={t('Delete account')}
         scaleOnPress={false}
         style={{ alignSelf: 'center', padding: 8 }}
       >
         <Text variant="caption" color={colors.textFaint}>
-          {deleting ? 'Deleting…' : 'Delete account'}
+          {deleting ? t('Deleting…') : t('Delete account')}
         </Text>
       </Pressable>
       {isDemo ? (
         <Text variant="caption" color={colors.textFaint} align="center">
-          Demo mode — sample data only
+          {t('Demo mode — sample data only')}
         </Text>
       ) : null}
 
-      <Sheet visible={plus} onClose={() => setPlus(false)} title="Evenly Plus">
+      <Sheet visible={plus} onClose={() => setPlus(false)} title={t('Evenly Plus')}>
         <View style={{ paddingHorizontal: spacing.screen, gap: 14 }}>
-          {['Export to CSV and PDF', 'Currency conversion'].map((f) => (
+          {[t('Export to CSV and PDF'), t('Currency conversion')].map((f) => (
             <View key={f} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <Icon name="check" size={18} color={colors.positive} />
               <Text variant="bodyLg">{f}</Text>
             </View>
           ))}
           <Text variant="secondary" color={colors.textMuted}>
-            Evenly Plus is coming soon. Everything you need to split and settle stays free.
+            {t('Evenly Plus is coming soon. Everything you need to split and settle stays free.')}
           </Text>
-          <Button label="Got it" onPress={() => setPlus(false)} />
+          <Button label={t('Got it')} onPress={() => setPlus(false)} />
         </View>
       </Sheet>
+      <SelectSheet
+        visible={languageSheet}
+        onClose={() => setLanguageSheet(false)}
+        title={t('Language')}
+        options={LANGUAGES.map((l) => ({ value: l.code, label: l.name }))}
+        value={language}
+        onSelect={(code) => void changeLanguage(code)}
+      />
     </Screen>
   );
 }

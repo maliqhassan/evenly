@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, View, type DimensionValue, type StyleProp, type ViewStyle } from 'react-native';
 
+import { t } from '@/i18n';
 import { colors, radii, spacing } from '@/theme';
 
 import { Button } from './Button';
@@ -50,7 +51,9 @@ export function ErrorState({ message = 'Something went wrong.', onRetry }: { mes
       <Text variant="bodyLgStrong" align="center">
         {message}
       </Text>
-      {onRetry ? <Button label="Try again" onPress={onRetry} size="md" variant="secondary" fullWidth={false} /> : null}
+      {onRetry ? (
+        <Button label={t('Try again')} onPress={onRetry} size="md" variant="secondary" fullWidth={false} />
+      ) : null}
     </View>
   );
 }

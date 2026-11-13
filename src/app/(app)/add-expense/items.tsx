@@ -18,6 +18,7 @@ import {
 import { currencySymbol, evaluateItemized, minorToDecimalString } from '@/domain/money';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { parseDraftItems, useExpenseDraft, type DraftItem } from '@/stores/drafts';
 import { colors, fontFamily, radii } from '@/theme';
 
@@ -69,16 +70,16 @@ export default function Items() {
       gap={14}
       footer={
         <Button
-          label="Done"
+          label={t('Done')}
           onPress={done}
           disabled={!ok}
           accessibilityHint={ok ? undefined : (message ?? undefined)}
         />
       }
     >
-      <Header title="Split by item" subtitle={description || undefined} />
+      <Header title={t('Split by item')} subtitle={description || undefined} />
       <Text variant="secondary" color={colors.textMuted}>
-        Add each item and choose who had it. Items shared by several people are split equally.
+        {t('Add each item and choose who had it. Items shared by several people are split equally.')}
       </Text>
 
       {items.map((item, n) => (
@@ -122,7 +123,7 @@ export default function Items() {
 
           <View style={{ gap: 8 }}>
             <Text variant="caption" color={colors.textSubtle}>
-              Who had this?
+              {t('Who had this?')}
             </Text>
             <View style={styles.chips}>
               <Pressable
@@ -167,7 +168,7 @@ export default function Items() {
       ))}
 
       <Button
-        label="Add item"
+        label={t('Add item')}
         icon="plus"
         variant="muted"
         size="md"
@@ -177,17 +178,17 @@ export default function Items() {
       <Card padded radius={radii.card} style={{ gap: 12 }}>
         <View style={styles.totalRow}>
           <Text variant="body" color={colors.textMuted}>
-            Items
+            {t('Items')}
           </Text>
           <AmountText minor={itemsTotal} currency={currency} variant="bodyMedium" />
         </View>
         <View style={styles.totalRow}>
           <View style={{ flex: 1 }}>
             <Text variant="body" color={colors.textMuted}>
-              Tax & tip
+              {t('Tax & tip')}
             </Text>
             <Text variant="caption" color={colors.textFaint}>
-              Shared in proportion to each person’s items
+              {t('Shared in proportion to each person’s items')}
             </Text>
           </View>
           <View style={[styles.input, styles.amount]}>
@@ -208,7 +209,7 @@ export default function Items() {
           </View>
         </View>
         <View style={[styles.totalRow, styles.totalLine]}>
-          <Text variant="bodyStrong">Total</Text>
+          <Text variant="bodyStrong">{t('Total')}</Text>
           <AmountText minor={itemsTotal + extra} currency={currency} variant="bodyLgStrong" />
         </View>
       </Card>
@@ -221,7 +222,7 @@ export default function Items() {
 
       {ok && result ? (
         <View style={{ gap: 8 }}>
-          <Overline>WHO OWES WHAT</Overline>
+          <Overline>{t('WHO OWES WHAT')}</Overline>
           <Card radius={radii.card}>
             {result.allocations.map((a, i, arr) => {
               const p = people.get(a.id);

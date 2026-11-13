@@ -12,6 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, LinearFill, Pressable, RadialFill, Text, Wordmark } from '@/components';
+import { msg, t } from '@/i18n';
 import {
   BalancesIllustration,
   GroupsIllustration,
@@ -24,26 +25,26 @@ import { colors, radii, spacing } from '@/theme';
 const PAGES = [
   {
     key: 'split',
-    title: 'Split any bill',
-    body: 'Add an expense and Evenly splits it equally, by exact amounts or by percentage, down to the last cent.',
+    title: msg('Split any bill'),
+    body: msg('Add an expense and Evenly splits it equally, by exact amounts or by percentage, down to the last cent.'),
     Art: SplitIllustration,
   },
   {
     key: 'balances',
-    title: 'Know who owes what',
-    body: 'One balance per person across all your groups. Green is owed to you, red is what you owe.',
+    title: msg('Know who owes what'),
+    body: msg('One balance per person across all your groups. Green is owed to you, red is what you owe.'),
     Art: BalancesIllustration,
   },
   {
     key: 'settle',
-    title: 'Settle up in a tap',
-    body: 'Record a payment and the other person confirms it. Balances update for everyone straight away.',
+    title: msg('Settle up in a tap'),
+    body: msg('Record a payment and the other person confirms it. Balances update for everyone straight away.'),
     Art: SettleIllustration,
   },
   {
     key: 'groups',
-    title: 'Made for your groups',
-    body: 'Homes, trips and teams. Invite friends with a link or QR code and get notified when anything changes.',
+    title: msg('Made for your groups'),
+    body: msg('Homes, trips and teams. Invite friends with a link or QR code and get notified when anything changes.'),
     Art: GroupsIllustration,
   },
 ] as const;
@@ -86,7 +87,7 @@ export default function Intro() {
             style={styles.skip}
           >
             <Text variant="bodyMedium" color={colors.textMuted}>
-              Skip
+              {t('Skip')}
             </Text>
           </Pressable>
         )}
@@ -103,17 +104,20 @@ export default function Intro() {
         onMomentumScrollEnd={onScrollEnd}
         getItemLayout={(_, i) => ({ length: width, offset: width * i, index: i })}
         renderItem={({ item, index: i }) => (
-          <View style={[styles.page, { width }]} accessibilityLabel={`Step ${i + 1} of ${PAGES.length}: ${item.title}`}>
+          <View
+            style={[styles.page, { width }]}
+            accessibilityLabel={`Step ${i + 1} of ${PAGES.length}: ${t(item.title)}`}
+          >
             <View style={styles.stage}>
               <RadialFill colors={colors.mintGradientSoft} cy="0%" rx="120%" ry="110%" />
               <item.Art />
             </View>
             <View style={styles.copy}>
               <Text variant="h1" align="center" accessibilityRole="header">
-                {item.title}
+                {t(item.title)}
               </Text>
               <Text variant="bodyLg" color={colors.textMuted} align="center">
-                {item.body}
+                {t(item.body)}
               </Text>
             </View>
           </View>
@@ -127,10 +131,10 @@ export default function Intro() {
           ))}
         </View>
         <Button
-          label={last ? 'Get started' : 'Next'}
+          label={last ? t('Get started') : t('Next')}
           icon={last ? undefined : 'arrow-right'}
           onPress={next}
-          accessibilityHint={last ? 'Finishes the tour' : 'Shows the next step'}
+          accessibilityHint={last ? t('Finishes the tour') : t('Shows the next step')}
         />
       </View>
     </View>

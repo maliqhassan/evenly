@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { errorMessage, type DateFormatPref, type NumberFormatPref } from '@/api';
 import { Card, Header, IconTile, InfoNote, ListRow, Screen, SelectSheet, toast } from '@/components';
 import { currencyLabel } from '@/domain/money';
+import { t } from '@/i18n';
 import {
   currencyOptions,
   dateFormatOptions,
@@ -37,7 +38,7 @@ export default function RegionSettings() {
 
   return (
     <Screen>
-      <Header title="Currency & region" />
+      <Header title={t('Currency & region')} />
       <Card>
         {rows.map((r, i) => (
           <ListRow
@@ -54,8 +55,9 @@ export default function RegionSettings() {
         ))}
       </Card>
       <InfoNote>
-        Your default currency is used for new groups and your dashboard. Balances in other currencies are always shown
-        separately — Evenly never converts them silently.
+        {t(
+          'Your default currency is used for new groups and your dashboard. Balances in other currencies are always shown separately — Evenly never converts them silently.',
+        )}
       </InfoNote>
 
       <SelectSheet

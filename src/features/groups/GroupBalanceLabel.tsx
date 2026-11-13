@@ -2,6 +2,7 @@ import type { Minor, CurrencyCode } from '@/domain/money';
 import { formatMoney } from '@/domain/money';
 import { usePreferences } from '@/hooks/usePreferences';
 import { Text } from '@/components';
+import { t } from '@/i18n';
 import { colors, type TypographyVariant } from '@/theme';
 
 /**
@@ -21,7 +22,7 @@ export function GroupBalanceLabel({
   if (nets.length === 0) {
     return (
       <Text variant={variant} color={colors.textSubtle}>
-        Settled up
+        {t('Settled up')}
       </Text>
     );
   }

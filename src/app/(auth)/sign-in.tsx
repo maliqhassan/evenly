@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { GoogleButton, Icon, Logo, Screen, Text } from '@/components';
+import { t } from '@/i18n';
 import { authClient } from '@/lib/auth';
 import { config, isDemo } from '@/lib/config';
 import { useSession } from '@/stores/session';
@@ -44,7 +45,7 @@ export default function SignIn() {
               onPress={() => WebBrowser.openBrowserAsync(config.termsUrl)}
               accessibilityRole="link"
             >
-              Terms
+              {t('Terms')}
             </Text>{' '}
             and{' '}
             <Text
@@ -52,7 +53,7 @@ export default function SignIn() {
               onPress={() => WebBrowser.openBrowserAsync(config.privacyUrl)}
               accessibilityRole="link"
             >
-              Privacy Policy
+              {t('Privacy Policy')}
             </Text>
             .
           </Text>
@@ -63,15 +64,16 @@ export default function SignIn() {
         <Logo size="md" />
         <View style={{ gap: 10 }}>
           <Text variant="headline" accessibilityRole="header">
-            Sign in to{'\n'}
+            {t('Sign in to')}
+            {'\n'}
             <Text variant="headlineItalic">Evenly</Text>
           </Text>
           <Text variant="bodyLg" color={colors.textMuted}>
-            One tap with the account you already use. No passwords to remember.
+            {t('One tap with the account you already use. No passwords to remember.')}
           </Text>
         </View>
         <View style={{ gap: 10 }}>
-          <Reassurance icon="shield-check" text="Secured by Google" />
+          <Reassurance icon="shield-check" text={t('Secured by Google')} />
           <Reassurance icon="lock" text="We never see or store a password" />
           {isDemo ? <Reassurance icon="sparkles" text="Demo mode — sample data, nothing is saved" /> : null}
         </View>

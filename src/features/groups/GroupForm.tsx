@@ -6,6 +6,7 @@ import { Chip, Field, Icon, Pressable, SelectSheet, Sheet, Text } from '@/compon
 import { currencyLabel } from '@/domain/money';
 import { GROUP_ICONS, GROUP_TYPES } from '@/features/expenses/categories';
 import { currencyOptions } from '@/features/profile/options';
+import { t } from '@/i18n';
 import { colors, spacing } from '@/theme';
 
 export interface GroupFormValue {
@@ -37,16 +38,16 @@ export function GroupFormFields({
         </Pressable>
         <Pressable onPress={() => setIconSheet(true)} scaleOnPress={false} accessibilityRole="button" hitSlop={8}>
           <Text variant="secondaryMedium" color={colors.positive}>
-            Change icon
+            {t('Change icon')}
           </Text>
         </Pressable>
       </View>
 
       <Field
-        label="Group name"
+        label={t('Group name')}
         value={value.name}
         onChangeText={(name) => set({ name })}
-        placeholder="e.g. Flatmates"
+        placeholder={t('e.g. Flatmates')}
         maxLength={60}
         autoCapitalize="words"
         error={nameError}
@@ -54,7 +55,7 @@ export function GroupFormFields({
 
       <View style={{ gap: 8 }}>
         <Text variant="secondary" color={colors.textMuted}>
-          Type
+          {t('Type')}
         </Text>
         <View style={styles.chips}>
           {GROUP_TYPES.map((t) => (
@@ -73,7 +74,7 @@ export function GroupFormFields({
       </View>
 
       <Field
-        label="Group currency"
+        label={t('Group currency')}
         onPressSelect={() => setCurrencySheet(true)}
         selectValue={currencyLabel(value.currency)}
       />
@@ -81,14 +82,14 @@ export function GroupFormFields({
       <SelectSheet
         visible={currencySheet}
         onClose={() => setCurrencySheet(false)}
-        title="Group currency"
+        title={t('Group currency')}
         options={currencyOptions}
         value={value.currency}
         onSelect={(currency) => set({ currency })}
         searchable
         searchPlaceholder="Search currencies"
       />
-      <Sheet visible={iconSheet} onClose={() => setIconSheet(false)} title="Choose an icon">
+      <Sheet visible={iconSheet} onClose={() => setIconSheet(false)} title={t('Choose an icon')}>
         <View style={styles.iconGrid}>
           {GROUP_ICONS.map((ic) => (
             <Pressable

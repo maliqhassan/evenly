@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, GoogleButton, Icon, Pressable, Screen, Text } from '@/components';
+import { t } from '@/i18n';
 import { authClient } from '@/lib/auth';
 import { config } from '@/lib/config';
 import { retrySession } from '@/lib/session';
@@ -40,8 +41,8 @@ export default function SignInError() {
       padding={24}
       footer={
         <View style={styles.footer}>
-          <Button label="Try again" onPress={tryAgain} loading={busy} />
-          <GoogleButton onPress={tryAgain} label="Use another Google account" loading={false} />
+          <Button label={t('Try again')} onPress={tryAgain} loading={busy} />
+          <GoogleButton onPress={tryAgain} label={t('Use another Google account')} loading={false} />
           <Pressable
             onPress={() => Linking.openURL(`mailto:${config.supportEmail}?subject=Sign-in%20help`)}
             accessibilityRole="link"
@@ -49,7 +50,7 @@ export default function SignInError() {
             style={{ marginTop: 4 }}
           >
             <Text variant="body" color={colors.textMuted}>
-              Need help? <Text variant="bodyStrong">Contact support</Text>
+              {t('Need help?')} <Text variant="bodyStrong">{t('Contact support')}</Text>
             </Text>
           </Pressable>
         </View>
@@ -61,7 +62,7 @@ export default function SignInError() {
         </View>
         <View style={{ gap: 8 }}>
           <Text variant="h2" align="center" accessibilityRole="header">
-            Sign-in didn’t complete
+            {t('Sign-in didn’t complete')}
           </Text>
           <Text variant="bodyLg" color={colors.textMuted} align="center">
             {COPY[reason] ?? COPY.unknown}
@@ -76,13 +77,13 @@ export default function SignInError() {
           <View style={[styles.tip, styles.tipDivider]}>
             <Icon name="wifi-off" size={18} color={colors.forest} />
             <Text variant="body" color={colors.forest}>
-              Check your internet connection
+              {t('Check your internet connection')}
             </Text>
           </View>
           <View style={styles.tip}>
             <Icon name="user-round-check" size={18} color={colors.forest} />
             <Text variant="body" color={colors.forest}>
-              Use the same account as last time
+              {t('Use the same account as last time')}
             </Text>
           </View>
         </View>

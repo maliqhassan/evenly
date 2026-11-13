@@ -31,6 +31,7 @@ import { splitModeMeta } from '@/features/expenses/split-summary';
 import { activeMembers, usePeople } from '@/features/people';
 import { currencyOptions } from '@/features/profile/options';
 import { usePreferences } from '@/hooks/usePreferences';
+import { msg, t } from '@/i18n';
 import { formatRelativeDay } from '@/lib/dates';
 import { chooseImage } from '@/lib/media';
 import { track } from '@/lib/monitoring';
@@ -43,12 +44,12 @@ import { colors, fontFamily, radii, typography } from '@/theme';
 type SheetName = 'group' | 'currency' | 'category' | 'date' | 'payer' | 'note' | 'repeat' | null;
 
 const REPEAT_OPTIONS = [
-  { value: 'never', label: 'Never', description: 'Just this once' },
-  { value: 'weekly', label: 'Every week', description: 'Same day each week' },
-  { value: 'monthly', label: 'Every month', description: 'Same date each month, such as rent' },
-  { value: 'yearly', label: 'Every year', description: 'Same date each year' },
+  { value: 'never', label: msg('Never'), description: msg('Just this once') },
+  { value: 'weekly', label: msg('Every week'), description: msg('Same day each week') },
+  { value: 'monthly', label: msg('Every month'), description: msg('Same date each month, such as rent') },
+  { value: 'yearly', label: msg('Every year'), description: msg('Same date each year') },
 ] as const;
-const repeatLabel = (v: string) => REPEAT_OPTIONS.find((o) => o.value === v)?.label ?? 'Never';
+const repeatLabel = (v: string) => t(REPEAT_OPTIONS.find((o) => o.value === v)?.label ?? 'Never');
 
 /** 15 — Add expense (also used to edit, via ?expenseId=). */
 export default function AddExpense() {
@@ -110,11 +111,11 @@ export default function AddExpense() {
   useEffect(() => {
     if (expenseId || !receiptUri || scannedUri.current === receiptUri) return;
     scannedUri.current = receiptUri;
-    toast.info('Reading your receipt…');
+    toast.info(t('Reading your receipt…'));
     void scanReceipt(receiptUri, { currency: d.currency, dateFormat }).then((r) => {
       if (!r) return; // no recognizer in this build, or the photo couldn't be read
       if (r.total === null && r.items.length === 0 && !r.merchant && !r.date) {
-        toast.info('Couldn’t read this receipt. You can enter the amount yourself.');
+        toast.info(t('Couldn’t read this receipt. You can enter the amount yourself.'));
         return;
       }
       setScan(r);
@@ -135,8 +136,8 @@ export default function AddExpense() {
 
   const errors = touched
     ? {
-        amount: amount <= 0 ? 'Enter an amount' : null,
-        description: !d.description.trim() ? 'Add a description' : null,
+        amount: amount <= 0 ? t('Enter an amount') : null,
+        description: !d.description.trim() ? t('Add a description') : null,
       }
     : { amount: null, description: null };
 
@@ -150,11 +151,11 @@ export default function AddExpense() {
       notes: d.notes,
     });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? 'Check the expense details');
+      toast.error(parsed.error.issues[0]?.message ?? t('Check the expense details'));
       return;
     }
     if (!evaluation.ok) {
-      toast.error('The split doesn’t add up yet');
+      toast.error(t('The split doesn’t add up yet'));
       router.push('/add-expense/split');
       return;
     }
@@ -184,10 +185,10 @@ export default function AddExpense() {
       track('expense_saved', { method: d.method, edit: !!d.expenseId, receipt: !!d.receipt, repeat: d.repeat });
       toast.success(
         d.expenseId
-          ? 'Expense updated'
+          ? t('Expense updated')
           : d.repeat !== 'never'
-            ? `Expense saved. It repeats ${repeatLabel(d.repeat).toLowerCase()}.`
-            : 'Expense saved',
+            ? t('Expense saved. It repeats: {when}.', { when: repeatLabel(d.repeat) })
+            : t('Expense saved'),
       );
       router.dismiss();
       if (!d.expenseId && !keepDraft) router.push({ pathname: '/expense/[id]', params: { id } });
@@ -207,17 +208,17 @@ export default function AddExpense() {
   };
 
   const pickReceipt = async () => {
-    const file = await chooseImage('Attach receipt');
+    const file = await chooseImage(t('Attach receipt'));
     if (file) d.patch({ receipt: { uri: file.uri, mimeType: file.mimeType, size: file.size ?? null } });
   };
   const attach = () =>
-    alert('Add to expense', undefined, [
-      { text: d.receipt ? 'Replace receipt photo' : 'Attach receipt photo', onPress: pickReceipt },
-      { text: d.notes ? 'Edit note' : 'Add a note', onPress: () => setSheet('note') },
+    alert(t('Add to expense'), undefined, [
+      { text: d.receipt ? t('Replace receipt photo') : t('Attach receipt photo'), onPress: pickReceipt },
+      { text: d.notes ? t('Edit note') : t('Add a note'), onPress: () => setSheet('note') },
       ...(d.receipt
-        ? [{ text: 'Remove receipt', style: 'destructive' as const, onPress: () => d.patch({ receipt: null }) }]
+        ? [{ text: t('Remove receipt'), style: 'destructive' as const, onPress: () => d.patch({ receipt: null }) }]
         : []),
-      { text: 'Cancel', style: 'cancel' as const },
+      { text: t('Cancel'), style: 'cancel' as const },
     ]);
 
   const payer = people.get(d.paidBy);
@@ -228,7 +229,7 @@ export default function AddExpense() {
       gap={16}
       footer={
         <Button
-          label={d.expenseId ? 'Save changes' : 'Save expense'}
+          label={d.expenseId ? t('Save changes') : t('Save expense')}
           onPress={submit}
           loading={save.isPending || loadingEdit}
           disabled={!d.groupId}
@@ -236,9 +237,9 @@ export default function AddExpense() {
       }
     >
       <Header
-        title={d.expenseId ? 'Edit expense' : 'Add expense'}
+        title={d.expenseId ? t('Edit expense') : t('Add expense')}
         left="close"
-        right={<IconButton icon="scan-line" label="Scan receipt" onPress={pickReceipt} />}
+        right={<IconButton icon="scan-line" label={t('Scan receipt')} onPress={pickReceipt} />}
       />
 
       <Pressable
@@ -251,7 +252,7 @@ export default function AddExpense() {
           <Icon name={group?.icon ?? 'users'} size={14} color={colors.mint} />
         </View>
         <Text variant="secondaryMedium">
-          {group?.name ?? (activeGroups.length ? 'Choose a group' : 'Create a group first')}
+          {group?.name ?? (activeGroups.length ? t('Choose a group') : t('Create a group first'))}
         </Text>
         {!d.expenseId ? <Icon name="chevron-down" size={16} color={colors.textFaint} /> : null}
       </Pressable>
@@ -291,7 +292,7 @@ export default function AddExpense() {
             hitSlop={8}
           >
             <Text variant="captionStrong" color={colors.positive}>
-              Total from items · Edit items
+              {t('Total from items · Edit items')}
             </Text>
           </Pressable>
         ) : null}
@@ -307,7 +308,7 @@ export default function AddExpense() {
         <TextInput
           value={d.description}
           onChangeText={(description) => d.patch({ description })}
-          placeholder="What was it for?"
+          placeholder={t('What was it for?')}
           placeholderTextColor={colors.textFaint}
           accessibilityLabel="Description"
           maxLength={120}
@@ -355,7 +356,7 @@ export default function AddExpense() {
           style={[styles.cardRow, styles.divider]}
         >
           <Text variant="secondary" color={colors.textMuted} style={styles.cardLabel}>
-            Paid by
+            {t('Paid by')}
           </Text>
           {d.paidBy ? <Avatar id={d.paidBy} name={payer.name} uri={payer.avatarUrl} size={28} /> : null}
           <Text variant="bodyMedium" style={{ flex: 1 }}>
@@ -371,22 +372,22 @@ export default function AddExpense() {
           style={[styles.cardRow, !d.expenseId && styles.divider]}
         >
           <Text variant="secondary" color={colors.textMuted} style={styles.cardLabel}>
-            Split
+            {t('Split')}
           </Text>
           <View style={{ flex: 1, gap: 2 }}>
             <Text variant="bodyMedium">
-              {d.itemized ? 'By item' : meta.summary} · {participants} {participants === 1 ? 'person' : 'people'}
+              {d.itemized ? t('By item') : t(meta.summary)} · {participants} {participants === 1 ? 'person' : 'people'}
             </Text>
             {evaluation.ok ? (
               <View style={{ flexDirection: 'row' }}>
                 <Text variant="caption" color={colors.positive}>
-                  Your share{' '}
+                  {t('Your share')}{' '}
                 </Text>
                 <AmountText minor={myShare ?? 0} currency={d.currency} tone="positive" variant="caption" />
               </View>
             ) : amount > 0 ? (
               <Text variant="caption" color={colors.negative}>
-                Split doesn’t add up — tap to fix
+                {t('Split doesn’t add up — tap to fix')}
               </Text>
             ) : null}
           </View>
@@ -401,7 +402,7 @@ export default function AddExpense() {
             style={styles.cardRow}
           >
             <Text variant="secondary" color={colors.textMuted} style={styles.cardLabel}>
-              Repeat
+              {t('Repeat')}
             </Text>
             <Icon name="refresh-cw" size={16} color={d.repeat === 'never' ? colors.textFaint : colors.positive} />
             <Text variant="bodyMedium" color={d.repeat === 'never' ? colors.ink : colors.positive} style={{ flex: 1 }}>
@@ -417,7 +418,7 @@ export default function AddExpense() {
           <View style={styles.attachFilled}>
             <Image source={{ uri: d.receipt.uri }} style={styles.thumb} contentFit="cover" />
             <View style={{ flex: 1 }}>
-              <Text variant="bodyMedium">Receipt attached</Text>
+              <Text variant="bodyMedium">{t('Receipt attached')}</Text>
               <Text variant="caption" color={colors.textSubtle} numberOfLines={1}>
                 {d.notes ? d.notes : 'Tap to add a note or replace'}
               </Text>
@@ -434,7 +435,7 @@ export default function AddExpense() {
           <>
             <Icon name="paperclip" size={18} color={colors.textMuted} />
             <Text variant="body" color={colors.textMuted}>
-              Attach receipt or add a note
+              {t('Attach receipt or add a note')}
             </Text>
           </>
         )}
@@ -443,7 +444,7 @@ export default function AddExpense() {
       <SelectSheet
         visible={sheet === 'group'}
         onClose={() => setSheet(null)}
-        title="Group"
+        title={t('Group')}
         options={activeGroups.map((g) => ({
           value: g.id,
           label: g.name,
@@ -459,7 +460,7 @@ export default function AddExpense() {
       <SelectSheet
         visible={sheet === 'currency'}
         onClose={() => setSheet(null)}
-        title="Currency"
+        title={t('Currency')}
         options={currencyOptions}
         value={d.currency}
         // Item amounts are typed in one currency, so changing it starts the items over.
@@ -484,15 +485,15 @@ export default function AddExpense() {
       <SelectSheet
         visible={sheet === 'repeat'}
         onClose={() => setSheet(null)}
-        title="Repeat"
-        options={REPEAT_OPTIONS}
+        title={t('Repeat')}
+        options={REPEAT_OPTIONS.map((o) => ({ ...o, label: t(o.label), description: t(o.description) }))}
         value={d.repeat}
         onSelect={(repeat) => d.patch({ repeat })}
       />
       <SelectSheet
         visible={sheet === 'category'}
         onClose={() => setSheet(null)}
-        title="Category"
+        title={t('Category')}
         options={(categories.data ?? []).map((c) => ({ value: c.id, label: c.name, icon: c.icon }))}
         value={d.categoryId}
         onSelect={(categoryId) => d.patch({ categoryId })}
@@ -500,7 +501,7 @@ export default function AddExpense() {
       <SelectSheet
         visible={sheet === 'payer'}
         onClose={() => setSheet(null)}
-        title="Paid by"
+        title={t('Paid by')}
         options={d.memberIds.map((id) => {
           const p = people.get(id);
           return {
@@ -535,21 +536,21 @@ export default function AddExpense() {
 function NoteSheet({ onClose, value, onSave }: { onClose: () => void; value: string; onSave: (v: string) => void }) {
   const [text, setText] = useState(value);
   return (
-    <Sheet visible onClose={onClose} title="Note">
+    <Sheet visible onClose={onClose} title={t('Note')}>
       <View style={{ paddingHorizontal: 20, gap: 12 }}>
         <TextInput
           value={text}
           onChangeText={setText}
           multiline
           maxLength={1000}
-          placeholder="Anything worth remembering?"
+          placeholder={t('Anything worth remembering?')}
           placeholderTextColor={colors.textFaint}
           accessibilityLabel="Note"
           style={styles.note}
           autoFocus
         />
         <Button
-          label="Save note"
+          label={t('Save note')}
           onPress={() => {
             onSave(text);
             onClose();

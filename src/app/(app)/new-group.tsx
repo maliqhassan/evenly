@@ -6,6 +6,7 @@ import { errorMessage } from '@/api';
 import { Avatar, Button, Card, Header, Icon, Pressable, Screen, Text, toast } from '@/components';
 import { FriendPicker } from '@/features/groups/FriendPicker';
 import { GroupFormFields, type GroupFormValue } from '@/features/groups/GroupForm';
+import { t } from '@/i18n';
 import { track } from '@/lib/monitoring';
 import { useCreateGroup, useFriends } from '@/queries';
 import { groupSchema } from '@/schemas';
@@ -50,9 +51,9 @@ export default function NewGroup() {
     <Screen
       gap={14}
       contentStyle={{ paddingTop: 8 }}
-      footer={<Button label="Create group" onPress={submit} loading={create.isPending} />}
+      footer={<Button label={t('Create group')} onPress={submit} loading={create.isPending} />}
     >
-      <Header title="New group" left="close" />
+      <Header title={t('New group')} left="close" />
       <GroupFormFields value={value} onChange={setValue} nameError={nameError} />
 
       <View style={{ gap: 8 }}>
@@ -63,10 +64,10 @@ export default function NewGroup() {
           <View style={[styles.row, styles.divider]}>
             <Avatar id={me.profile.id} name={me.profile.fullName} uri={me.profile.avatarUrl} size={34} />
             <Text variant="bodyMedium" style={{ flex: 1 }}>
-              You
+              {t('You')}
             </Text>
             <Text variant="caption" color={colors.textFaint}>
-              Admin
+              {t('Admin')}
             </Text>
           </View>
           {people.map((p) => (
@@ -76,7 +77,7 @@ export default function NewGroup() {
                 {p.name}
               </Text>
               <Text variant="caption" color={colors.textFaint}>
-                Invited
+                {t('Invited')}
               </Text>
             </View>
           ))}
@@ -90,7 +91,7 @@ export default function NewGroup() {
               <Icon name="plus" size={16} color={colors.positive} />
             </View>
             <Text variant="bodyMedium" color={colors.positive}>
-              Add members
+              {t('Add members')}
             </Text>
           </Pressable>
         </Card>

@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { AmountText, Avatar, Icon, IconTile, Logo, Text } from '@/components';
+import { t } from '@/i18n';
 import { colors, radii, shadows, spacing } from '@/theme';
 
 // Example people and amounts for the feature tour (not user data).
@@ -36,7 +37,7 @@ export function SplitIllustration() {
       <View style={styles.pill}>
         <Icon name="equal" size={14} color={colors.forest} />
         <Text variant="captionStrong" color={colors.forest}>
-          Split equally
+          {t('Split equally')}
         </Text>
       </View>
     </View>
@@ -49,7 +50,7 @@ export function BalancesIllustration() {
     <View style={[styles.card, shadows.float, { padding: 0, overflow: 'hidden' }]}>
       <View style={styles.balanceTop}>
         <Text variant="overlineSm" color={colors.onDarkMuted}>
-          NET BALANCE
+          {t('NET BALANCE')}
         </Text>
         <AmountText minor={235000} currency={CUR} sign="always" variant="h2" color={colors.onDarkPositive} />
       </View>
@@ -59,7 +60,7 @@ export function BalancesIllustration() {
           <View style={{ flex: 1 }}>
             <Text variant="bodyStrong">Sara</Text>
             <Text variant="caption" color={colors.textSubtle}>
-              owes you
+              {t('owes you')}
             </Text>
           </View>
           <AmountText minor={320000} currency={CUR} tone="positive" variant="bodyStrong" />
@@ -69,7 +70,7 @@ export function BalancesIllustration() {
           <View style={{ flex: 1 }}>
             <Text variant="bodyStrong">Ali</Text>
             <Text variant="caption" color={colors.textSubtle}>
-              you owe
+              {t('you owe')}
             </Text>
           </View>
           <AmountText minor={85000} currency={CUR} tone="negative" variant="bodyStrong" />
@@ -102,7 +103,7 @@ export function SettleIllustration() {
         <View style={{ gap: 2 }}>
           <AmountText minor={85000} currency={CUR} tone="positive" variant="bodyLgStrong" />
           <Text variant="caption" color={colors.textSubtle}>
-            Payment confirmed
+            {t('Payment confirmed')}
           </Text>
         </View>
       </View>

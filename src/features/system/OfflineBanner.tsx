@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, Pressable, Text } from '@/components';
+import { t } from '@/i18n';
 import { useConnectivity } from '@/lib/offline';
 import { colors, radii, shadows } from '@/theme';
 
@@ -22,10 +23,10 @@ export function OfflineBanner() {
       >
         <Icon name="wifi-off" size={16} color={colors.warning} />
         <Text variant="captionMedium" style={{ flex: 1 }}>
-          You’re offline — showing saved data
+          {t('You’re offline — showing saved data')}
         </Text>
         <Text variant="captionStrong" color={colors.positive}>
-          Retry
+          {t('Retry')}
         </Text>
       </Pressable>
     </View>

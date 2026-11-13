@@ -17,6 +17,7 @@ import {
 } from '@/components';
 import { formatMoney, type CurrencyCode } from '@/domain/money';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { monthLong, monthShort } from '@/lib/dates';
 import { useBalances, useGroups, useSpendingReport } from '@/queries';
 import { colors, radii } from '@/theme';
@@ -65,7 +66,7 @@ export default function Reports() {
   return (
     <Screen gap={16} refreshing={report.isRefetching} onRefresh={() => report.refetch()}>
       <Header
-        title="Reports"
+        title={t('Reports')}
         right={
           <Pressable
             onPress={() =>
@@ -139,13 +140,13 @@ export default function Reports() {
       </View>
 
       <Card padded style={{ gap: 14 }}>
-        <Text variant="bodyLgStrong">By category</Text>
+        <Text variant="bodyLgStrong">{t('By category')}</Text>
         {report.isLoading ? (
           <Skeleton height={60} />
         ) : cats.length === 0 ? (
           <EmptyState
             icon="chart-pie"
-            title="Nothing this month yet"
+            title={t('Nothing this month yet')}
             body={`Expenses you share in ${currency} will be broken down here.`}
           />
         ) : (
@@ -171,7 +172,7 @@ export default function Reports() {
       <SelectSheet
         visible={pick}
         onClose={() => setPick(false)}
-        title="Report currency"
+        title={t('Report currency')}
         options={currencies.map((c) => ({ value: c, label: c }))}
         value={currency}
         onSelect={setCurrency}

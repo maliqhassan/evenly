@@ -4,6 +4,7 @@ import { Linking } from 'react-native';
 import type { UploadFile } from '@/api';
 import { alert } from '@/components/Dialog';
 import type { IconName } from '@/components/Icon';
+import { t } from '@/i18n';
 
 /** A themed yes/no dialog; resolves true when the user confirms. */
 export function confirmDialog(
@@ -17,7 +18,7 @@ export function confirmDialog(
       title,
       message,
       [
-        { text: opts.cancelText ?? 'Not now', style: 'cancel', onPress: () => resolve(false) },
+        { text: opts.cancelText ?? t('Not now'), style: 'cancel', onPress: () => resolve(false) },
         { text: confirmText, onPress: () => resolve(true) },
       ],
       { icon: opts.icon },
@@ -26,13 +27,13 @@ export function confirmDialog(
 }
 
 /** Explains a permission is blocked and offers to open the app's system settings. */
-export function showPermissionBlocked(what: string, why: string, icon: IconName) {
+export function showPermissionBlocked(title: string, message: string, icon: IconName) {
   alert(
-    `${what} access is off`,
-    `${why} Turn on ${what.toLowerCase()} access for Evenly in your phone's settings.`,
+    title,
+    message,
     [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Open settings', onPress: () => void Linking.openSettings() },
+      { text: t('Cancel'), style: 'cancel' },
+      { text: t('Open settings'), onPress: () => void Linking.openSettings() },
     ],
     { icon },
   );
@@ -47,9 +48,11 @@ async function ensureCamera(): Promise<boolean> {
   if (perm.granted) return true;
   if (perm.canAskAgain) {
     const ok = await confirmDialog(
-      'Use your camera?',
-      'Evenly uses the camera to photograph receipts and set your profile photo. Your phone will ask you to confirm.',
-      'Continue',
+      t('Use your camera?'),
+      t(
+        'Evenly uses the camera to photograph receipts and set your profile photo. Your phone will ask you to confirm.',
+      ),
+      t('Continue'),
       { icon: 'camera' },
     );
     if (!ok) return false;
@@ -57,7 +60,13 @@ async function ensureCamera(): Promise<boolean> {
     if (perm.granted) return true;
     if (perm.canAskAgain) return false; // declined for now; ask again next time
   }
-  showPermissionBlocked('Camera', 'Evenly needs the camera to take receipt and profile photos.', 'camera');
+  showPermissionBlocked(
+    t('Camera access is off'),
+    t(
+      'Evenly needs the camera to take receipt and profile photos. Turn on camera access for Evenly in your phone’s settings.',
+    ),
+    'camera',
+  );
   return false;
 }
 
@@ -87,9 +96,9 @@ export async function pickImage(
 export function chooseImage(title: string, square = false): Promise<UploadFile | null> {
   return new Promise((resolve) => {
     alert(title, undefined, [
-      { text: 'Take photo', onPress: () => void pickImage({ source: 'camera', square }).then(resolve) },
-      { text: 'Choose from library', onPress: () => void pickImage({ source: 'library', square }).then(resolve) },
-      { text: 'Cancel', style: 'cancel', onPress: () => resolve(null) },
+      { text: t('Take photo'), onPress: () => void pickImage({ source: 'camera', square }).then(resolve) },
+      { text: t('Choose from library'), onPress: () => void pickImage({ source: 'library', square }).then(resolve) },
+      { text: t('Cancel'), style: 'cancel', onPress: () => resolve(null) },
     ]);
   });
 }

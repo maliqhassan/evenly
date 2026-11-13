@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+import { t } from '@/i18n';
 import { colors, radii, sizes } from '@/theme';
 
 import { Pressable } from './Pressable';
@@ -31,13 +32,13 @@ export function GoogleLogo({ size = 18 }: { size?: number }) {
 }
 
 /**
- * "Continue with Google" — white, 1pt border, Google G on the left
+ * t('Continue with Google') — white, 1pt border, Google G on the left
  * (follows Google's sign-in branding guidelines).
  */
 export function GoogleButton({
   onPress,
   loading,
-  label = 'Continue with Google',
+  label = t('Continue with Google'),
 }: {
   onPress: () => void;
   loading?: boolean;

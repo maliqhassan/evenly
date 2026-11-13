@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Button, Field, GoogleLogo, InfoNote, Screen, Text } from '@/components';
 import { AvatarPicker } from '@/features/profile/AvatarPicker';
+import { t } from '@/i18n';
 import { chooseImage } from '@/lib/media';
 import { profileSchema, type ProfileForm } from '@/schemas';
 import { useOnboardingDraft } from '@/stores/drafts';
@@ -42,14 +43,14 @@ export default function CompleteProfile() {
     <Screen
       padding={spacing.screenAuth}
       gap={22}
-      footer={<Button label="Continue" onPress={onContinue} disabled={!formState.isValid} />}
+      footer={<Button label={t('Continue')} onPress={onContinue} disabled={!formState.isValid} />}
     >
       <View style={{ gap: 6 }}>
         <Text variant="h1" accessibilityRole="header">
-          You’re in
+          {t('You’re in')}
         </Text>
         <Text variant="bodyLg" color={colors.textMuted}>
-          Confirm how friends will see you.
+          {t('Confirm how friends will see you.')}
         </Text>
       </View>
 
@@ -63,7 +64,7 @@ export default function CompleteProfile() {
       <View style={styles.photoRow}>
         <AvatarPicker uri={draft.avatarUri} id={profile.id} name={profile.fullName} onPress={pickPhoto} />
         <View style={{ gap: 2 }}>
-          <Text variant="bodyLgStrong">Profile photo</Text>
+          <Text variant="bodyLgStrong">{t('Profile photo')}</Text>
           <Text variant="secondary" color={colors.textMuted}>
             {draft.avatarUri && draft.avatarUri === profile.avatarUrl
               ? 'Imported from Google'
@@ -79,7 +80,7 @@ export default function CompleteProfile() {
         name="fullName"
         render={({ field, fieldState }) => (
           <Field
-            label="Display name"
+            label={t('Display name')}
             value={field.value}
             onChangeText={field.onChange}
             onBlur={field.onBlur}
@@ -96,8 +97,8 @@ export default function CompleteProfile() {
         name="phone"
         render={({ field, fieldState }) => (
           <Field
-            label="Phone (optional)"
-            placeholder="Helps friends find you"
+            label={t('Phone (optional)')}
+            placeholder={t('Helps friends find you')}
             value={field.value ?? ''}
             onChangeText={field.onChange}
             onBlur={field.onBlur}
@@ -110,7 +111,7 @@ export default function CompleteProfile() {
       />
 
       <InfoNote>
-        Friends can always add you with your invite link — your email is only shown to people in your groups.
+        {t('Friends can always add you with your invite link — your email is only shown to people in your groups.')}
       </InfoNote>
     </Screen>
   );

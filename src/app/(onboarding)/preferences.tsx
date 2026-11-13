@@ -6,6 +6,7 @@ import { api, errorMessage, type DateFormatPref, type NumberFormatPref } from '@
 import { Button, Card, IconTile, ListRow, Pressable, Screen, SelectSheet, Text, toast } from '@/components';
 import { currencyLabel } from '@/domain/money';
 import { AvatarPicker } from '@/features/profile/AvatarPicker';
+import { t } from '@/i18n';
 import {
   currencyOptions,
   dateFormatOptions,
@@ -87,7 +88,7 @@ export default function Preferences() {
     <Screen
       padding={spacing.screenAuth}
       gap={22}
-      footer={<Button label="Continue" onPress={finish} loading={complete.isPending} />}
+      footer={<Button label={t('Continue')} onPress={finish} loading={complete.isPending} />}
     >
       <View style={styles.top}>
         <View style={styles.progress} accessibilityLabel="Step 2 of 2">
@@ -102,17 +103,17 @@ export default function Preferences() {
           scaleOnPress={false}
         >
           <Text variant="body" color={colors.textMuted}>
-            Skip
+            {t('Skip')}
           </Text>
         </Pressable>
       </View>
 
       <View style={{ gap: 6 }}>
         <Text variant="h1" accessibilityRole="header">
-          Make it yours
+          {t('Make it yours')}
         </Text>
         <Text variant="bodyLg" color={colors.textMuted}>
-          You can change these later in Settings.
+          {t('You can change these later in Settings.')}
         </Text>
       </View>
 
@@ -146,7 +147,7 @@ export default function Preferences() {
       <SelectSheet
         visible={sheet === 'currency'}
         onClose={() => setSheet(null)}
-        title="Default currency"
+        title={t('Default currency')}
         options={currencyOptions}
         value={currency}
         onSelect={setCurrency}
@@ -156,7 +157,7 @@ export default function Preferences() {
       <SelectSheet
         visible={sheet === 'region'}
         onClose={() => setSheet(null)}
-        title="Region"
+        title={t('Region')}
         options={regionOptions}
         value={region}
         searchable
@@ -171,7 +172,7 @@ export default function Preferences() {
       <SelectSheet
         visible={sheet === 'number'}
         onClose={() => setSheet(null)}
-        title="Number format"
+        title={t('Number format')}
         options={numberFormatOptions}
         value={numberFormat}
         onSelect={setNumberFormat}
@@ -179,7 +180,7 @@ export default function Preferences() {
       <SelectSheet
         visible={sheet === 'date'}
         onClose={() => setSheet(null)}
-        title="Date format"
+        title={t('Date format')}
         options={dateFormatOptions}
         value={dateFormat}
         onSelect={setDateFormat}

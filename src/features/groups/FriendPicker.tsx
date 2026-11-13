@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import type { Friend } from '@/api';
 import { Avatar, Button, Checkbox, Pressable, SearchField, Sheet, Text } from '@/components';
+import { t } from '@/i18n';
 import { colors, spacing } from '@/theme';
 
 /** Multi-select of friends (people from your other groups). */
@@ -30,11 +31,11 @@ export function FriendPicker({
   const toggle = (id: string) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   return (
-    <Sheet visible={visible} onClose={onClose} title="Add members" tall>
+    <Sheet visible={visible} onClose={onClose} title={t('Add members')} tall>
       <View style={{ paddingHorizontal: spacing.screen, gap: spacing.md }}>
-        <SearchField value={q} onChangeText={setQ} placeholder="Search friends" bg={colors.surface} />
+        <SearchField value={q} onChangeText={setQ} placeholder={t('Search friends')} bg={colors.surface} />
         <Text variant="caption" color={colors.textSubtle}>
-          They’ll get an invitation to join. You can also share an invite link after creating the group.
+          {t('They’ll get an invitation to join. You can also share an invite link after creating the group.')}
         </Text>
       </View>
       <FlatList

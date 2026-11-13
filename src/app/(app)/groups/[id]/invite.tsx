@@ -22,6 +22,7 @@ import {
 } from '@/components';
 import { activeMembers } from '@/features/people';
 import { useDebounced } from '@/hooks/useDebounced';
+import { t } from '@/i18n';
 import { inviteUrl } from '@/lib/config';
 import { track } from '@/lib/monitoring';
 import { useFriends, useGroup, useGroupInvitations, useInviteLink, useInviteProfiles } from '@/queries';
@@ -83,7 +84,7 @@ export default function Invite() {
 
   const copy = async () => {
     await Clipboard.setStringAsync(url);
-    toast.success('Invite link copied');
+    toast.success(t('Invite link copied'));
   };
   const share = async () => {
     track('invite_link_shared');
@@ -92,7 +93,7 @@ export default function Invite() {
   const sendInvite = async (pid: string) => {
     try {
       await invite.mutateAsync([pid]);
-      toast.success('Invitation sent');
+      toast.success(t('Invitation sent'));
     } catch (e) {
       toast.error(errorMessage(e));
     }
@@ -105,10 +106,10 @@ export default function Invite() {
       <View style={styles.linkCard}>
         <View style={{ gap: 4 }}>
           <Text variant="bodyLgStrong" color={colors.onDark}>
-            Share invite link
+            {t('Share invite link')}
           </Text>
           <Text variant="secondary" color={colors.onDarkMuted}>
-            Anyone with the link can join this group.
+            {t('Anyone with the link can join this group.')}
           </Text>
         </View>
         <View style={styles.linkField}>
@@ -122,7 +123,7 @@ export default function Invite() {
           <Pressable onPress={copy} disabled={!url} accessibilityLabel="Copy invite link" style={styles.copy}>
             <Icon name="copy" size={14} color={colors.forest} />
             <Text variant="secondaryStrong" color={colors.forest}>
-              Copy
+              {t('Copy')}
             </Text>
           </Pressable>
         </View>
@@ -135,7 +136,7 @@ export default function Invite() {
           >
             <Icon name="share" size={16} color={colors.forest} />
             <Text variant="secondaryStrong" color={colors.forest}>
-              Share
+              {t('Share')}
             </Text>
           </Pressable>
           <Pressable
@@ -146,13 +147,13 @@ export default function Invite() {
           >
             <Icon name="qr-code" size={16} color={colors.onDark} />
             <Text variant="secondary" color={colors.onDark}>
-              QR code
+              {t('QR code')}
             </Text>
           </Pressable>
         </View>
       </View>
 
-      <SearchField value={q} onChangeText={setQ} placeholder="Name or email" bg={colors.surface} />
+      <SearchField value={q} onChangeText={setQ} placeholder={t('Name or email')} bg={colors.surface} />
 
       <View style={{ gap: 8 }}>
         <Overline>{q ? 'RESULTS' : 'SUGGESTED'}</Overline>
@@ -186,7 +187,7 @@ export default function Invite() {
         </Card>
       </View>
 
-      <Sheet visible={qr} onClose={() => setQr(false)} title="Scan to join">
+      <Sheet visible={qr} onClose={() => setQr(false)} title={t('Scan to join')}>
         <View style={styles.qr}>
           <View style={styles.qrCard}>{url ? <QRCode value={url} size={220} /> : null}</View>
           <Text variant="secondary" color={colors.textMuted} align="center">

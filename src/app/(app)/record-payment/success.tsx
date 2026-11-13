@@ -7,6 +7,7 @@ import { formatMoney } from '@/domain/money';
 import { PAYMENT_METHOD_LABELS } from '@/features/expenses/categories';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { useBalances, useSettlement } from '@/queries';
 import { colors, radii } from '@/theme';
 
@@ -32,7 +33,7 @@ export default function PaymentRecorded() {
         padding={24}
         footer={
           <View style={{ gap: 14, alignItems: 'center' }}>
-            <Button label="Done" onPress={done} />
+            <Button label={t('Done')} onPress={done} />
             <Pressable
               onPress={() => {
                 router.dismissAll();
@@ -43,7 +44,7 @@ export default function PaymentRecorded() {
               hitSlop={10}
             >
               <Text variant="bodyMedium" color={colors.positive}>
-                View in activity
+                {t('View in activity')}
               </Text>
             </Pressable>
           </View>
@@ -61,7 +62,7 @@ export default function PaymentRecorded() {
             <>
               <View style={{ gap: 8 }}>
                 <Text variant="h2" align="center" accessibilityRole="header">
-                  Payment recorded
+                  {t('Payment recorded')}
                 </Text>
                 <Text variant="bodyLg" color={colors.textMuted} align="center">
                   {iPaid ? `You paid ${other.firstName} ` : `${other.firstName} paid you `}
@@ -70,10 +71,10 @@ export default function PaymentRecorded() {
                 </Text>
               </View>
               <Card style={styles.summary}>
-                <Line label="Method" value={PAYMENT_METHOD_LABELS[st.method]} />
-                {st.reference ? <Line label="Reference" value={st.reference} /> : null}
+                <Line label={t('Method')} value={PAYMENT_METHOD_LABELS[st.method]} />
+                {st.reference ? <Line label={t('Reference')} value={st.reference} /> : null}
                 <Line
-                  label="Status"
+                  label={t('Status')}
                   value={st.status === 'pending' ? 'Awaiting confirmation' : 'Confirmed'}
                   color={st.status === 'pending' ? colors.warning : colors.positive}
                   strong

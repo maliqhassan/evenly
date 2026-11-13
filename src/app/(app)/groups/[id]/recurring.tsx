@@ -19,6 +19,7 @@ import {
 import { categoryIcon } from '@/features/expenses/categories';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { formatRelativeDay } from '@/lib/dates';
 import { useDeleteRecurring, useGroup, useRecurring, useSetRecurringActive } from '@/queries';
 import { useSession } from '@/stores/session';
@@ -66,7 +67,7 @@ export default function Recurring() {
         style: 'destructive',
         onPress: () =>
           remove.mutate(r.id, {
-            onSuccess: () => toast.success('Removed'),
+            onSuccess: () => toast.success(t('Removed')),
             onError: (e) => toast.error(errorMessage(e)),
           }),
       },
@@ -74,10 +75,11 @@ export default function Recurring() {
 
   return (
     <Screen gap={16}>
-      <Header title="Recurring expenses" subtitle={group?.name} />
+      <Header title={t('Recurring expenses')} subtitle={group?.name} />
       <Text variant="secondary" color={colors.textMuted}>
-        These are added to the group automatically, at the same time each week, month or year. Set one up with Repeat
-        when you add an expense.
+        {t(
+          'These are added to the group automatically, at the same time each week, month or year. Set one up with Repeat when you add an expense.',
+        )}
       </Text>
 
       {list.isLoading ? (
@@ -86,8 +88,8 @@ export default function Recurring() {
         <Card tone="bg" radius={radii.card}>
           <EmptyState
             icon="refresh-cw"
-            title="Nothing repeats yet"
-            body="When you add an expense, choose Repeat to make it happen every week, month or year."
+            title={t('Nothing repeats yet')}
+            body={t('When you add an expense, choose Repeat to make it happen every week, month or year.')}
           />
         </Card>
       ) : (
@@ -146,7 +148,7 @@ export default function Recurring() {
                         style={styles.action}
                       >
                         <Text variant="captionStrong" color={colors.negative}>
-                          Stop
+                          {t('Stop')}
                         </Text>
                       </Pressable>
                     </View>

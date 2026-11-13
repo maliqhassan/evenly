@@ -27,6 +27,7 @@ import { formatMoney } from '@/domain/money';
 import { categoryIcon } from '@/features/expenses/categories';
 import { activeMembers, usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { dayOfMonth, monthHeader, monthShort, sinceLabel } from '@/lib/dates';
 import { useBalances, useGroup, useGroupExpenses, useGroupSettlements, useGroupTotals } from '@/queries';
 import { useExpenseDraft } from '@/stores/drafts';
@@ -68,7 +69,7 @@ export default function GroupDetails() {
         {isLoading ? (
           <SkeletonRows count={5} />
         ) : (
-          <ErrorState message="This group isn’t available." onRetry={() => router.back()} />
+          <ErrorState message={t('This group isn’t available.')} onRetry={() => router.back()} />
         )}
       </View>
     );
@@ -86,18 +87,18 @@ export default function GroupDetails() {
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 120 }} showsVerticalScrollIndicator={false}>
         <View style={[styles.hero, { paddingTop: insets.top + 14 }]}>
           <View style={styles.heroNav}>
-            <IconButton icon="arrow-left" tone="onDark" label="Back" onPress={() => router.back()} />
+            <IconButton icon="arrow-left" tone="onDark" label={t('Back')} onPress={() => router.back()} />
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <IconButton
                 icon="user-plus"
                 tone="onDark"
-                label="Invite members"
+                label={t('Invite members')}
                 onPress={() => router.push({ pathname: '/groups/[id]/invite', params: { id } })}
               />
               <IconButton
                 icon="settings"
                 tone="onDark"
-                label="Group settings"
+                label={t('Group settings')}
                 onPress={() => router.push({ pathname: '/groups/[id]/settings', params: { id } })}
               />
             </View>
@@ -117,7 +118,7 @@ export default function GroupDetails() {
             <View style={styles.archived}>
               <Icon name="archive" size={16} color={colors.onDarkMuted} />
               <Text variant="secondary" color={colors.onDarkMuted}>
-                Archived — restore it in settings to add expenses.
+                {t('Archived — restore it in settings to add expenses.')}
               </Text>
             </View>
           ) : null}
@@ -136,18 +137,18 @@ export default function GroupDetails() {
                 />
               ) : (
                 <Text variant="h3" color={colors.textSubtle}>
-                  Settled up
+                  {t('Settled up')}
                 </Text>
               )}
               {nets.length > 1 ? (
                 <Text variant="micro" color={colors.textMuted}>
-                  + other currencies
+                  {t('+ other currencies')}
                 </Text>
               ) : null}
             </View>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <Button
-                label="Balances"
+                label={t('Balances')}
                 size="sm"
                 variant="secondary"
                 fullWidth={false}
@@ -155,7 +156,7 @@ export default function GroupDetails() {
                 onPress={() => router.push({ pathname: '/groups/[id]/balances', params: { id } })}
               />
               <Button
-                label="Settle up"
+                label={t('Settle up')}
                 size="sm"
                 fullWidth={false}
                 style={{ height: 38 }}
@@ -170,9 +171,9 @@ export default function GroupDetails() {
             value={tab}
             onChange={setTab}
             options={[
-              { value: 'expenses', label: 'Expenses' },
-              { value: 'members', label: 'Members' },
-              { value: 'totals', label: 'Totals' },
+              { value: 'expenses', label: t('Expenses') },
+              { value: 'members', label: t('Members') },
+              { value: 'totals', label: t('Totals') },
             ]}
           />
           {tab === 'expenses' ? (
@@ -200,7 +201,7 @@ export default function GroupDetails() {
         >
           <Icon name="plus" size={20} color={colors.onDarkStrong} />
           <Text variant="bodyLgMedium" color={colors.onDarkStrong}>
-            Add expense
+            {t('Add expense')}
           </Text>
         </Pressable>
       ) : null}
@@ -227,8 +228,8 @@ function ExpensesTab({
     return (
       <EmptyState
         icon="receipt"
-        title="No expenses yet"
-        body="Add the first shared cost for this group."
+        title={t('No expenses yet')}
+        body={t('Add the first shared cost for this group.')}
         action={canAdd ? 'Add expense' : undefined}
         onAction={onAdd}
       />
@@ -316,9 +317,9 @@ function SettlementRow({ s, label }: { s: Settlement; label: string }) {
         </Text>
         <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
           <Text variant="caption" color={colors.textSubtle}>
-            Settlement
+            {t('Settlement')}
           </Text>
-          {s.status === 'pending' ? <Pill label="Pending" tone="warning" /> : null}
+          {s.status === 'pending' ? <Pill label={t('Pending')} tone="warning" /> : null}
         </View>
       </View>
       <AmountText minor={s.amount} currency={s.currency} tone="muted" />
@@ -354,7 +355,7 @@ function MembersTab({ groupId }: { groupId: string }) {
               </View>
             ) : (
               <Text variant="secondary" color={colors.textSubtle}>
-                Settled up
+                {t('Settled up')}
               </Text>
             )}
           </View>
@@ -368,17 +369,23 @@ function TotalsTab({ groupId }: { groupId: string }) {
   const totals = useGroupTotals(groupId);
   if (totals.isLoading) return <SkeletonRows count={3} bg={colors.surface} />;
   if (!totals.data?.length)
-    return <EmptyState icon="chart-pie" title="No spending yet" body="Totals appear once the group has expenses." />;
+    return (
+      <EmptyState
+        icon="chart-pie"
+        title={t('No spending yet')}
+        body={t('Totals appear once the group has expenses.')}
+      />
+    );
   return (
     <View style={{ gap: 12, paddingTop: 10 }}>
-      {totals.data.map((t) => (
-        <Card key={t.currency} tone="bg" padded radius={radii.card} style={{ gap: 12 }}>
+      {totals.data.map((tot) => (
+        <Card key={tot.currency} tone="bg" padded radius={radii.card} style={{ gap: 12 }}>
           <Text variant="overline" color={colors.textFaint}>
-            {t.currency} · {t.count} {t.count === 1 ? 'expense' : 'expenses'}
+            {tot.currency} · {tot.count} {tot.count === 1 ? 'expense' : 'expenses'}
           </Text>
-          <TotalLine label="Total group spending" minor={t.totalSpent} currency={t.currency} strong />
-          <TotalLine label="You paid" minor={t.myPaid} currency={t.currency} />
-          <TotalLine label="Your share" minor={t.myShare} currency={t.currency} />
+          <TotalLine label={t('Total group spending')} minor={tot.totalSpent} currency={tot.currency} strong />
+          <TotalLine label={t('You paid')} minor={tot.myPaid} currency={tot.currency} />
+          <TotalLine label={t('Your share')} minor={tot.myShare} currency={tot.currency} />
         </Card>
       ))}
     </View>

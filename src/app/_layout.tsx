@@ -22,6 +22,7 @@ import { initMonitoring, wrapRoot } from '@/lib/monitoring';
 import { queryClient } from '@/lib/query-client';
 import { startSessionListener } from '@/lib/session';
 import { usePendingInvite } from '@/stores/drafts';
+import { useLanguage } from '@/i18n';
 import { useIntro } from '@/stores/intro';
 import { useSession } from '@/stores/session';
 
@@ -44,7 +45,10 @@ function RootLayout() {
 
   useEffect(() => {
     void useIntro.getState().load();
+    void useLanguage.getState().load();
   }, []);
+  // Text is translated as it's drawn, so a new language redraws the app.
+  const language = useLanguage((s) => s.code);
   const url = Linking.useLinkingURL();
 
   useEffect(() => {
@@ -74,7 +78,7 @@ function RootLayout() {
         {status === 'booting' || !introDone || introSeen === null ? (
           <SplashView onFinish={() => setIntroDone(true)} />
         ) : (
-          <RootStack status={status} introSeen={introSeen} />
+          <RootStack key={language} status={status} introSeen={introSeen} />
         )}
         {/* Android: hide the system navigation buttons; a swipe up shows them briefly. */}
         <NavigationBar hidden />

@@ -22,6 +22,7 @@ import { myDebts, type Debt } from '@/domain/ledger';
 import { formatMoney, type CurrencyCode } from '@/domain/money';
 import { usePeople } from '@/features/people';
 import { usePreferences } from '@/hooks/usePreferences';
+import { t } from '@/i18n';
 import { useAwaitingMe, useBalances, useGroups, useRespondSettlement } from '@/queries';
 import { colors, radii } from '@/theme';
 
@@ -62,7 +63,7 @@ export default function SettleUp() {
   const answer = async (id: string, gid: string, confirm: boolean) => {
     try {
       await respond.mutateAsync({ id, confirm, groupId: gid });
-      toast.success(confirm ? 'Payment confirmed' : 'Payment declined');
+      toast.success(confirm ? t('Payment confirmed') : t('Payment declined'));
     } catch (e) {
       toast.error(errorMessage(e));
     }
@@ -83,24 +84,24 @@ export default function SettleUp() {
           <IconButton
             icon="ellipsis-vertical"
             tone="plain"
-            label="Settlement history"
+            label={t('Settlement history')}
             onPress={() => router.push('/activity')}
           />
         }
       />
       <View style={{ alignItems: 'center', gap: 4 }}>
         <Text variant="h1" accessibilityRole="header">
-          Settle Up
+          {t('Settle Up')}
         </Text>
         <Text variant="body" color={colors.textSubtle}>
-          {groupId ? groupName(groupId) || 'Clear your balances in one tap' : 'Clear your balances in one tap'}
+          {groupId ? groupName(groupId) || t('Clear your balances in one tap') : t('Clear your balances in one tap')}
         </Text>
       </View>
 
       <View style={styles.oweCard}>
         <View style={{ gap: 4, flex: 1 }}>
           <Text variant="overlineSm" color={colors.textMuted}>
-            TOTAL YOU OWE
+            {t('TOTAL YOU OWE')}
           </Text>
           <AmountText
             minor={primary.amount}
@@ -126,7 +127,7 @@ export default function SettleUp() {
       {toConfirm.length ? (
         <View style={{ gap: 10 }}>
           <SectionHeader
-            title="Awaiting your confirmation"
+            title={t('Awaiting your confirmation')}
             right={<Pill label={`${toConfirm.length} to review`} tone="warning" variant="soft" />}
           />
           {toConfirm.map((s) => (
@@ -134,7 +135,9 @@ export default function SettleUp() {
               <View style={styles.cardTop}>
                 <Avatar id={s.from} name={people.get(s.from).name} uri={people.get(s.from).avatarUrl} size={40} />
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text variant="bodyLgStrong">{people.get(s.from).firstName} says they paid you</Text>
+                  <Text variant="bodyLgStrong">
+                    {t('{name} says they paid you', { name: people.get(s.from).firstName })}
+                  </Text>
                   <Text variant="caption" color={colors.textSubtle}>
                     {groupName(s.groupId)} · {s.method.replace('_', ' ')}
                     {s.reference ? ` · ${s.reference}` : ''}
@@ -143,9 +146,14 @@ export default function SettleUp() {
                 <AmountText minor={s.amount} currency={s.currency} variant="nav" />
               </View>
               <View style={{ flexDirection: 'row', gap: 10 }}>
-                <Button label="Confirm" size="md" style={{ flex: 1 }} onPress={() => answer(s.id, s.groupId, true)} />
                 <Button
-                  label="Not received"
+                  label={t('Confirm')}
+                  size="md"
+                  style={{ flex: 1 }}
+                  onPress={() => answer(s.id, s.groupId, true)}
+                />
+                <Button
+                  label={t('Not received')}
                   size="md"
                   variant="secondary"
                   style={{ flex: 1 }}
@@ -159,7 +167,7 @@ export default function SettleUp() {
 
       <View style={{ gap: 10 }}>
         <SectionHeader
-          title="Pending settlements"
+          title={t('Pending settlements')}
           right={iOwe.length ? <Pill label={`${iOwe.length} pending`} tone="positive" variant="soft" /> : undefined}
         />
         {balances.isLoading ? (
@@ -168,8 +176,8 @@ export default function SettleUp() {
           <View style={styles.card}>
             <EmptyState
               icon="circle-check"
-              title="You don’t owe anyone"
-              body={owedToMe.length ? 'Others still owe you — see below.' : 'Everyone is settled up.'}
+              title={t('You don’t owe anyone')}
+              body={owedToMe.length ? t('Others still owe you — see below.') : t('Everyone is settled up.')}
             />
           </View>
         ) : (
@@ -186,19 +194,25 @@ export default function SettleUp() {
 
       {owedToMe.length ? (
         <View style={{ gap: 10 }}>
-          <SectionHeader title="Owed to you" />
+          <SectionHeader title={t('Owed to you')} />
           {owedToMe.map((d) => (
             <View key={`${d.groupId}-${d.from}-${d.currency}`} style={[styles.card, styles.owedRow]}>
               <Avatar id={d.from} name={people.get(d.from).name} uri={people.get(d.from).avatarUrl} size={40} />
               <View style={{ flex: 1, gap: 2 }}>
-                <Text variant="bodyLgStrong">{people.get(d.from).firstName} owes you</Text>
+                <Text variant="bodyLgStrong">{t('{name} owes you', { name: people.get(d.from).firstName })}</Text>
                 <Text variant="caption" color={colors.textSubtle}>
                   {groupName(d.groupId)}
                 </Text>
               </View>
               <View style={{ alignItems: 'flex-end', gap: 6 }}>
                 <AmountText minor={d.amount} currency={d.currency} tone="positive" variant="bodyLgStrong" />
-                <Button label="Record payment" size="sm" variant="secondary" fullWidth={false} onPress={() => pay(d)} />
+                <Button
+                  label={t('Record payment')}
+                  size="sm"
+                  variant="secondary"
+                  fullWidth={false}
+                  onPress={() => pay(d)}
+                />
               </View>
             </View>
           ))}
@@ -224,18 +238,18 @@ function DebtCard({ debt, note, onPay }: { debt: Debt; note: string; onPay: () =
         <Avatar id={to.id} name={to.name} uri={to.avatarUrl} size={40} />
         <View style={{ flex: 1, alignItems: 'flex-end', gap: 4 }}>
           <AmountText minor={debt.amount} currency={debt.currency} variant="bodyLgStrong" style={{ fontSize: 19 }} />
-          <Pill label="Pending" tone="negative" />
+          <Pill label={t('Pending')} tone="negative" />
         </View>
       </View>
       <View style={styles.cardBottom}>
         <View style={{ gap: 2, flex: 1 }}>
-          <Text variant="bodyLgStrong">You to {to.firstName}</Text>
+          <Text variant="bodyLgStrong">{t('You to {name}', { name: to.firstName })}</Text>
           <Text variant="caption" color={colors.textSubtle}>
             {note} · {debt.currency}
           </Text>
         </View>
         <Button
-          label="Pay"
+          label={t('Pay')}
           size="sm"
           fullWidth={false}
           onPress={onPay}

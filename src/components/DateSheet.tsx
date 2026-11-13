@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { t } from '@/i18n';
 import { addDays, fromISODate, toISODate, todayISO } from '@/lib/dates';
 import { colors, spacing } from '@/theme';
 
@@ -46,22 +47,22 @@ export function DateSheet({
     setCursor(({ y, m }) => ({ y: m + delta < 0 ? y - 1 : m + delta > 11 ? y + 1 : y, m: (m + delta + 12) % 12 }));
 
   return (
-    <Sheet visible={visible} onClose={onClose} title="Date">
+    <Sheet visible={visible} onClose={onClose} title={t('Date')}>
       <View style={{ paddingHorizontal: spacing.screen, gap: spacing['2xl'] }}>
         <View style={styles.quick}>
-          <Chip label="Today" selected={value === todayISO()} onPress={() => pick(todayISO())} />
+          <Chip label={t('Today')} selected={value === todayISO()} onPress={() => pick(todayISO())} />
           <Chip
-            label="Yesterday"
+            label={t('Yesterday')}
             selected={value === addDays(todayISO(), -1)}
             onPress={() => pick(addDays(todayISO(), -1))}
           />
         </View>
         <View style={styles.monthRow}>
-          <IconButton icon="chevron-left" label="Previous month" onPress={() => shift(-1)} />
+          <IconButton icon="chevron-left" label={t('Previous month')} onPress={() => shift(-1)} />
           <Text variant="section">{monthLabel}</Text>
           <IconButton
             icon="chevron-right"
-            label="Next month"
+            label={t('Next month')}
             onPress={() => shift(1)}
             disabled={toISODate(new Date(cursor.y, cursor.m + 1, 1)) > maxDate}
           />

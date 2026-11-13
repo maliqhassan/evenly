@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { errorMessage, type AppNotification } from '@/api';
+import { t } from '@/i18n';
 import {
   Avatar,
   Button,
@@ -60,7 +61,7 @@ export default function Notifications() {
     try {
       const groupId = await respond.mutateAsync({ id, accept });
       if (accept) {
-        toast.success('You joined the group');
+        toast.success(t('You joined the group'));
         router.push({ pathname: '/groups/[id]', params: { id: groupId } });
       }
     } catch (e) {
@@ -82,12 +83,12 @@ export default function Notifications() {
       }}
     >
       <Header
-        title="Notifications"
+        title={t('Notifications')}
         right={
           <IconButton
             icon="check-check"
             tone="plain"
-            label="Mark all as read"
+            label={t('Mark all as read')}
             onPress={() => markRead.mutate(undefined)}
             disabled={!unread.length}
           />
@@ -119,14 +120,14 @@ export default function Notifications() {
           </View>
           <View style={styles.inviteActions}>
             <Button
-              label="Accept"
+              label={t('Accept')}
               size="md"
               style={{ flex: 1 }}
               onPress={() => answer(inv.id, true)}
               loading={respond.isPending && respond.variables?.id === inv.id && respond.variables.accept}
             />
             <Button
-              label="Decline"
+              label={t('Decline')}
               size="md"
               variant="muted"
               style={{ flex: 1 }}
@@ -143,7 +144,7 @@ export default function Notifications() {
           <EmptyState
             icon="bell"
             title={tab === 'unread' ? 'You’re all caught up' : 'No notifications yet'}
-            body="We’ll let you know when friends add expenses or settle up."
+            body={t('We’ll let you know when friends add expenses or settle up.')}
           />
         </Card>
       ) : (

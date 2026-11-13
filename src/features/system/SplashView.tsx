@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 
 import { Text } from '@/components';
+import { t } from '@/i18n';
 import { colors } from '@/theme';
 
 // The mark's ring (app icon geometry: stroke ≈ 22% of the ring's outer size).
@@ -99,7 +100,7 @@ export function SplashView({ onFinish }: SplashViewProps) {
       </View>
       <Animated.View style={{ opacity: text, paddingBottom: insets.bottom + 64 }}>
         <Text variant="body" color={colors.onDarkMuted} align="center">
-          Shared money, made simple.
+          {t('Shared money, made simple.')}
         </Text>
       </Animated.View>
     </View>

@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { api, errorMessage } from '@/api';
 import { Button, ErrorState, Header, IconTile, Screen, Skeleton, Text, toast } from '@/components';
+import { t } from '@/i18n';
 import { track } from '@/lib/monitoring';
 import { useAcceptInvite } from '@/queries';
 import { colors } from '@/theme';
@@ -32,7 +33,7 @@ export default function Join() {
         p ? (
           p.alreadyMember ? (
             <Button
-              label="Open group"
+              label={t('Open group')}
               onPress={() => {
                 router.dismiss();
                 router.push({ pathname: '/groups/[id]', params: { id: p.groupId } });
@@ -63,7 +64,7 @@ export default function Join() {
           </Text>
           {p.alreadyMember ? (
             <Text variant="secondary" color={colors.positive}>
-              You’re already a member.
+              {t('You’re already a member.')}
             </Text>
           ) : null}
         </View>

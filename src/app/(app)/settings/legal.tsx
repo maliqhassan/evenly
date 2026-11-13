@@ -3,6 +3,7 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
 import { Card, Header, IconTile, ListRow, Screen, Text } from '@/components';
+import { t } from '@/i18n';
 import { config } from '@/lib/config';
 import { colors } from '@/theme';
 
@@ -15,7 +16,7 @@ export default function Legal() {
   ];
   return (
     <Screen>
-      <Header title="Privacy & terms" />
+      <Header title={t('Privacy & terms')} />
       <Card>
         {rows.map((r, i) => (
           <ListRow
@@ -29,9 +30,9 @@ export default function Legal() {
         ))}
       </Card>
       <Text variant="secondary" color={colors.textMuted}>
-        Evenly stores your name, email, profile photo and the expenses you share so your groups can see who owes whom.
-        Evenly records payments you make elsewhere — it never moves money. Analytics never include amounts or
-        descriptions. You can delete your account from your profile at any time.
+        {t(
+          'Evenly stores your name, email, profile photo and the expenses you share so your groups can see who owes whom. Evenly records payments you make elsewhere — it never moves money. Analytics never include amounts or descriptions. You can delete your account from your profile at any time.',
+        )}
       </Text>
       <Text variant="caption" color={colors.textFaint} align="center">
         Evenly {Application.nativeApplicationVersion ?? '1.0.0'} ({Application.nativeBuildVersion ?? 'dev'})
