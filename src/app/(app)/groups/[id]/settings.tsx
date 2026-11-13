@@ -149,6 +149,18 @@ function GroupSettingsForm({ group }: { group: Group }) {
           </Text>
           <Icon name="chevron-right" size={18} color={colors.textFaint} />
         </Pressable>
+        <Pressable
+          style={[styles.row, styles.divider]}
+          scaleOnPress={false}
+          accessibilityLabel={t('Import from CSV')}
+          onPress={() => router.push({ pathname: '/groups/[id]/import', params: { id } })}
+        >
+          <Icon name="download" size={18} color={colors.forest} />
+          <Text variant="bodyMedium" style={{ flex: 1 }}>
+            {t('Import from CSV')}
+          </Text>
+          <Icon name="chevron-right" size={18} color={colors.textFaint} />
+        </Pressable>
         {isAdmin ? (
           <Pressable
             style={[styles.row, styles.divider]}

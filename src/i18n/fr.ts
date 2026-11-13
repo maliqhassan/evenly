@@ -399,6 +399,38 @@ const dict: Record<string, string> = {
   'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.':
     'Votre profil est supprimé et vous quittez tous les groupes. Les dépenses dont d’autres ont besoin restent dans leur historique sous « Utilisateur supprimé ». Vous devez d’abord être quitte. C’est irréversible.',
   'Your share': 'Votre part',
+  // CSV import
+  'Money in, not spending': 'Argent reçu, pas une dépense',
+  'No amount': 'Pas de montant',
+  'Date not recognised': 'Date non reconnue',
+  'Other currency': 'Autre devise',
+  Column: 'Colonne',
+  'Couldn’t read this file. Save it as CSV and try again.':
+    'Impossible de lire ce fichier. Enregistrez-le en CSV et réessayez.',
+  None: 'Aucune',
+  '{count} expenses imported': '{count} dépenses importées',
+  '{count} could not be imported': '{count} n’ont pas pu être importées',
+  'Importing {done} of {count}…': 'Import de {done} sur {count}…',
+  'Import {count} expenses': 'Importer {count} dépenses',
+  'Import from CSV': 'Importer un CSV',
+  'Import expenses from a spreadsheet or bank export. Each row becomes an expense split equally between everyone in this group.':
+    'Importez des dépenses depuis un tableur ou un relevé bancaire. Chaque ligne devient une dépense partagée à parts égales entre tous les membres du groupe.',
+  'Choose CSV file': 'Choisir un fichier CSV',
+  '{count} rows': '{count} lignes',
+  'Choose another file': 'Choisir un autre fichier',
+  COLUMNS: 'COLONNES',
+  Description: 'Description',
+  'Money out': 'Sorties d’argent',
+  Amount: 'Montant',
+  'Spending is': 'Les dépenses sont',
+  'Negative amounts': 'Montants négatifs',
+  'Positive amounts': 'Montants positifs',
+  PREVIEW: 'APERÇU',
+  '{count} to import · {total}': '{count} à importer · {total}',
+  'Split equally between everyone in this group': 'À parts égales entre tous les membres du groupe',
+  'Importing the same file again won’t add duplicates.':
+    'Importer le même fichier une seconde fois ne crée pas de doublons.',
+  '{count} rows skipped': '{count} lignes ignorées',
 };
 
 export default dict;

@@ -399,6 +399,37 @@ const dict: Record<string, string> = {
   'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.':
     'Profilmu dihapus dan kamu keluar dari semua grup. Pengeluaran yang dibutuhkan orang lain tetap ada di riwayat mereka sebagai “Pengguna dihapus”. Kamu harus lunas dulu. Ini tidak bisa dibatalkan.',
   'Your share': 'Bagianmu',
+  // CSV import
+  'Money in, not spending': 'Uang masuk, bukan pengeluaran',
+  'No amount': 'Tanpa jumlah',
+  'Date not recognised': 'Tanggal tidak dikenali',
+  'Other currency': 'Mata uang lain',
+  Column: 'Kolom',
+  'Couldn’t read this file. Save it as CSV and try again.':
+    'File ini tidak terbaca. Simpan sebagai CSV lalu coba lagi.',
+  None: 'Tidak ada',
+  '{count} expenses imported': '{count} pengeluaran diimpor',
+  '{count} could not be imported': '{count} gagal diimpor',
+  'Importing {done} of {count}…': 'Mengimpor {done} dari {count}…',
+  'Import {count} expenses': 'Impor {count} pengeluaran',
+  'Import from CSV': 'Impor dari CSV',
+  'Import expenses from a spreadsheet or bank export. Each row becomes an expense split equally between everyone in this group.':
+    'Impor pengeluaran dari spreadsheet atau mutasi bank. Tiap baris menjadi pengeluaran yang dibagi rata ke semua anggota grup.',
+  'Choose CSV file': 'Pilih file CSV',
+  '{count} rows': '{count} baris',
+  'Choose another file': 'Pilih file lain',
+  COLUMNS: 'KOLOM',
+  Description: 'Keterangan',
+  'Money out': 'Uang keluar',
+  Amount: 'Jumlah',
+  'Spending is': 'Pengeluaran berupa',
+  'Negative amounts': 'Jumlah negatif',
+  'Positive amounts': 'Jumlah positif',
+  PREVIEW: 'PRATINJAU',
+  '{count} to import · {total}': '{count} akan diimpor · {total}',
+  'Split equally between everyone in this group': 'Dibagi rata ke semua anggota grup',
+  'Importing the same file again won’t add duplicates.': 'Mengimpor file yang sama lagi tidak membuat duplikat.',
+  '{count} rows skipped': '{count} baris dilewati',
 };
 
 export default dict;

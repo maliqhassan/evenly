@@ -395,6 +395,37 @@ const dict: Record<string, string> = {
   'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.':
     'آپ کی پروفائل ہٹا دی جاتی ہے اور آپ تمام گروپ چھوڑ دیتے ہیں۔ جن اخراجات پر دوسرے انحصار کرتے ہیں وہ ان کی تاریخ میں “ڈیلیٹ شدہ صارف” کے طور پر رہتے ہیں۔ پہلے آپ کا حساب برابر ہونا چاہیے۔ اسے واپس نہیں کیا جا سکتا۔',
   'Your share': 'آپ کا حصہ',
+  // CSV import
+  'Money in, not spending': 'آنے والی رقم، خرچ نہیں',
+  'No amount': 'رقم نہیں',
+  'Date not recognised': 'تاریخ پہچانی نہیں گئی',
+  'Other currency': 'دوسری کرنسی',
+  Column: 'کالم',
+  'Couldn’t read this file. Save it as CSV and try again.':
+    'یہ فائل پڑھی نہیں جا سکی۔ اسے CSV میں محفوظ کر کے دوبارہ کوشش کریں۔',
+  None: 'کوئی نہیں',
+  '{count} expenses imported': '{count} اخراجات امپورٹ ہو گئے',
+  '{count} could not be imported': '{count} امپورٹ نہیں ہو سکے',
+  'Importing {done} of {count}…': '{count} میں سے {done} امپورٹ ہو رہے ہیں…',
+  'Import {count} expenses': '{count} اخراجات امپورٹ کریں',
+  'Import from CSV': 'CSV سے امپورٹ کریں',
+  'Import expenses from a spreadsheet or bank export. Each row becomes an expense split equally between everyone in this group.':
+    'اسپریڈشیٹ یا بینک اسٹیٹمنٹ سے اخراجات امپورٹ کریں۔ ہر قطار ایک خرچ بنتی ہے جو گروپ کے سب لوگوں میں برابر تقسیم ہوتا ہے۔',
+  'Choose CSV file': 'CSV فائل چنیں',
+  '{count} rows': '{count} قطاریں',
+  'Choose another file': 'دوسری فائل چنیں',
+  COLUMNS: 'کالم',
+  Description: 'تفصیل',
+  'Money out': 'جانے والی رقم',
+  Amount: 'رقم',
+  'Spending is': 'اخراجات ہیں',
+  'Negative amounts': 'منفی رقوم',
+  'Positive amounts': 'مثبت رقوم',
+  PREVIEW: 'پیش منظر',
+  '{count} to import · {total}': '{count} امپورٹ ہوں گے · {total}',
+  'Split equally between everyone in this group': 'گروپ کے سب لوگوں میں برابر',
+  'Importing the same file again won’t add duplicates.': 'وہی فائل دوبارہ امپورٹ کرنے سے ڈپلیکیٹ نہیں بنتے۔',
+  '{count} rows skipped': '{count} قطاریں چھوڑ دی گئیں',
 };
 
 export default dict;

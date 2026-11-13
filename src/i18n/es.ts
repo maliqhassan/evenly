@@ -398,6 +398,37 @@ const dict: Record<string, string> = {
   'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.':
     'Se elimina tu perfil y sales de todos los grupos. Los gastos de los que dependen otros quedan en su historial como «Usuario eliminado». Antes debes estar al día. No se puede deshacer.',
   'Your share': 'Tu parte',
+  // CSV import
+  'Money in, not spending': 'Dinero recibido, no gasto',
+  'No amount': 'Sin importe',
+  'Date not recognised': 'Fecha no reconocida',
+  'Other currency': 'Otra moneda',
+  Column: 'Columna',
+  'Couldn’t read this file. Save it as CSV and try again.':
+    'No se pudo leer este archivo. Guárdalo como CSV e inténtalo de nuevo.',
+  None: 'Ninguna',
+  '{count} expenses imported': '{count} gastos importados',
+  '{count} could not be imported': '{count} no se pudieron importar',
+  'Importing {done} of {count}…': 'Importando {done} de {count}…',
+  'Import {count} expenses': 'Importar {count} gastos',
+  'Import from CSV': 'Importar desde CSV',
+  'Import expenses from a spreadsheet or bank export. Each row becomes an expense split equally between everyone in this group.':
+    'Importa gastos desde una hoja de cálculo o un extracto bancario. Cada fila se convierte en un gasto dividido a partes iguales entre todos los del grupo.',
+  'Choose CSV file': 'Elegir archivo CSV',
+  '{count} rows': '{count} filas',
+  'Choose another file': 'Elegir otro archivo',
+  COLUMNS: 'COLUMNAS',
+  Description: 'Descripción',
+  'Money out': 'Dinero que sale',
+  Amount: 'Importe',
+  'Spending is': 'Los gastos son',
+  'Negative amounts': 'Importes negativos',
+  'Positive amounts': 'Importes positivos',
+  PREVIEW: 'VISTA PREVIA',
+  '{count} to import · {total}': '{count} por importar · {total}',
+  'Split equally between everyone in this group': 'A partes iguales entre todos los del grupo',
+  'Importing the same file again won’t add duplicates.': 'Importar el mismo archivo otra vez no crea duplicados.',
+  '{count} rows skipped': '{count} filas omitidas',
 };
 
 export default dict;

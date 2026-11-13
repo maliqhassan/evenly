@@ -395,6 +395,37 @@ const dict: Record<string, string> = {
   'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.':
     'आपकी प्रोफ़ाइल हटा दी जाती है और आप सभी ग्रुप छोड़ देते हैं। जिन खर्चों पर दूसरे निर्भर हैं, वे उनके इतिहास में “हटाया गया उपयोगकर्ता” के रूप में रहते हैं। पहले आपका हिसाब बराबर होना चाहिए। इसे वापस नहीं लिया जा सकता।',
   'Your share': 'आपका हिस्सा',
+  // CSV import
+  'Money in, not spending': 'आया पैसा, खर्च नहीं',
+  'No amount': 'रकम नहीं',
+  'Date not recognised': 'तारीख़ पहचानी नहीं गई',
+  'Other currency': 'दूसरी मुद्रा',
+  Column: 'कॉलम',
+  'Couldn’t read this file. Save it as CSV and try again.':
+    'यह फ़ाइल पढ़ी नहीं जा सकी। इसे CSV में सहेजकर फिर कोशिश करें।',
+  None: 'कोई नहीं',
+  '{count} expenses imported': '{count} खर्च आयात हुए',
+  '{count} could not be imported': '{count} आयात नहीं हो सके',
+  'Importing {done} of {count}…': '{count} में से {done} आयात हो रहे हैं…',
+  'Import {count} expenses': '{count} खर्च आयात करें',
+  'Import from CSV': 'CSV से आयात करें',
+  'Import expenses from a spreadsheet or bank export. Each row becomes an expense split equally between everyone in this group.':
+    'स्प्रेडशीट या बैंक स्टेटमेंट से खर्च आयात करें। हर पंक्ति एक खर्च बनती है जो ग्रुप के सभी लोगों में बराबर बँटता है।',
+  'Choose CSV file': 'CSV फ़ाइल चुनें',
+  '{count} rows': '{count} पंक्तियाँ',
+  'Choose another file': 'दूसरी फ़ाइल चुनें',
+  COLUMNS: 'कॉलम',
+  Description: 'विवरण',
+  'Money out': 'गया पैसा',
+  Amount: 'रकम',
+  'Spending is': 'खर्च हैं',
+  'Negative amounts': 'नकारात्मक रकम',
+  'Positive amounts': 'सकारात्मक रकम',
+  PREVIEW: 'पूर्वावलोकन',
+  '{count} to import · {total}': '{count} आयात होंगे · {total}',
+  'Split equally between everyone in this group': 'ग्रुप के सभी लोगों में बराबर',
+  'Importing the same file again won’t add duplicates.': 'वही फ़ाइल दोबारा आयात करने से डुप्लिकेट नहीं बनते।',
+  '{count} rows skipped': '{count} पंक्तियाँ छोड़ी गईं',
 };
 
 export default dict;

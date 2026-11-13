@@ -394,6 +394,36 @@ const dict: Record<string, string> = {
   'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.':
     'يُحذف ملفك الشخصي وتغادر كل المجموعات. تبقى المصروفات التي يعتمد عليها الآخرون في سجلهم باسم «مستخدم محذوف». يجب أن تسوّي حساباتك أولًا. لا يمكن التراجع عن هذا.',
   'Your share': 'حصتك',
+  // CSV import
+  'Money in, not spending': 'أموال واردة وليست مصروفًا',
+  'No amount': 'لا يوجد مبلغ',
+  'Date not recognised': 'تاريخ غير معروف',
+  'Other currency': 'عملة أخرى',
+  Column: 'عمود',
+  'Couldn’t read this file. Save it as CSV and try again.': 'تعذّرت قراءة هذا الملف. احفظه بصيغة CSV وحاول مجددًا.',
+  None: 'لا شيء',
+  '{count} expenses imported': 'استُورد {count} مصروفًا',
+  '{count} could not be imported': 'تعذّر استيراد {count}',
+  'Importing {done} of {count}…': 'جارٍ استيراد {done} من {count}…',
+  'Import {count} expenses': 'استيراد {count} مصروفًا',
+  'Import from CSV': 'الاستيراد من CSV',
+  'Import expenses from a spreadsheet or bank export. Each row becomes an expense split equally between everyone in this group.':
+    'استورد المصروفات من جدول بيانات أو كشف حساب بنكي. يصبح كل صف مصروفًا مقسومًا بالتساوي بين كل أعضاء المجموعة.',
+  'Choose CSV file': 'اختيار ملف CSV',
+  '{count} rows': '{count} صفوف',
+  'Choose another file': 'اختيار ملف آخر',
+  COLUMNS: 'الأعمدة',
+  Description: 'الوصف',
+  'Money out': 'أموال صادرة',
+  Amount: 'المبلغ',
+  'Spending is': 'المصروفات هي',
+  'Negative amounts': 'مبالغ سالبة',
+  'Positive amounts': 'مبالغ موجبة',
+  PREVIEW: 'معاينة',
+  '{count} to import · {total}': '{count} للاستيراد · {total}',
+  'Split equally between everyone in this group': 'بالتساوي بين كل أعضاء المجموعة',
+  'Importing the same file again won’t add duplicates.': 'استيراد الملف نفسه مرة أخرى لا يضيف تكرارات.',
+  '{count} rows skipped': 'تخطّي {count} صفوف',
 };
 
 export default dict;

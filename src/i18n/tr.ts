@@ -396,6 +396,36 @@ const dict: Record<string, string> = {
   'Your profile is removed and you leave all groups. Expenses other people rely on stay in their history as “Deleted user”. You must be settled up first. This can’t be undone.':
     'Profilin silinir ve tüm gruplardan ayrılırsın. Başkalarının ihtiyaç duyduğu harcamalar geçmişlerinde “Silinmiş kullanıcı” olarak kalır. Önce hesabının kapanmış olması gerekir. Bu geri alınamaz.',
   'Your share': 'Payın',
+  // CSV import
+  'Money in, not spending': 'Gelen para, harcama değil',
+  'No amount': 'Tutar yok',
+  'Date not recognised': 'Tarih tanınmadı',
+  'Other currency': 'Başka para birimi',
+  Column: 'Sütun',
+  'Couldn’t read this file. Save it as CSV and try again.': 'Bu dosya okunamadı. CSV olarak kaydedip tekrar dene.',
+  None: 'Yok',
+  '{count} expenses imported': '{count} harcama içe aktarıldı',
+  '{count} could not be imported': '{count} içe aktarılamadı',
+  'Importing {done} of {count}…': '{count} içinden {done} aktarılıyor…',
+  'Import {count} expenses': '{count} harcamayı içe aktar',
+  'Import from CSV': 'CSV’den içe aktar',
+  'Import expenses from a spreadsheet or bank export. Each row becomes an expense split equally between everyone in this group.':
+    'Bir tablodan ya da banka dökümünden harcama aktar. Her satır, gruptaki herkes arasında eşit bölünen bir harcama olur.',
+  'Choose CSV file': 'CSV dosyası seç',
+  '{count} rows': '{count} satır',
+  'Choose another file': 'Başka dosya seç',
+  COLUMNS: 'SÜTUNLAR',
+  Description: 'Açıklama',
+  'Money out': 'Çıkan para',
+  Amount: 'Tutar',
+  'Spending is': 'Harcamalar',
+  'Negative amounts': 'Eksi tutarlar',
+  'Positive amounts': 'Artı tutarlar',
+  PREVIEW: 'ÖNİZLEME',
+  '{count} to import · {total}': '{count} aktarılacak · {total}',
+  'Split equally between everyone in this group': 'Gruptaki herkes arasında eşit bölünür',
+  'Importing the same file again won’t add duplicates.': 'Aynı dosyayı tekrar aktarmak kopya oluşturmaz.',
+  '{count} rows skipped': '{count} satır atlandı',
 };
 
 export default dict;

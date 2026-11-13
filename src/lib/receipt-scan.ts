@@ -9,7 +9,7 @@ import { captureError } from '@/lib/monitoring';
 export const canScanReceipts = () => !!ReceiptText;
 
 /** How to read an ambiguous date like 03/04/2026 for this user's date format. */
-export const dateOrderFor = (pref: DateFormatPref): DateOrder => (pref === 'MM/DD/YYYY' ? 'MDY' : 'DMY');
+export const dateOrderFor = (pref: DateFormatPref): Exclude<DateOrder, 'YMD'> => (pref === 'MM/DD/YYYY' ? 'MDY' : 'DMY');
 
 /**
  * Read a receipt photo on the device: recognise the text, then pull out the
